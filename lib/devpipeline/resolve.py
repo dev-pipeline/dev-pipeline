@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-def order_dependencies(target, components):
+def order_dependencies(targets, components):
     counts = {}
     reverse_deps = {}
 
@@ -18,7 +18,7 @@ def order_dependencies(target, components):
         raise Exception("Resolve error")
 
     # seed the initial dependencies
-    depends = [target]
+    depends = list(targets)
     # build our intermediary objects
     while depends:
         current = depends[0]
