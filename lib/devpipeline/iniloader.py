@@ -6,7 +6,8 @@ import devpipeline.component
 
 
 def read_config(path):
-    config = configparser.ConfigParser()
+    config = configparser.ConfigParser(
+        interpolation=configparser.ExtendedInterpolation())
     config.read(path)
 
     ret = devpipeline.component.Components()
