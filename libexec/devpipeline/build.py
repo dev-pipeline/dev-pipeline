@@ -18,7 +18,8 @@ class Builder(devpipeline.common.Tool):
         self._targets = arguments.targets
 
     def process(self):
-        build_order = devpipeline.resolve.order_dependencies(self._targets, self.components)
+        build_order = devpipeline.resolve.order_dependencies(
+            self._targets, self.components)
         print(build_order)
 
 

@@ -6,7 +6,7 @@ class Component:
     def __init__(self, name):
         self._name = name
         self._values = {
-            "depends" : []
+            "depends": []
         }
 
     def add_value(self, key, value):

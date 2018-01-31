@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+
 def order_dependencies(targets, components):
     counts = {}
     reverse_deps = {}
@@ -23,7 +24,8 @@ def order_dependencies(targets, components):
     while depends:
         current = depends[0]
         del depends[0]
-        # We'll add dependencies in reverse order, so that the original target is built last.
+        # We'll add dependencies in reverse order, so that the original target
+        # is built last.
         component = components._components[current]
         if current not in counts:
             current_deps = component._values["depends"]

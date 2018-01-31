@@ -4,6 +4,7 @@ import configparser
 
 import devpipeline.component
 
+
 def read_config(path):
     config = configparser.ConfigParser()
     config.read(path)
