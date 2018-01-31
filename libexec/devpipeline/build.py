@@ -3,7 +3,7 @@
 import operator
 
 import devpipeline.common
-import devpipeline.iniloader
+import devpipeline.resolve
 
 
 class Builder(devpipeline.common.Tool):
@@ -15,11 +15,11 @@ class Builder(devpipeline.common.Tool):
             help="The target to build.")
 
     def setup(self, arguments):
-        self._components = devpipeline.iniloader.read_config(arguments.config)
+        self._target = arguments.target
 
     def process(self):
-        for name, component in self._components._components.items():
-            print("{} : {}".format(name, component._values["depends"]))
+        build_order = devpipeline.resolve.order_dependencies(self._target, self.components)
+        print(build_order)
 
 
 builder = Builder()

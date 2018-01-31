@@ -4,6 +4,7 @@ import argparse
 import errno
 import sys
 
+import devpipeline.iniloader
 
 class Tool:
 
@@ -22,6 +23,7 @@ class Tool:
 
     def execute(self, *args, **kwargs):
         args = self.parser.parse_args(*args, **kwargs)
+        self.components = devpipeline.iniloader.read_config(args.config)
         self.setup(args)
         self.process()
 
