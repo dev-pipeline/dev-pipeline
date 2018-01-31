@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 
-import operator
-
 import devpipeline.common
 import devpipeline.resolve
 
