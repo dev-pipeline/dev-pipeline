@@ -18,7 +18,7 @@ toolsDir="${dir}/../libexec/devpipeline"
 do_help() {
 	local=$(${BASENAME} ${0})
 	${CAT} <<EOF
-${local} - Front-end to writing-tools
+${local} - Front-end to dev-pipeline tools.
 
 ${local} <tool> [tool options]
 
