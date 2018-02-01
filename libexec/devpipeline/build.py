@@ -12,17 +12,16 @@ _builder_lookup = {
 }
 
 
-def make_builder(target, components, build_dir):
-    component = components._components[target]
+def make_builder(component, build_dir):
     if "build" in component._values:
         builder = component._values["build"]
         if builder in _builder_lookup:
             return _builder_lookup[builder](component, build_dir)
         else:
             raise Exception(
-                "Unknown builder '{}' for {}".format(builder, target))
+                "Unknown builder '{}' for {}".format(builder, component._name))
     else:
-        raise Exception("{} does not specify build".format(target))
+        raise Exception("{} does not specify build".format(component._name))
 
 
 class Builder(devpipeline.common.Tool):
@@ -46,13 +45,15 @@ class Builder(devpipeline.common.Tool):
             self._targets, self.components)
         pwd = os.getcwd()
         for target in build_order:
+            component = self.components._components[target]
             build_path = "{}/{}".format(self._build_dir, target)
             if not os.path.exists(build_path):
                 os.makedirs(build_path)
-            builder = make_builder(target, self.components, build_path)
+            builder = make_builder(component, build_path)
             builder.configure("{}/{}".format(pwd, target))
             builder.build()
-            builder.install()
+            if 'no_install' not in component._values:
+                builder.install(path=component._values.get("install_path"))
 
 
 builder = Builder()

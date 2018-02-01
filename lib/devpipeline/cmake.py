@@ -19,14 +19,17 @@ class CMake:
                                '--build',
                                self._build_dir])
 
-    def install(self):
-        subprocess.check_call(['cmake',
-                               '--build',
-                               self._build_dir,
-                               '--target',
-                               'install',
-                               '--',
-                               'DESTDIR=_install_'])
+    def install(self, path=None):
+        install_args = ['cmake',
+                        '--build',
+                        self._build_dir,
+                        '--target',
+                        'install']
+        if path:
+            install_args.extend(['--',
+                                 "DESTDIR={}".format(path)])
+        print(install_args)
+        subprocess.check_call(install_args)
 
 
 def make_cmake(component, build_dir):
