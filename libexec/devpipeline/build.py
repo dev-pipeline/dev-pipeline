@@ -13,10 +13,11 @@ _builder_lookup = {
 
 
 def make_builder(component, build_dir):
-    if "build" in component._values:
-        builder = component._values["build"]
-        if builder in _builder_lookup:
-            return _builder_lookup[builder](component, build_dir)
+    builder = component._values.get("build")
+    if builder:
+        builder_fn = _builder_lookup.get(builder)
+        if builder_fn:
+            return builder_fn(component, build_dir)
         else:
             raise Exception(
                 "Unknown builder '{}' for {}".format(builder, component._name))

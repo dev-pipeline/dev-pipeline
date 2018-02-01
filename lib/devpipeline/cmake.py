@@ -34,11 +34,11 @@ class CMake:
 
 def make_cmake(component, build_dir):
     cmake_args = []
-    if "cmake_args" in component._values:
-        cmake_args.extend([x.strip()
-                           for x in component._values["cmake_args"].split(",")])
-    if "prefix" in component._values:
-        cmake_args.append(
-            "-DCMAKE_INSTALL_PREFIX={}".format(component._values["prefix"]))
+    val = component._values.get("cmake_args")
+    if val:
+        cmake_args.extend([x.strip() for x in val.split(",")])
+    val = component._values.get("prefix")
+    if val:
+        cmake_args.append("-DCMAKE_INSTALL_PREFIX={}".format(val))
 
     return CMake(cmake_args, build_dir)
