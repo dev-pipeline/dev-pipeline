@@ -6,7 +6,6 @@ CUT=/usr/bin/cut
 DIRNAME=/usr/bin/dirname
 ECHO=/bin/echo
 INSTALL=/usr/bin/install
-SED=/bin/sed
 
 prefix=/usr/local
 
