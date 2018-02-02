@@ -38,8 +38,11 @@ class Builder(devpipeline.common.Tool):
             default="build")
 
     def setup(self, arguments):
-        self._targets = arguments.targets
-        self._build_dir = arguments.build_dir
+        if not arguments.targets:
+            raise Exception("No targets specified")
+        else:
+            self._targets = arguments.targets
+            self._build_dir = arguments.build_dir
 
     def process(self):
         build_order = devpipeline.resolve.order_dependencies(

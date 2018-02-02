@@ -5,16 +5,10 @@ class Component:
 
     def __init__(self, name):
         self._name = name
-        self._values = {
-            "depends": []
-        }
+        self._values = {}
 
     def add_value(self, key, value):
-        if(key == "depends"):
-            depends = [x.strip() for x in value.split(",")]
-            self._values[key] = depends
-        else:
-            self._values[key] = value
+        self._values[key] = value
 
 
 class Components:

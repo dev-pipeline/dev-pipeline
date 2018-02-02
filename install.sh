@@ -94,6 +94,7 @@ binFiles=" \
 "
 libexecFiles=" \
 	libexec/devpipeline/build.py \
+	libexec/devpipeline/build-order.py \
 "
 libFiles=" \
 	lib/devpipeline/__init__.py \
