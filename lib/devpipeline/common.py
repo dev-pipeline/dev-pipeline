@@ -18,13 +18,19 @@ class Tool:
             "--config",
             help="Build configuration file",
             default="build.config")
+        self.add_argument(
+            "--build-dir",
+            help="The build folder to use",
+            default="build")
 
     def add_argument(self, *args, **kwargs):
         self.parser.add_argument(*args, **kwargs)
 
     def execute(self, *args, **kwargs):
         args = self.parser.parse_args(*args, **kwargs)
-        self.components = devpipeline.iniloader.read_config(args.config)
+        self.components = devpipeline.iniloader.read_config(
+            args.config, args.build_dir, "build.config")
+        self.build_dir = args.build_dir
         self.setup(args)
         self.process()
 
