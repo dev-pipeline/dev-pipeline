@@ -13,11 +13,9 @@ class Checkout(devpipeline.common.Tool):
     def process(self):
         build_order = devpipeline.resolve.order_dependencies(
             self.targets, self.components)
-        for target in build_order:
-            scm = devpipeline.scm.scm.make_scm(
-                self.components._components[target])
-            scm.checkout(target)
-            scm.update(target)
+        self.process_targets(build_order, [
+            devpipeline.scm.scm.scm_task
+        ])
 
 
 checkout = Checkout()

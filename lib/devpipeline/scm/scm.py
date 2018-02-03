@@ -20,3 +20,9 @@ def make_scm(component):
                 "Unknown scm '{}' for {}".format(scm, component._name))
     else:
         raise Exception("{} does not specify scm".format(component._name))
+
+
+def scm_task(target):
+    scm = make_scm(target)
+    scm.checkout(target._name)
+    scm.update(target._name)

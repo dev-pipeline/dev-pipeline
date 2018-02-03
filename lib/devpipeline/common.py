@@ -46,6 +46,12 @@ class Tool:
     def process(self):
         pass
 
+    def process_targets(self, targets, tasks):
+        for target in targets:
+            current = self.components._components[target]
+            for task in tasks:
+                task(current)
+
 
 def execute_tool(tool):
     try:

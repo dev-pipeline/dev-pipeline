@@ -92,6 +92,7 @@ binFiles=" \
 	bin/dev-pipeline.sh \
 "
 libexecFiles=" \
+	libexec/devpipeline/bootstrap.py \
 	libexec/devpipeline/build.py \
 	libexec/devpipeline/build-order.py \
 	libexec/devpipeline/checkout.py \
