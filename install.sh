@@ -98,15 +98,27 @@ libexecFiles=" \
 "
 libFiles=" \
 	lib/devpipeline/__init__.py \
-	lib/devpipeline/cmake.py \
 	lib/devpipeline/common.py \
 	lib/devpipeline/component.py \
-	lib/devpipeline/git.py \
 	lib/devpipeline/iniloader.py \
 	lib/devpipeline/resolve.py \
+"
+
+libBuildFiles=" \
+	lib/devpipeline/build/__init__.py \
+	lib/devpipeline/build/build.py \
+	lib/devpipeline/build/cmake.py \
+"
+
+libScmFiles=" \
+	lib/devpipeline/scm/__init__.py \
+	lib/devpipeline/scm/git.py \
+	lib/devpipeline/scm/scm.py \
 "
 
 # tools
 install_helper install_exec "bin" ${binFiles}
 install_helper install_share "lib/devpipeline/" ${libFiles}
+install_helper install_share "lib/devpipeline/build" ${libBuildFiles}
+install_helper install_share "lib/devpipeline/scm" ${libScmFiles}
 install_helper install_exec "libexec/devpipeline" ${libexecFiles}

@@ -4,25 +4,8 @@ import os
 import os.path
 
 import devpipeline.common
-import devpipeline.cmake
+import devpipeline.build.build
 import devpipeline.resolve
-
-_builder_lookup = {
-    "cmake": devpipeline.cmake.make_cmake
-}
-
-
-def make_builder(component, build_dir):
-    builder = component._values.get("build")
-    if builder:
-        builder_fn = _builder_lookup.get(builder)
-        if builder_fn:
-            return builder_fn(component, build_dir)
-        else:
-            raise Exception(
-                "Unknown builder '{}' for {}".format(builder, component._name))
-    else:
-        raise Exception("{} does not specify build".format(component._name))
 
 
 class Builder(devpipeline.common.Tool):
@@ -39,7 +22,8 @@ class Builder(devpipeline.common.Tool):
             build_path = "{}/{}".format(self.build_dir, target)
             if not os.path.exists(build_path):
                 os.makedirs(build_path)
-            builder = make_builder(component, build_path)
+            builder = devpipeline.build.build.make_builder(
+                component, build_path)
             builder.configure("{}/{}".format(pwd, target))
             builder.build()
             if 'no_install' not in component._values:
