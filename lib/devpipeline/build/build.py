@@ -1,9 +1,11 @@
 #!/usr/bin/python3
 
 import devpipeline.build.cmake
+import devpipeline.build.nothing
 
 _builder_lookup = {
-    "cmake": devpipeline.build.cmake.make_cmake
+    "cmake": devpipeline.build.cmake.make_cmake,
+    "nothing": devpipeline.build.nothing.make_nothing
 }
 
 

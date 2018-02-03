@@ -1,9 +1,11 @@
 #!/usr/bin/python3
 
+import devpipeline.scm.nothing
 import devpipeline.scm.git
 
 _scm_lookup = {
-    "git": devpipeline.scm.git.make_git
+    "git": devpipeline.scm.git.make_git,
+    "nothing": devpipeline.scm.nothing.make_nothing
 }
 
 
