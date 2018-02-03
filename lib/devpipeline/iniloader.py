@@ -16,18 +16,19 @@ def _read_config(path):
     return config
 
 
-def transform_config(config, state):
-    transform_patterns = {
-        R"\[\[dp_build_dir\]\]":
-            lambda m, state:
-                "{}/{}/{}".format(os.getcwd(),
-                                  state["build_dir"],
-                                  state["section"])
-    }
+_transform_patterns = {
+    R"\[\[dp_build_dir\]\]":
+        lambda m, state:
+            "{}/{}/{}".format(os.getcwd(),
+                              state["build_dir"],
+                              state["section"])
+}
 
+
+def transform_config(config, state):
     def alter_values(raw_value):
         ret = raw_value
-        for pattern, repl in transform_patterns.items():
+        for pattern, repl in _transform_patterns.items():
             ret = re.sub(pattern, lambda m: repl(m, state), ret)
         return ret
 
