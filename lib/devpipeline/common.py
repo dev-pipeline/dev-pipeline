@@ -22,12 +22,18 @@ class Tool:
             "--build-dir",
             help="The build folder to use",
             default="build")
+        self.add_argument(
+            "targets", nargs="*",
+            help="The targets to operate on")
 
     def add_argument(self, *args, **kwargs):
         self.parser.add_argument(*args, **kwargs)
 
     def execute(self, *args, **kwargs):
         args = self.parser.parse_args(*args, **kwargs)
+        if not args.targets:
+            raise Exception("No targets specified")
+        self.targets = args.targets
         self.components = devpipeline.iniloader.read_config(
             args.config, args.build_dir, "build.config")
         self.build_dir = args.build_dir

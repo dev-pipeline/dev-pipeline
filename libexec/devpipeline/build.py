@@ -29,19 +29,10 @@ class Builder(devpipeline.common.Tool):
 
     def __init__(self):
         super().__init__(description="Build a target")
-        self.add_argument(
-            "targets", nargs="*",
-            help="The target to build.")
-
-    def setup(self, arguments):
-        if not arguments.targets:
-            raise Exception("No targets specified")
-        else:
-            self._targets = arguments.targets
 
     def process(self):
         build_order = devpipeline.resolve.order_dependencies(
-            self._targets, self.components)
+            self.targets, self.components)
         pwd = os.getcwd()
         for target in build_order:
             component = self.components._components[target]
