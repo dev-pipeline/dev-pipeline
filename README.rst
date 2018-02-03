@@ -3,7 +3,32 @@ dev-pipeline
 |codacy|
 |code-climate|
 
-A tool to help manage projects with dependencies spread across folders.
+A tool to help manage projects with dependencies spread across repositories.
+
+
+Inspiration
+-----------
+I work on several projects spread across repositories; some of these leverage
+sub-repositories in some form, and it's led to additional complexity trying to
+stay in sync (especially when dealing with merges, release lines, hot fixes,
+and all the other fun things that happen in large software projects).  The
+goal here is to have a suite of scripts to help keep repositories in sync and
+working well together, without the issues that sub-repositories introduce.
+
+
+Using
+-----
+dev-pipeline follows the libexec model, with a single front-end
+(:code:`dev-pipeline`) that prepares the environment before invoking the
+desired tool.
+
+
+Installation
+------------
+dev-pipeline is installed using :code:`install.sh`.  Typical Unix system utils
+are assumed to be installed in their usual locations, but additional tools may
+be required based on the configuration of your projects.  As a general rule,
+programs like :code:`git` and :code:`cmake` are expected to be in :code:`PATH`.
 
 
 .. |codacy| image::
