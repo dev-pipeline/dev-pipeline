@@ -94,12 +94,14 @@ binFiles=" \
 libexecFiles=" \
 	libexec/devpipeline/build.py \
 	libexec/devpipeline/build-order.py \
+	libexec/devpipeline/checkout.py \
 "
 libFiles=" \
 	lib/devpipeline/__init__.py \
 	lib/devpipeline/cmake.py \
 	lib/devpipeline/common.py \
 	lib/devpipeline/component.py \
+	lib/devpipeline/git.py \
 	lib/devpipeline/iniloader.py \
 	lib/devpipeline/resolve.py \
 "
