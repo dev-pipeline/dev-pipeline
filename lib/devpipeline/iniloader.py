@@ -3,7 +3,6 @@
 import configparser
 import os
 import os.path
-import re
 
 import devpipeline.component
 
@@ -16,9 +15,9 @@ def _read_config(path):
     return config
 
 
-_transform_patterns = {
-    R"\[\[dp_build_dir\]\]":
-        lambda m, state:
+_ex_values = {
+    "dp_build_dir":
+        lambda state:
             "{}/{}/{}".format(os.getcwd(),
                               state["build_dir"],
                               state["section"])
@@ -26,18 +25,14 @@ _transform_patterns = {
 
 
 def transform_config(config, state):
-    def alter_values(raw_value):
-        ret = raw_value
-        for pattern, repl in _transform_patterns.items():
-            ret = re.sub(pattern, lambda m: repl(m, state), ret)
-        return ret
-
     ret = configparser.ConfigParser()
     for s in config.sections():
         ret.add_section(s)
         state["section"] = s
         for key, value in config.items(s, raw=True):
-            ret[s][key] = alter_values(value)
+            ret[s][key] = value
+        for ex, fn in _ex_values.items():
+            ret[s][ex] = fn(state)
     return ret
 
 
