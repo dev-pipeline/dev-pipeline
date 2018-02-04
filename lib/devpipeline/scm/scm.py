@@ -24,5 +24,5 @@ def make_scm(component):
 
 def scm_task(target):
     scm = make_scm(target)
-    scm.checkout(target._name)
-    scm.update(target._name)
+    scm.checkout(target._values["dp_src_dir"])
+    scm.update(target._values["dp_src_dir"])

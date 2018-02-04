@@ -12,12 +12,12 @@ _builder_lookup = {
 }
 
 
-def make_builder(component, build_dir):
+def make_builder(component):
     builder = component._values.get("build")
     if builder:
         builder_fn = _builder_lookup.get(builder)
         if builder_fn:
-            return builder_fn(component, build_dir)
+            return builder_fn(component)
         else:
             raise Exception(
                 "Unknown builder '{}' for {}".format(builder, component._name))
@@ -28,11 +28,11 @@ def make_builder(component, build_dir):
 def build_task(target, build_path):
     if not os.path.exists(build_path):
         os.makedirs(build_path)
-    builder = make_builder(target, build_path)
-    builder.configure("{}/{}".format(os.getcwd(), target._name))
-    builder.build()
+    builder = make_builder(target)
+    builder.configure(target._values["dp_src_dir"], build_path)
+    builder.build(build_path)
     if 'no_install' not in target._values:
-        builder.install(path=target._values.get("install_path"))
+        builder.install(build_path, path=target._values.get("install_path"))
 
 
 def make_build_task_wrapper(build_dir):

@@ -8,24 +8,24 @@ class Git():
     def __init__(self, args):
         self._args = args
 
-    def checkout(self, target_dir):
-        if not os.path.isdir(target_dir):
+    def checkout(self, repo_dir):
+        if not os.path.isdir(repo_dir):
             subprocess.check_call(['git',
                                    'clone',
                                    self._args["uri"],
-                                   target_dir])
+                                   repo_dir])
         else:
             subprocess.check_call(['git',
                                    'fetch'],
-                                  cwd=target_dir)
+                                  cwd=repo_dir)
 
-    def update(self, target_dir):
+    def update(self, repo_dir):
         rev = self._args.get("revision")
         if rev:
             subprocess.check_call(['git',
                                    'checkout',
                                    rev],
-                                  cwd=target_dir)
+                                  cwd=repo_dir)
 
 
 def make_git(component):

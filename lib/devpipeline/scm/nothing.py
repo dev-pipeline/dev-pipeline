@@ -2,10 +2,10 @@
 
 
 class Nothing():
-    def checkout(self, target_dir):
+    def checkout(self, repo_dir):
         pass
 
-    def update(self, target_dir):
+    def update(self, repo_dir):
         pass
 
 

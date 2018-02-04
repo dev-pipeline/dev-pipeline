@@ -20,7 +20,11 @@ _ex_values = {
         lambda state:
             "{}/{}/{}".format(os.getcwd(),
                               state["build_dir"],
-                              state["section"])
+                              state["section"]),
+    "dp_src_dir":
+        lambda state:
+            "{}/{}".format(state["src_dir"],
+                           state["section"])
 }
 
 
@@ -41,7 +45,8 @@ def build_cache(input_path, output, force=False):
     if force or os.path.getmtime(input_path) > os.path.getmtime(output):
         cache_dir = os.path.dirname(output)
         config = transform_config(_read_config(input_path), {
-            "build_dir": cache_dir
+            "build_dir": cache_dir,
+            "src_dir": os.path.abspath(os.path.dirname(input_path))
         })
         if not os.path.exists(cache_dir):
             os.makedirs(cache_dir)
@@ -53,8 +58,11 @@ def build_cache(input_path, output, force=False):
         return _read_config(output)
 
 
-def read_config(input_path, cache_dir, cache_file):
-    config = build_cache(input_path, "{}/{}".format(cache_dir, cache_file))
+def read_config(input_path, cache_path=None):
+    if cache_path:
+        config = build_cache(input_path, cache_path)
+    else:
+        config = _read_config(input_path)
     ret = devpipeline.component.Components()
     for name in config.sections():
         comp = devpipeline.component.Component(name)

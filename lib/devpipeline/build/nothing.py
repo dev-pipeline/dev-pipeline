@@ -2,15 +2,15 @@
 
 
 class Nothing:
-    def configure(self, src_dir):
+    def configure(self, src_dir, build_dir):
         pass
 
-    def build(self):
+    def build(self, build_dir):
         pass
 
-    def install(self, path=None):
+    def install(self, build_dir, path=None):
         pass
 
 
-def make_nothing(component, build_dir):
+def make_nothing(component):
     return Nothing()
