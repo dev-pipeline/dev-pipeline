@@ -28,8 +28,8 @@ be used like normal.
 
 All variables provided in this manner are prefixed with :code:`dp_`.
 
-* [[dp_build_dir]] - The build directory of a specific package.  If you need
-  this outside a package, store it in a local key/value pair.
+* dp_build_dir - The build directory of a specific package.  If you need this
+  outside a package, store it in a local key/value pair.
 
 
 Example Configuration
