@@ -3,6 +3,7 @@
 import os
 import os.path
 
+import devpipeline.common
 import devpipeline.build.cmake
 import devpipeline.build.nothing
 
@@ -13,16 +14,8 @@ _builder_lookup = {
 
 
 def make_builder(component):
-    builder = component._values.get("build")
-    if builder:
-        builder_fn = _builder_lookup.get(builder)
-        if builder_fn:
-            return builder_fn(component)
-        else:
-            raise Exception(
-                "Unknown builder '{}' for {}".format(builder, component._name))
-    else:
-        raise Exception("{} does not specify build".format(component._name))
+    return devpipeline.common.tool_builder(component, "build",
+                                           _builder_lookup)
 
 
 def build_task(target, build_path):

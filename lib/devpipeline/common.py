@@ -70,3 +70,16 @@ def execute_tool(tool):
     except Exception as e:
         print("Error: {}".format(str(e)), file=sys.stderr)
         exit(1)
+
+
+def tool_builder(component, key, tool_map):
+    tool_name = component._values.get(key)
+    if tool_name:
+        tool_fn = tool_map.get(tool_name)
+        if tool_fn:
+            return tool_fn(component)
+        else:
+            raise Exception(
+                "Unknown {} '{}' for {}".format(key, tool_name, component._name))
+    else:
+        raise Exception("{} does not specify {}".format(component._name), key)
