@@ -5,7 +5,7 @@ Synopsis
 --------
 .. code::
 
-    build.py [-h] [--config CONFIG] [--build-dir BUILD_DIR]
+    build [-h] [--config CONFIG] [--build-dir BUILD_DIR]
                 [targets [targets ...]]
 
 
@@ -32,9 +32,9 @@ Config Options
 
 Builders
 --------
-* cmake - Build using CMake_.
+* cmake_ - Build using CMake.
 * nothing - No build step.  This is useful for dependencies that don't produce
   any artifacts, but are needed for some reason.
 
 
-.. _CMake: https://www.cmake.org
+.. _cmake: ../builder/cmake.rst

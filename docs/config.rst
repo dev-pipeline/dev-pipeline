@@ -24,9 +24,9 @@ Expanded Options
 ----------------
 Some options are dependent on factors outside the control of
 :code:`build.config` (such as the absolute path of a bulid).  These values can
-be used like normal, but they *are not* available like other values.  While a
-config file is parsed, these value are expanded, but they're not stored in the
-cached configuration.
+be used like normal.
+
+All variables provided in this manner are prefixed with :code:`dp_`.
 
 * [[dp_build_dir]] - The build directory of a specific package.  If you need
   this outside a package, store it in a local key/value pair.
@@ -57,7 +57,7 @@ Example Configuration
     # We can set arbitrary arguments; this is used to help things that depend
     # on bureaucracy
     dep_args =
-        -DBureaucracy_DIR=[[dp_build_dir]]/${install_path}/${prefix}/share/Bureaucracy/cmake
+        -DBureaucracy_DIR=${dp_build_dir}/${install_path}/${prefix}/share/Bureaucracy/cmake
 
     # Declare another package
     [bureaucracy-test]

@@ -37,9 +37,9 @@ Config Options
 
 SCMs
 ----
-* git - Build using git_.
+* git_ - Build using git.
 * nothing - No checkout step.  This is useful for packages that live locally
   under the dev-pipeline project for some reason.
 
 
-.. _git: https://www.git-scm.com
+.. _git: ../scm/git.rst
