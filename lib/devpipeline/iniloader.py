@@ -36,11 +36,11 @@ def transform_config(config, state):
     return ret
 
 
-def build_cache(input, output, force=False):
+def build_cache(input_path, output, force=False):
     force = force or not os.path.isfile(output)
-    if force or os.path.getmtime(input) > os.path.getmtime(output):
+    if force or os.path.getmtime(input_path) > os.path.getmtime(output):
         cache_dir = os.path.dirname(output)
-        config = transform_config(_read_config(input), {
+        config = transform_config(_read_config(input_path), {
             "build_dir": cache_dir
         })
         if not os.path.exists(cache_dir):
@@ -53,8 +53,8 @@ def build_cache(input, output, force=False):
         return _read_config(output)
 
 
-def read_config(input, cache_dir, cache_file):
-    config = build_cache(input, "{}/{}".format(cache_dir, cache_file))
+def read_config(input_path, cache_dir, cache_file):
+    config = build_cache(input_path, "{}/{}".format(cache_dir, cache_file))
     ret = devpipeline.component.Components()
     for name in config.sections():
         comp = devpipeline.component.Component(name)
