@@ -27,7 +27,6 @@ class CMake:
         if path:
             install_args.extend(['--',
                                  "DESTDIR={}".format(path)])
-        print(install_args)
         subprocess.check_call(install_args)
 
 
