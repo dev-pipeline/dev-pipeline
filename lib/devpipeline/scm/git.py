@@ -28,15 +28,22 @@ class Git():
                                   cwd=repo_dir)
 
 
+_git_args = {
+    "uri": lambda v: ("uri", v),
+    "revision": lambda v: ("revision", v)
+}
+
+
 def make_git(component):
     git_args = {}
-    val = component._values.get("uri")
-    if not val:
+
+    for key, value in component._values.items():
+        fn = _git_args.get(key)
+        if fn:
+            k, v = fn(value)
+            git_args[k] = v
+
+    if not git_args.get("uri"):
         raise Exception("Not git uri ({})".format(component._name))
     else:
-        git_args["uri"] = val
-    val = component._values.get("revision")
-    if val:
-        git_args["revision"] = val
-
-    return Git(git_args)
+        return Git(git_args)

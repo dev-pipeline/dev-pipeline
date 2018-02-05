@@ -30,19 +30,19 @@ class CMake:
         subprocess.check_call(install_args)
 
 
+_usable_args = {
+    "cmake_args": lambda v: [x.strip() for x in v.split(",")],
+    "prefix": lambda v: ["-DCMAKE_INSTALL_PREFIX={}".format(v)],
+    "cc": lambda v: ["-DCMAKE_C_COMPILER={}".format(v)],
+    "cxx": lambda v: ["-DCMAKE_CXX_COMPILER={}".format(v)]
+}
+
+
 def make_cmake(component):
     cmake_args = []
-    val = component._values.get("cmake_args")
-    if val:
-        cmake_args.extend([x.strip() for x in val.split(",")])
-    val = component._values.get("prefix")
-    if val:
-        cmake_args.append("-DCMAKE_INSTALL_PREFIX={}".format(val))
-    val = component._values.get("cc")
-    if val:
-        cmake_args.append("-DCMAKE_C_COMPILER={}".format(val))
-    val = component._values.get("cxx")
-    if val:
-        cmake_args.append("-DCMAKE_CXX_COMPILER={}".format(val))
+    for key, value in component._values.items():
+        fn = _usable_args.get(key)
+        if fn:
+            cmake_args.extend(fn(value))
 
     return CMake(cmake_args)
