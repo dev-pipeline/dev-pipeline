@@ -1,10 +1,22 @@
 #!/usr/bin/python3
 
+import os.path
 import argparse
 import errno
 import sys
 
 import devpipeline.iniloader
+
+
+def _get_context(args):
+    if args.context:
+        config = devpipeline.iniloader.read_config(
+            "{}/{}".format(os.path.expanduser("~"), ".dev-pipeline"))
+        context = config._components.get(args.context)
+        if not context:
+            raise Exception("Unable to load context {}".format(args.context))
+        return context
+    return None
 
 
 class Tool:
@@ -19,6 +31,9 @@ class Tool:
             help="Build configuration file",
             default="build.config")
         self.add_argument(
+            "--context",
+            help="Build-specific context to use")
+        self.add_argument(
             "--build-dir",
             help="The build folder to use",
             default="build")
@@ -32,14 +47,20 @@ class Tool:
 
     def execute(self, *args, **kwargs):
         args = self.parser.parse_args(*args, **kwargs)
+        context_config = _get_context(args)
+        if context_config:
+            self.build_dir = "{}-{}".format(args.build_dir, args.context)
+        else:
+            self.build_dir = args.build_dir
         if "targets" in args:
             if not args.targets:
                 raise Exception("No targets specified")
             else:
                 self.targets = args.targets
         self.components = devpipeline.iniloader.read_config(
-            args.config, "{}/{}".format(args.build_dir, "config.cache"))
-        self.build_dir = args.build_dir
+            args.config,
+            cache_path="{}/{}".format(self.build_dir, "config.cache"),
+            context=context_config)
         self.setup(args)
         self.process()
 

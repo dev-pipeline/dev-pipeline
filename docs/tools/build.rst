@@ -20,6 +20,7 @@ Options
 -------
   -h, --help            show this help message and exit
   --config CONFIG       Build configuration file (default: build.config)
+  --context CONTEXT     Build-specific context to use (default: None)
   --build-dir BUILD_DIR
                         The build folder to use (default: build)
 

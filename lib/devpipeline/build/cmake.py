@@ -38,5 +38,11 @@ def make_cmake(component):
     val = component._values.get("prefix")
     if val:
         cmake_args.append("-DCMAKE_INSTALL_PREFIX={}".format(val))
+    val = component._values.get("cc")
+    if val:
+        cmake_args.append("-DCMAKE_C_COMPILER={}".format(val))
+    val = component._values.get("cxx")
+    if val:
+        cmake_args.append("-DCMAKE_CXX_COMPILER={}".format(val))
 
     return CMake(cmake_args)

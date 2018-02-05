@@ -28,7 +28,7 @@ _ex_values = {
 }
 
 
-def transform_config(config, state):
+def transform_config(config, state, context):
     ret = configparser.ConfigParser()
     for s in config.sections():
         ret.add_section(s)
@@ -37,17 +37,22 @@ def transform_config(config, state):
             ret[s][key] = value
         for ex, fn in _ex_values.items():
             ret[s][ex] = fn(state)
+
+    # Add any context variables
+    if context:
+        for key, value in context._values.items():
+            ret["DEFAULT"][key] = value
     return ret
 
 
-def build_cache(input_path, output, force=False):
+def build_cache(input_path, output, context, force=False):
     force = force or not os.path.isfile(output)
     if force or os.path.getmtime(input_path) > os.path.getmtime(output):
         cache_dir = os.path.dirname(output)
         config = transform_config(_read_config(input_path), {
             "build_dir": cache_dir,
             "src_dir": os.path.abspath(os.path.dirname(input_path))
-        })
+        }, context)
         if not os.path.exists(cache_dir):
             os.makedirs(cache_dir)
         with open(output, 'w') as output_file:
@@ -58,9 +63,9 @@ def build_cache(input_path, output, force=False):
         return _read_config(output)
 
 
-def read_config(input_path, cache_path=None):
+def read_config(input_path, cache_path=None, context=None):
     if cache_path:
-        config = build_cache(input_path, cache_path)
+        config = build_cache(input_path, cache_path, context)
     else:
         config = _read_config(input_path)
     ret = devpipeline.component.Components()
