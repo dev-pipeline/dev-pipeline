@@ -2,6 +2,8 @@
 
 import subprocess
 
+import devpipeline.common
+
 
 class CMake:
     def __init__(self, config_args):
@@ -31,18 +33,16 @@ class CMake:
 
 
 _usable_args = {
-    "cmake_args": lambda v: [x.strip() for x in v.split(",")],
+    "args": lambda v: [x.strip() for x in v.split(",")],
     "prefix": lambda v: ["-DCMAKE_INSTALL_PREFIX={}".format(v)],
     "cc": lambda v: ["-DCMAKE_C_COMPILER={}".format(v)],
-    "cxx": lambda v: ["-DCMAKE_CXX_COMPILER={}".format(v)]
+    "cxx": lambda v: ["-DCMAKE_CXX_COMPILER={}".format(v)],
+    "toolchain_file": lambda v: ["-DCMAKE_TOOLCHAIN_FILE={}".format(v)]
 }
 
 
 def make_cmake(component):
     cmake_args = []
-    for key, value in component._values.items():
-        fn = _usable_args.get(key)
-        if fn:
-            cmake_args.extend(fn(value))
-
+    devpipeline.common.args_builder("cmake", component, _usable_args,
+                                    lambda v, fn: cmake_args.extend(fn(v)))
     return CMake(cmake_args)

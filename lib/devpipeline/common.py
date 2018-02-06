@@ -3,6 +3,7 @@
 import os.path
 import argparse
 import errno
+import re
 import sys
 
 import devpipeline.iniloader
@@ -104,3 +105,14 @@ def tool_builder(component, key, tool_map):
                 "Unknown {} '{}' for {}".format(key, tool_name, component._name))
     else:
         raise Exception("{} does not specify {}".format(component._name, key))
+
+
+def args_builder(prefix, component, args_dict, val_found_fn):
+    pattern = re.compile(R"^{}\.".format(prefix))
+    for key, value in component._values.items():
+        m = pattern.match(key)
+        if m:
+            real_key = key[m.end():]
+            hit = args_dict.get(key[m.end():])
+            if hit:
+                val_found_fn(value, hit)

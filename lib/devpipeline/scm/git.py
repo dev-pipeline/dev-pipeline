@@ -3,6 +3,8 @@
 import os.path
 import subprocess
 
+import devpipeline.common
+
 
 class Git():
     def __init__(self, args):
@@ -37,11 +39,11 @@ _git_args = {
 def make_git(component):
     git_args = {}
 
-    for key, value in component._values.items():
-        fn = _git_args.get(key)
-        if fn:
-            k, v = fn(value)
-            git_args[k] = v
+    def add_value(v, fn):
+        k, r = fn(v)
+        git_args[k] = r
+
+    devpipeline.common.args_builder("git", component, _git_args, add_value)
 
     if not git_args.get("uri"):
         raise Exception("Not git uri ({})".format(component._name))
