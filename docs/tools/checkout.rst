@@ -30,10 +30,6 @@ Config Options
 --------------
 * scm - (**Required**) The source control tool to use.  This must be one of the
   options listed in SCMs_.
-* revision - The revision to use during checkouts.  If unspecified, the
-  repository will be checked out in whatever state the SCM chooses. In
-  practice this is required, since without it the repository state will be
-  unreliable.
 
 
 SCMs
