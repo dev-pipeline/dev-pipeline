@@ -37,7 +37,14 @@ _usable_args = {
     "prefix": lambda v: ["-DCMAKE_INSTALL_PREFIX={}".format(v)],
     "cc": lambda v: ["-DCMAKE_C_COMPILER={}".format(v)],
     "cxx": lambda v: ["-DCMAKE_CXX_COMPILER={}".format(v)],
-    "toolchain_file": lambda v: ["-DCMAKE_TOOLCHAIN_FILE={}".format(v)]
+    "toolchain_file": lambda v: ["-DCMAKE_TOOLCHAIN_FILE={}".format(v)],
+    "build_type": lambda v: ["-DCMAKE_BUILD_TYPE={}".format(v)],
+    "cflags": lambda v: ["-DCMAKE_C_FLAGS={}".format(v)],
+    "cxxflags": lambda v: ["-DCMAKE_CXX_FLAGS={}".format(v)],
+    "cflags.debug": lambda v: ["-DCMAKE_C_FLAGS_DEBUG={}".format(v)],
+    "cxxflags.debug": lambda v: ["-DCMAKE_CXX_FLAGS_DEBUG={}".format(v)],
+    "cflags.release": lambda v: ["-DCMAKE_C_FLAGS_RELEASE={}".format(v)],
+    "cxxflags.release": lambda v: ["-DCMAKE_CXX_FLAGS_RELEASE={}".format(v)]
 }
 
 
