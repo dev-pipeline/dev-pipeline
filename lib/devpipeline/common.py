@@ -103,4 +103,4 @@ def tool_builder(component, key, tool_map):
             raise Exception(
                 "Unknown {} '{}' for {}".format(key, tool_name, component._name))
     else:
-        raise Exception("{} does not specify {}".format(component._name), key)
+        raise Exception("{} does not specify {}".format(component._name, key))
