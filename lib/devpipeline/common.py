@@ -113,6 +113,6 @@ def args_builder(prefix, component, args_dict, val_found_fn):
         m = pattern.match(key)
         if m:
             real_key = key[m.end():]
-            hit = args_dict.get(key[m.end():])
+            hit = args_dict.get(real_key)
             if hit:
                 val_found_fn(value, hit)
