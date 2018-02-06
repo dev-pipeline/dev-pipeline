@@ -28,36 +28,39 @@ be used like normal.
 
 All variables provided in this manner are prefixed with :code:`dp_`.
 
-* dp_build_dir - The build directory of a specific package.  If you need this
-  outside a package, store it in a local key/value pair.
+* dp_build_dir - The build directory of a specific package.
+* dp_src_dir - The full path to the folder where a package was checked out.
 
 
 Example Configuration
 ---------------------
+A simple :code:`build.config` looks like this.  It should be fairly
+human-readable, but comments are inline to help explain.
+
 .. code::
 
     [DEFAULT]
     # options used across projects
     build = cmake
     # cmake-specific option
-    prefix = /usr
+    cmake.prefix = /usr
 
     # Declare a package
     [bureaucracy]
     # Use git for source control.  Also provide information on repository and
     # revision info
     scm = git
-    uri = https://github.com/snewell/bureaucracy.git
-    revision = master
+    git.uri = https://github.com/snewell/bureaucracy.git
+    git.revision = master
     # Extra cmake-specific arguments; these are used at configuration time
-    cmake_args =
+    cmake.args =
             -DBUILD_DOCS=OFF,
             -DBUILD_TESTS=OFF
-    install_path = _install_
+    install_path = ${dp_build_dir}/_install_
     # We can set arbitrary arguments; this is used to help things that depend
     # on bureaucracy
     dep_args =
-        -DBureaucracy_DIR=${dp_build_dir}/${install_path}/${prefix}/share/Bureaucracy/cmake
+        -DBureaucracy_DIR=${install_path}/${cmake.prefix}/share/Bureaucracy/cmake
 
     # Declare another package
     [bureaucracy-test]
@@ -67,5 +70,5 @@ Example Configuration
     depends = bureaucracy
     # CMake-specific arguments, including one we get from bureaucracy
     no_install =
-    cmake_args =
+    cmake.args =
             ${bureaucracy:dep_args}
