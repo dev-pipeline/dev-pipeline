@@ -20,48 +20,18 @@ def _get_context(args):
     return None
 
 
-class Tool:
+class GenericTool:
 
-    def __init__(self, targets=True, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         self.parser = argparse.ArgumentParser(
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
             *args, **kwargs)
-
-        self.add_argument(
-            "--config",
-            help="Build configuration file",
-            default="build.config")
-        self.add_argument(
-            "--context",
-            help="Build-specific context to use")
-        self.add_argument(
-            "--build-dir",
-            help="The build folder to use",
-            default="build")
-        if targets:
-            self.add_argument(
-                "targets", nargs="*",
-                help="The targets to operate on")
 
     def add_argument(self, *args, **kwargs):
         self.parser.add_argument(*args, **kwargs)
 
     def execute(self, *args, **kwargs):
         args = self.parser.parse_args(*args, **kwargs)
-        context_config = _get_context(args)
-        if context_config:
-            self.build_dir = "{}-{}".format(args.build_dir, args.context)
-        else:
-            self.build_dir = args.build_dir
-        if "targets" in args:
-            if not args.targets:
-                raise Exception("No targets specified")
-            else:
-                self.targets = args.targets
-        self.components = devpipeline.iniloader.read_config(
-            args.config,
-            cache_path="{}/{}".format(self.build_dir, "config.cache"),
-            context=context_config)
         self.setup(args)
         self.process()
 
@@ -70,6 +40,31 @@ class Tool:
 
     def process(self):
         pass
+
+
+class TargetTool(GenericTool):
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.add_argument("targets", nargs="*",
+                          help="The targets to operate on")
+        self.add_argument("all", action="store_true",
+                          help="Operate on all targets")
+
+    def execute(self, *args, **kwargs):
+        args = self.parser.parse_args(*args, **kwargs)
+        if args.targets:
+            self.targets = args.targets
+        elif args.all:
+            # TODO: get all targets
+            pass
+        else:
+            raise Exception("No targets specified")
+        # self.components = devpipeline.iniloader.read_config(
+            # args.config,
+            # cache_path="{}/{}".format(self.build_dir, "config.cache"),
+            # context=context_config)
+        self.setup(args)
+        self.process()
 
     def process_targets(self, targets, tasks):
         for target in targets:
