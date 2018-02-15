@@ -19,6 +19,7 @@ class ConfigFinder:
 
 _context_file = "{}/{}".format(os.path.expanduser("~"), ".dev-pipeline")
 
+
 def find_config():
     previous = ""
     current = os.getcwd()
