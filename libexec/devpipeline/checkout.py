@@ -5,7 +5,7 @@ import devpipeline.common
 import devpipeline.resolve
 
 
-class Checkout(devpipeline.common.Tool):
+class Checkout(devpipeline.common.TargetTool):
 
     def __init__(self):
         super().__init__(description="Checkout repositories")

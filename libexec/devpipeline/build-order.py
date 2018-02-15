@@ -4,7 +4,7 @@ import devpipeline.common
 import devpipeline.resolve
 
 
-class BuildOrderer(devpipeline.common.Tool):
+class BuildOrderer(devpipeline.common.TargetTool):
 
     def __init__(self):
         super().__init__(description="Determinte all dependencies of a set of"
