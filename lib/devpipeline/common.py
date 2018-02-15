@@ -6,16 +6,7 @@ import errno
 import re
 import sys
 
-
-def _get_context(args):
-    if args.context:
-        config = devpipeline.iniloader.read_config(
-            "{}/{}".format(os.path.expanduser("~"), ".dev-pipeline"))
-        context = config._components.get(args.context)
-        if not context:
-            raise Exception("Unable to load context {}".format(args.context))
-        return context
-    return None
+import devpipeline.config
 
 
 class GenericTool:
@@ -42,31 +33,25 @@ class GenericTool:
 
 class TargetTool(GenericTool):
     def __init__(self, *args, **kwargs):
-        super().__init__(args, kwargs)
+        super().__init__(*args, **kwargs)
         self.add_argument("targets", nargs="*",
                           help="The targets to operate on")
-        self.add_argument("all", action="store_true",
-                          help="Operate on all targets")
 
     def execute(self, *args, **kwargs):
         args = self.parser.parse_args(*args, **kwargs)
+
+        config = devpipeline.config.find_config()
+        self.components = config.read_config()
         if args.targets:
             self.targets = args.targets
-        elif args.all:
-            # TODO: get all targets
-            pass
         else:
-            raise Exception("No targets specified")
-        # self.components = devpipeline.iniloader.read_config(
-            # args.config,
-            # cache_path="{}/{}".format(self.build_dir, "config.cache"),
-            # context=context_config)
+            self.targets = self.components.sections()
         self.setup(args)
         self.process()
 
     def process_targets(self, targets, tasks):
         for target in targets:
-            current = self.components._components[target]
+            current = self.components[target]
             for task in tasks:
                 task(current)
 
@@ -88,7 +73,7 @@ def execute_tool(tool):
 
 
 def tool_builder(component, key, tool_map):
-    tool_name = component._values.get(key)
+    tool_name = component.get(key)
     if tool_name:
         tool_fn = tool_map.get(tool_name)
         if tool_fn:
@@ -102,7 +87,7 @@ def tool_builder(component, key, tool_map):
 
 def args_builder(prefix, component, args_dict, val_found_fn):
     pattern = re.compile(R"^{}\.".format(prefix))
-    for key, value in component._values.items():
+    for key, value in component.items():
         m = pattern.match(key)
         if m:
             real_key = key[m.end():]

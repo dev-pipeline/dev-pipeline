@@ -18,16 +18,13 @@ def make_builder(component):
                                            _builder_lookup)
 
 
-def build_task(target, build_path):
+def build_task(target):
+    build_path = target.get("dp.build_dir")
     if not os.path.exists(build_path):
         os.makedirs(build_path)
     builder = make_builder(target)
-    builder.configure(target._values["dp_src_dir"], build_path)
+    builder.configure(target.get("dp.src_dir"), build_path)
     builder.build(build_path)
-    if 'no_install' not in target._values:
-        builder.install(build_path, path=target._values.get("install_path",
-                                                            "install"))
-
-
-def make_build_task_wrapper(build_dir):
-    return lambda t: build_task(t, "{}/{}".format(build_dir, t._name))
+    if not target.get("no_install"):
+        builder.install(build_path, path=target.get("install_path",
+                                                    "install"))

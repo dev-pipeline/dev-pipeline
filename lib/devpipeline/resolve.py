@@ -15,7 +15,7 @@ def _build_dep_data(targets, components):
     def add_counts(current, counts):
         nonlocal depends
         if current not in counts:
-            dep_string = component._values.get("depends")
+            dep_string = component.get("depends")
             if dep_string:
                 current_deps = [x.strip() for x in dep_string.split(",")]
             else:
@@ -32,7 +32,7 @@ def _build_dep_data(targets, components):
         del depends[0]
         # We'll add dependencies in reverse order, so that the original target
         # is built last.
-        component = components._components[current]
+        component = components[current]
         add_counts(current, counts)
 
     return (counts, reverse_deps)

@@ -19,6 +19,18 @@ class ConfigFinder:
 
 _context_file = "{}/{}".format(os.path.expanduser("~"), ".dev-pipeline")
 
+def find_config():
+    previous = ""
+    current = os.getcwd()
+    while previous != current:
+        check_path = "{}/build.cache".format(current)
+        if os.path.isfile(check_path):
+            return ConfigFinder(check_path)
+        else:
+            previous = current
+            current = os.path.dirname(current)
+    raise Exception("Can't find build cache")
+
 
 class ContextConfig:
     def __init__(self, context_name=None):
@@ -52,7 +64,7 @@ _ex_values = {
             "${{dp.build_root}}/{}".format(state["section"]),
     "dp.src_dir":
         lambda state:
-            "${{dp.src_root}}{}".format(state["section"])
+            "${{dp.src_root}}/{}".format(state["section"])
 }
 
 
@@ -74,14 +86,26 @@ def _add_context_values(config, context_config):
             config[key] = value
 
 
+def _validate_config_dir(build_dir, cache_name):
+    files = os.listdir(build_dir)
+    if files:
+        if not cache_name in files:
+            raise Exception(
+                "{} doesn't look like a build directory".format(build_dir))
+
+
 def write_cache(config_reader, context_config_reader, build_dir,
                 cache_name="build.cache"):
     config = config_reader.read_config()
     context_section = context_config_reader.read_config()
     if not os.path.isdir(build_dir):
         os.makedirs(build_dir)
+    else:
+        _validate_config_dir(build_dir, cache_name)
+
+    config_abs = os.path.abspath(config_reader.filename)
     state_variables = {
-        "src_dir": os.path.dirname(os.path.abspath(config_reader.filename))
+        "src_dir": os.path.dirname(config_abs)
     }
     if os.path.isabs(build_dir):
         state_variables["build_dir"] = build_dir
@@ -92,7 +116,9 @@ def write_cache(config_reader, context_config_reader, build_dir,
     _add_context_values(config.defaults(), context_section)
     _add_default_values(config.defaults(), {
         "dp.build_root": state_variables["build_dir"],
-        "dp.src_root": state_variables["src_dir"]
+        "dp.src_root": state_variables["src_dir"],
+        "dp.context_name": context_config_reader.name,
+        "dp.build_config": config_abs
     })
     with open("{}/{}".format(build_dir, cache_name), 'w') as output_file:
         config.write(output_file)
