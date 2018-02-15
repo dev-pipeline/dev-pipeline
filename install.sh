@@ -96,12 +96,12 @@ libexecFiles=" \
 	libexec/devpipeline/build.py \
 	libexec/devpipeline/build-order.py \
 	libexec/devpipeline/checkout.py \
+	libexec/devpipeline/configure.py \
 "
 libFiles=" \
 	lib/devpipeline/__init__.py \
 	lib/devpipeline/common.py \
-	lib/devpipeline/component.py \
-	lib/devpipeline/iniloader.py \
+	lib/devpipeline/config.py \
 	lib/devpipeline/resolve.py \
 "
 
