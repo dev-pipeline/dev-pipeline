@@ -3,9 +3,8 @@
 import os
 import os.path
 
-import devpipeline.cachewriter
 import devpipeline.common
-import devpipeline.iniloader
+import devpipeline.config
 
 
 class Configure(devpipeline.common.GenericTool):
@@ -28,21 +27,18 @@ class Configure(devpipeline.common.GenericTool):
             self.build_dir = args.build_dir
         else:
             if args.context:
-                self.build_dir = "{}-{}".format(args.build_dir_basename, args.context)
+                self.build_dir = "{}-{}".format(
+                    args.build_dir_basename, args.context)
             else:
                 self.build_dir = args.build_dir_basename
         self.context = args.context
         self.config = args.config
 
     def process(self):
-        config = devpipeline.iniloader.read_config(self.config)
-        context_file = "{}/{}".format(os.path.expanduser("~"), ".dev-pipeline")
-        if os.path.isfile(context_file):
-            context_config = devpipeline.iniloader.read_config(context_file)
-        else:
-            context_config = None
-        devpipeline.cachewriter.write_cache(config, context_config,
-                                            self.build_dir, self.context)
+        devpipeline.config.write_cache(
+            devpipeline.config.ConfigFinder(self.config),
+            devpipeline.config.ContextConfig(self.context),
+            self.build_dir)
 
 
 configure = Configure()

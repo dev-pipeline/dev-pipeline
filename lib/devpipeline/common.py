@@ -6,8 +6,6 @@ import errno
 import re
 import sys
 
-import devpipeline.iniloader
-
 
 def _get_context(args):
     if args.context:
