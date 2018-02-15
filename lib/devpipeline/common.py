@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-import os.path
 import argparse
 import errno
 import re
@@ -54,10 +53,10 @@ class TargetTool(GenericTool):
     def process(self):
         build_order = devpipeline.resolve.order_dependencies(
             self.targets, self.components)
-        self.process_targets()
+        self.process_targets(build_order)
 
-    def process_targets(self):
-        for target in self.targets:
+    def process_targets(self, build_order):
+        for target in build_order:
             current = self.components[target]
             for task in self.tasks:
                 task(current)

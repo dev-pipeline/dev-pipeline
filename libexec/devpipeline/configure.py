@@ -1,8 +1,5 @@
 #!/usr/bin/python3
 
-import os
-import os.path
-
 import devpipeline.common
 import devpipeline.config
 
@@ -22,17 +19,17 @@ class Configure(devpipeline.common.GenericTool):
                           help="Basename for build directory configuration",
                           default="build")
 
-    def setup(self, args):
-        if args.build_dir:
-            self.build_dir = args.build_dir
+    def setup(self, arguments):
+        if arguments.build_dir:
+            self.build_dir = arguments.build_dir
         else:
-            if args.context:
+            if arguments.context:
                 self.build_dir = "{}-{}".format(
-                    args.build_dir_basename, args.context)
+                    arguments.build_dir_basename, arguments.context)
             else:
-                self.build_dir = args.build_dir_basename
-        self.context = args.context
-        self.config = args.config
+                self.build_dir = arguments.build_dir_basename
+        self.context = arguments.context
+        self.config = arguments.config
 
     def process(self):
         devpipeline.config.write_cache(
