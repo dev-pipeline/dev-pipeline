@@ -7,6 +7,7 @@ import re
 import sys
 
 import devpipeline.config
+import devpipeline.resolve
 
 
 class GenericTool:
@@ -32,10 +33,11 @@ class GenericTool:
 
 
 class TargetTool(GenericTool):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, tasks, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.add_argument("targets", nargs="*",
                           help="The targets to operate on")
+        self.tasks = tasks
 
     def execute(self, *args, **kwargs):
         args = self.parser.parse_args(*args, **kwargs)
@@ -49,10 +51,15 @@ class TargetTool(GenericTool):
         self.setup(args)
         self.process()
 
-    def process_targets(self, targets, tasks):
-        for target in targets:
+    def process(self):
+        build_order = devpipeline.resolve.order_dependencies(
+            self.targets, self.components)
+        self.process_targets()
+
+    def process_targets(self):
+        for target in self.targets:
             current = self.components[target]
-            for task in tasks:
+            for task in self.tasks:
                 task(current)
 
 

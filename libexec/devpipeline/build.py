@@ -8,14 +8,9 @@ import devpipeline.resolve
 class Builder(devpipeline.common.TargetTool):
 
     def __init__(self):
-        super().__init__(description="Build targets")
-
-    def process(self):
-        build_order = devpipeline.resolve.order_dependencies(
-            self.targets, self.components)
-        self.process_targets(build_order, [
+        super().__init__([
             devpipeline.build.build.build_task
-        ])
+        ], description="Build targets")
 
 
 builder = Builder()
