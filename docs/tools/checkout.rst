@@ -5,8 +5,7 @@ Synopsis
 --------
 .. code::
 
-    checkout [-h] [--config CONFIG] [--build-dir BUILD_DIR]
-                   [targets [targets ...]]
+    checkout [-h] [targets [targets ...]]
 
 
 Description
@@ -16,14 +15,12 @@ date.  The tool with either perform a fresh checkout or an update
 (:code:`git fetch`, :code:`hg pull`, etc.) depending on the status of the
 local copy.
 
+If no targets are specified, all targets will be checked out and updated.
+
 
 Options
 -------
   -h, --help            show this help message and exit
-  --config CONFIG       Build configuration file (default: build.config)
-  --context CONTEXT     Build-specific context to use (default: None)
-  --build-dir BUILD_DIR
-                        The build folder to use (default: build)
 
 
 Config Options

@@ -5,24 +5,22 @@ Synopsis
 --------
 .. code::
 
-    bootstrap [-h] [--config CONFIG] [--build-dir BUILD_DIR]
+    bootstrap [-h] [targets [targets ...]]
 
 
 Description
 -----------
-This tool checks out and builds every package in a configuration with proper
+This tool checks out and builds packages in a configuration with proper
 dependency ordering.  The result is similar to running
-:code:`dev-pipeline checkout` followed by :code:`dev-pipeline build`, but
-against all possible targets.
+:code:`dev-pipeline checkout` followed by :code:`dev-pipeline build`, but the
+steps are mixed instead of performing all checkouts followed by all builds.
+
+If no targets are specified, all targets will be used.
 
 
 Options
 -------
   -h, --help            show this help message and exit
-  --config CONFIG       Build configuration file (default: build.config)
-  --context CONTEXT     Build-specific context to use (default: None)
-  --build-dir BUILD_DIR
-                        The build folder to use (default: build)
 
 
 Config Options

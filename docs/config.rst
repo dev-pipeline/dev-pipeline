@@ -24,12 +24,21 @@ Expanded Options
 ----------------
 Some options are dependent on factors outside the control of
 :code:`build.config` (such as the absolute path of a bulid).  These values can
-be used like normal.
+be used like normal.  If a :code:`build.config` sets any of these values,
+results are undefined but at minimum you can expect strange behavior.
 
-All variables provided in this manner are prefixed with :code:`dp_`.
+All variables provided in this manner are prefixed with :code:`dp.`.
 
-* dp_build_dir - The build directory of a specific package.
-* dp_src_dir - The full path to the folder where a package was checked out.
+* :code:`dp.build_dir` - The build directory of a specific package.  This will
+  be a folder within :code:`dp.build_root`.
+* :code:`dp.build_config` - Full path to the build configuration used by a
+  project.
+* :code:`dp.build_root` - The root directory for all package builds.
+* :code:`dp.context_name` -  The name of the context_ a build is configured
+  for.
+* :code:`dp.src_dir` - The full path to the source folder for each package.
+  This will be some folder within :code:`dp.src_root`.
+* :code:`dp.src_root` - The root directory where each package is checked out.
 
 
 Example Configuration
@@ -56,7 +65,7 @@ human-readable, but comments are inline to help explain.
     cmake.args =
             -DBUILD_DOCS=OFF,
             -DBUILD_TESTS=OFF
-    install_path = ${dp_build_dir}/_install_
+    install_path = ${dp.build_dir}/_install_
     # We can set arbitrary arguments; this is used to help things that depend
     # on bureaucracy
     dep_args =
@@ -72,3 +81,6 @@ human-readable, but comments are inline to help explain.
     no_install =
     cmake.args =
             ${bureaucracy:dep_args}
+
+
+.. _context: context.rst

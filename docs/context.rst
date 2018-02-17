@@ -6,12 +6,7 @@ cross-compiler information or build flags, but you can put any valid key value
 pair in your context.
 
 The context configuration is stored in :code:`${HOME_DIRECTORY}/.dev-pipeline`
-and is otherwise identical to a build.config file.
-
-In addition to setting extra variables, each context is run in a unique build
-directory (:code:`${build_dir}-${context_name}`).  This lets you easily
-perform builds with different flags or toolchains without having to manage
-directories on your own.
+but is otherwise identical to a build.config file.
 
 
 Example
@@ -30,14 +25,14 @@ Example
     cmake.cxxflags.release = ${cmake.cflags.release}
 
     # Each section represents a context.  Because key/values in [DEFAULT]
-    # are inherited by default, I can just set cmake.build_type.
+    # are inherited, I can just set cmake.build_type.
     [debug]
     cmake.build_type = Debug
 
     [release]
     cmake.build_type = Release
 
-    # I like to build with clang sometimes, so set the extra values.
+    # I like to build with clang sometimes, so set the required values.
     [clang]
     camke.cc = clang
     cmake.cxx = clang++

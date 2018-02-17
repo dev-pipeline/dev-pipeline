@@ -5,8 +5,7 @@ Synopsis
 --------
 .. code::
 
-    build [-h] [--config CONFIG] [--build-dir BUILD_DIR]
-                [targets [targets ...]]
+    build [-h] [targets [targets ...]]
 
 
 Description
@@ -15,14 +14,12 @@ This tool builds one or more targets along with their dependencies.  The
 specific order of dependencies isn't guaranteed, but any package will be built
 before packages that depend on it.
 
+If no targets are specified, all targets will be built.
+
 
 Options
 -------
   -h, --help            show this help message and exit
-  --config CONFIG       Build configuration file (default: build.config)
-  --context CONTEXT     Build-specific context to use (default: None)
-  --build-dir BUILD_DIR
-                        The build folder to use (default: build)
 
 
 Config Options
