@@ -41,8 +41,8 @@ class TargetTool(GenericTool):
     def execute(self, *args, **kwargs):
         args = self.parser.parse_args(*args, **kwargs)
 
-        config = devpipeline.config.find_config()
-        self.components = config.read_config()
+        self.components = devpipeline.config.rebuild_cache(
+            devpipeline.config.find_config())
         if args.targets:
             self.targets = args.targets
         else:

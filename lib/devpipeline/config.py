@@ -33,6 +33,26 @@ def find_config():
     raise Exception("Can't find build cache")
 
 
+def rebuild_cache(config, force=False):
+    data = config.read_config()
+    if not force:
+        config_time = os.path.getmtime(
+            data.get("DEFAULT", "dp.build_config"))
+        cache_time = os.path.getmtime(
+            "{}/build.cache".format(data.get("DEFAULT", "dp.build_root")))
+        force = cache_time < config_time
+        if data.get("DEFAULT", "dp.context_name") and not force:
+            force = cache_time < os.path.getmtime(_context_file)
+    if force:
+        return write_cache(ConfigFinder(data.get("DEFAULT",
+                                                 "dp.build_config")),
+                           ContextConfig(data.get("DEFAULT",
+                                                  "dp.context_name")),
+                           data.get("DEFAULT", "dp.build_root"))
+    else:
+        return data
+
+
 class ContextConfig:
     def __init__(self, context_name=None):
         self.name = context_name
@@ -123,3 +143,4 @@ def write_cache(config_reader, context_config_reader, build_dir,
     })
     with open("{}/{}".format(build_dir, cache_name), 'w') as output_file:
         config.write(output_file)
+    return config
