@@ -4,13 +4,7 @@ import devpipeline.scm.scm
 import devpipeline.common
 
 
-class Checkout(devpipeline.common.TargetTool):
-
-    def __init__(self):
-        super().__init__([
-            devpipeline.scm.scm.scm_task
-        ], description="Checkout repositories")
-
-
-checkout = Checkout()
+checkout = devpipeline.common.TargetTool([
+    devpipeline.scm.scm.scm_task
+], description="Checkout repositories")
 devpipeline.common.execute_tool(checkout)

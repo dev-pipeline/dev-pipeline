@@ -2,16 +2,9 @@
 
 import devpipeline.build.build
 import devpipeline.common
-import devpipeline.resolve
 
 
-class Builder(devpipeline.common.TargetTool):
-
-    def __init__(self):
-        super().__init__([
-            devpipeline.build.build.build_task
-        ], description="Build targets")
-
-
-builder = Builder()
+builder = devpipeline.common.TargetTool([
+    devpipeline.build.build.build_task
+], description="Build targets")
 devpipeline.common.execute_tool(builder)
