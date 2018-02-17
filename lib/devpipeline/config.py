@@ -34,17 +34,22 @@ def find_config():
     raise Exception("Can't find build cache")
 
 
+def _cache_outdated(config_data, build_cache_path):
+    cache_time = os.path.getmtime(build_cache_path)
+    input_files = [
+        config_data.get("DEFAULT", "dp.build_config"),
+        _context_file
+    ]
+    for input_file in input_files:
+        mt = os.path.getmtime(input_file)
+        if cache_time < mt:
+            return True
+    return False
+
+
 def rebuild_cache(config, force=False):
     data = config.read_config()
-    if not force:
-        config_time = os.path.getmtime(
-            data.get("DEFAULT", "dp.build_config"))
-        cache_time = os.path.getmtime(
-            "{}/build.cache".format(data.get("DEFAULT", "dp.build_root")))
-        force = cache_time < config_time
-        if data.get("DEFAULT", "dp.context_name") and not force:
-            force = cache_time < os.path.getmtime(_context_file)
-    if force:
+    if force or _cache_outdated(data, config.filename):
         return write_cache(ConfigFinder(data.get("DEFAULT",
                                                  "dp.build_config")),
                            ContextConfig(data.get("DEFAULT",
