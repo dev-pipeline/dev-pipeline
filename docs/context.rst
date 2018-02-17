@@ -5,8 +5,9 @@ that you don't want to add in your main configuration.  Good examples are
 cross-compiler information or build flags, but you can put any valid key value
 pair in your context.
 
-The context configuration is stored in :code:`${HOME_DIRECTORY}/.dev-pipeline`
-but is otherwise identical to a build.config file.
+The context configuration is stored in
+:code:`${HOME_DIRECTORY}/.dev-pipeline.d/contexts.conf` but is otherwise
+identical to a build.config file.
 
 
 Example

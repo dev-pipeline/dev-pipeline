@@ -17,7 +17,8 @@ class ConfigFinder:
         return config
 
 
-_context_file = "{}/{}".format(os.path.expanduser("~"), ".dev-pipeline")
+_context_file = "{}/{}".format(os.path.expanduser("~"),
+                               ".dev-pipeline.d/contexts.conf")
 
 
 def find_config():
