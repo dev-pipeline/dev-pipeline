@@ -103,6 +103,7 @@ libFiles=" \
 	lib/devpipeline/common.py \
 	lib/devpipeline/config.py \
 	lib/devpipeline/resolve.py \
+	lib/devpipeline/toolsupport.py \
 "
 
 libBuildFiles=" \
