@@ -3,7 +3,7 @@
 import os.path
 import subprocess
 
-import devpipeline.common
+import devpipeline.toolsupport
 
 
 class Git(devpipeline.scm.Scm):
@@ -43,7 +43,8 @@ def make_git(component):
         k, r = fn(v)
         git_args[k] = r
 
-    devpipeline.common.args_builder("git", component, _git_args, add_value)
+    devpipeline.toolsupport.args_builder("git", component, _git_args,
+                                         add_value)
 
     if not git_args.get("uri"):
         raise Exception("Not git uri ({})".format(component._name))

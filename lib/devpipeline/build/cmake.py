@@ -2,7 +2,7 @@
 
 import subprocess
 
-import devpipeline.common
+import devpipeline.toolsupport
 
 
 class CMake(devpipeline.build.Builder):
@@ -67,9 +67,10 @@ _flag_args = {
 def make_cmake(component):
     cmake_args = []
 
-    devpipeline.common.args_builder("cmake", component, _usable_args,
-                                    lambda v, fn: cmake_args.extend(fn(v)))
-    devpipeline.common.flex_args_builder("cmake", component, _flag_args,
-                                         lambda v, suffix, fn:
-                                             cmake_args.extend(fn(v, suffix)))
+    devpipeline.toolsupport.args_builder("cmake", component, _usable_args,
+                                         lambda v, fn: cmake_args.extend(fn(v)))
+    devpipeline.toolsupport.flex_args_builder("cmake", component, _flag_args,
+                                              lambda v, suffix, fn:
+                                                  cmake_args.extend(
+                                                      fn(v, suffix)))
     return CMake(cmake_args)

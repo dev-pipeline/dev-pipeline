@@ -4,7 +4,7 @@ import os
 import os.path
 
 import devpipeline.build.cmake
-import devpipeline.common
+import devpipeline.toolsupport
 
 
 # Every builder supported should have an entry in this dictionary.  The key
@@ -23,8 +23,8 @@ def _make_builder(component):
     Arguments
     component - The component the builder should be created for.
     """
-    return devpipeline.common.tool_builder(component, "build",
-                                           _builder_lookup)
+    return devpipeline.toolsupport.tool_builder(component, "build",
+                                                _builder_lookup)
 
 
 def build_task(target):

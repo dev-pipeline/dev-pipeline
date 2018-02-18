@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-import devpipeline.common
 import devpipeline.scm.git
+import devpipeline.toolsupport
 
 # A dictionary of all supported scm tools.  Any supported tool should provide
 # an interface compatible with devpipeline.scm.Scm, but it's not required they
@@ -21,8 +21,8 @@ def _make_scm(component):
     Arguments
     component - The component being operated on.
     """
-    return devpipeline.common.tool_builder(component, "scm",
-                                           _scm_lookup)
+    return devpipeline.toolsupport.tool_builder(component, "scm",
+                                                _scm_lookup)
 
 
 def scm_task(target):
