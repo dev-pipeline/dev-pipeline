@@ -39,17 +39,37 @@ _usable_args = {
     "cxx": lambda v: ["-DCMAKE_CXX_COMPILER={}".format(v)],
     "toolchain_file": lambda v: ["-DCMAKE_TOOLCHAIN_FILE={}".format(v)],
     "build_type": lambda v: ["-DCMAKE_BUILD_TYPE={}".format(v)],
-    "cflags": lambda v: ["-DCMAKE_C_FLAGS={}".format(v)],
-    "cxxflags": lambda v: ["-DCMAKE_CXX_FLAGS={}".format(v)],
-    "cflags.debug": lambda v: ["-DCMAKE_C_FLAGS_DEBUG={}".format(v)],
-    "cxxflags.debug": lambda v: ["-DCMAKE_CXX_FLAGS_DEBUG={}".format(v)],
-    "cflags.release": lambda v: ["-DCMAKE_C_FLAGS_RELEASE={}".format(v)],
-    "cxxflags.release": lambda v: ["-DCMAKE_CXX_FLAGS_RELEASE={}".format(v)]
+}
+
+_valid_cflag_suffixes = [
+    "DEBUG",
+    "RELEASE"
+]
+
+
+def _extend_cflags(base, suffix, value):
+    base_flags = "-DCMAKE_{}_FLAGS".format(base)
+    if suffix:
+        suffix = suffix.upper()
+        if suffix in _valid_cflag_suffixes:
+            base_flags += "_{}".format(suffix)
+        else:
+            raise Exception("{} is an invalid modifier".format(suffix))
+    return ["{}={}".format(base_flags, value)]
+
+
+_flag_args = {
+    "cflags": lambda v, suffix: _extend_cflags("C", suffix, v),
+    "cxxflags": lambda v, suffix: _extend_cflags("CXX", suffix, v)
 }
 
 
 def make_cmake(component):
     cmake_args = []
+
     devpipeline.common.args_builder("cmake", component, _usable_args,
                                     lambda v, fn: cmake_args.extend(fn(v)))
+    devpipeline.common.flex_args_builder("cmake", component, _flag_args,
+                                         lambda v, suffix, fn:
+                                             cmake_args.extend(fn(v, suffix)))
     return CMake(cmake_args)

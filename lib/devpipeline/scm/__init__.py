@@ -3,6 +3,7 @@
 
 class Scm():
     """An interface for all scms"""
+
     def checkout(self, repo_dir):
         """
         Perform the initial checkout of a repository.
