@@ -5,7 +5,7 @@ import subprocess
 import devpipeline.common
 
 
-class CMake:
+class CMake(devpipeline.build.Builder):
     def __init__(self, config_args):
         self._config_args = config_args
 

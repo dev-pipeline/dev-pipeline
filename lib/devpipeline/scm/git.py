@@ -6,7 +6,7 @@ import subprocess
 import devpipeline.common
 
 
-class Git():
+class Git(devpipeline.scm.Scm):
     def __init__(self, args):
         self._args = args
 

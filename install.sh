@@ -109,13 +109,11 @@ libBuildFiles=" \
 	lib/devpipeline/build/__init__.py \
 	lib/devpipeline/build/build.py \
 	lib/devpipeline/build/cmake.py \
-	lib/devpipeline/build/nothing.py \
 "
 
 libScmFiles=" \
 	lib/devpipeline/scm/__init__.py \
 	lib/devpipeline/scm/git.py \
-	lib/devpipeline/scm/nothing.py \
 	lib/devpipeline/scm/scm.py \
 "
 
