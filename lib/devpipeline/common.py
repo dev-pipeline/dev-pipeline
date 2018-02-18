@@ -31,7 +31,7 @@ class GenericTool:
 
 
 class TargetTool(GenericTool):
-    def __init__(self, tasks, *args, **kwargs):
+    def __init__(self, tasks=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.add_argument("targets", nargs="*",
                           help="The targets to operate on")

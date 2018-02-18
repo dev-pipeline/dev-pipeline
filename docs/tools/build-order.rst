@@ -17,7 +17,8 @@ satisfy pacakge dependencies.
 
 Options
 -------
-  -h, --help            show this help message and exit
+  -h, --help  show this help message and exit
+  --dot       Generate a dot graph showing dependencies. (default: False)
 
 
 Config Options
