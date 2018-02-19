@@ -10,7 +10,7 @@ class Configure(devpipeline.common.GenericTool):
         super().__init__(description="Configure a project")
         self.add_argument("--config", help="Build configuration file",
                           default="build.config")
-        self.add_argument("--context", help="Build-specific context to use")
+        self.add_argument("--profile", help="Build-specific profile to use")
         self.add_argument("--build-dir",
                           help="Directory to store configuration.  If "
                                "specified, --build-dir-basename will be "
@@ -23,18 +23,18 @@ class Configure(devpipeline.common.GenericTool):
         if arguments.build_dir:
             self.build_dir = arguments.build_dir
         else:
-            if arguments.context:
+            if arguments.profile:
                 self.build_dir = "{}-{}".format(
-                    arguments.build_dir_basename, arguments.context)
+                    arguments.build_dir_basename, arguments.profile)
             else:
                 self.build_dir = arguments.build_dir_basename
-        self.context = arguments.context
+        self.profile = arguments.profile
         self.config = arguments.config
 
     def process(self):
         devpipeline.config.write_cache(
             devpipeline.config.ConfigFinder(self.config),
-            devpipeline.config.ContextConfig(self.context),
+            devpipeline.config.ProfileConfig(self.profile),
             self.build_dir)
 
 

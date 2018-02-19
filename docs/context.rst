@@ -1,12 +1,12 @@
-Build Context
+Build Profile
 =============
-A build context is a method of providing extra information to dev-pipeline
+A build profile is a method of providing extra information to dev-pipeline
 that you don't want to add in your main configuration.  Good examples are
 cross-compiler information or build flags, but you can put any valid key value
-pair in your context.
+pair in your profile.
 
-The context configuration is stored in
-:code:`${HOME_DIRECTORY}/.dev-pipeline.d/contexts.conf` but is otherwise
+The profile configuration is stored in
+:code:`${HOME_DIRECTORY}/.dev-pipeline.d/profiles.conf` but is otherwise
 identical to a build.config file.
 
 
@@ -15,7 +15,7 @@ Example
 .. code::
 
     # I want to put all my favorite flags in one place so I get them by
-    # default when using a context
+    # default when using a profile
     [DEFAULT]
     cmake.cflags = -pipe -Wall -Wextra -Wshadow -Wundef -pedantic
     cmake.cflags.debug = -ggdb3 -O0
@@ -25,7 +25,7 @@ Example
     cmake.cxxflags.debug = ${cmake.cflags.debug}
     cmake.cxxflags.release = ${cmake.cflags.release}
 
-    # Each section represents a context.  Because key/values in [DEFAULT]
+    # Each section represents a profile.  Because key/values in [DEFAULT]
     # are inherited, I can just set cmake.build_type.
     [debug]
     cmake.build_type = Debug
@@ -39,6 +39,6 @@ Example
     cmake.cxx = clang++
 
     # I also keep a mingw64 compiler around, so I want that available as a
-    # context option.
+    # profile option.
     [mingw64]
     cmake.toolchain_file = /home/stephen/cmake_toolchains/mingw64.cmake

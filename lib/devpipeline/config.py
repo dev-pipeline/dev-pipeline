@@ -17,8 +17,8 @@ class ConfigFinder:
         return config
 
 
-_context_file = "{}/{}".format(os.path.expanduser("~"),
-                               ".dev-pipeline.d/contexts.conf")
+_profile_file = "{}/{}".format(os.path.expanduser("~"),
+                               ".dev-pipeline.d/profiles.conf")
 
 
 def find_config():
@@ -38,7 +38,7 @@ def _cache_outdated(config_data, build_cache_path):
     cache_time = os.path.getmtime(build_cache_path)
     input_files = [
         config_data.get("DEFAULT", "dp.build_config"),
-        _context_file
+        _profile_file
     ]
     for input_file in input_files:
         mt = os.path.getmtime(input_file)
@@ -52,31 +52,31 @@ def rebuild_cache(config, force=False):
     if force or _cache_outdated(data, config.filename):
         return write_cache(ConfigFinder(data.get("DEFAULT",
                                                  "dp.build_config")),
-                           ContextConfig(data.get("DEFAULT",
-                                                  "dp.context_name")),
+                           ProfileConfig(data.get("DEFAULT",
+                                                  "dp.profile_name")),
                            data.get("DEFAULT", "dp.build_root"))
     else:
         return data
 
 
-class ContextConfig:
-    def __init__(self, context_name=None):
-        self.name = context_name
+class ProfileConfig:
+    def __init__(self, profile_name=None):
+        self.name = profile_name
 
-    def _get_specific_context(self, context_config):
+    def _get_specific_profile(self, profile_config):
         if self.name:
-            if not context_config.has_section(self.name):
+            if not profile_config.has_section(self.name):
                 raise Exception(
-                    "Context {} doesn't exist".format(self.name))
+                    "Profile {} doesn't exist".format(self.name))
             else:
-                return context_config[self.name]
+                return profile_config[self.name]
         else:
-            return context_config.defaults()
+            return profile_config.defaults()
 
     def read_config(self):
-        if os.path.isfile(_context_file):
-            return self._get_specific_context(
-                ConfigFinder(_context_file).read_config())
+        if os.path.isfile(_profile_file):
+            return self._get_specific_profile(
+                ConfigFinder(_profile_file).read_config())
 
 
 def _add_root_values(config, state_variables):
@@ -107,8 +107,8 @@ def _add_default_values(config, state_variables):
         config[key] = value
 
 
-def _add_context_values(config, context_config):
-    for key, value in context_config.items():
+def _add_profile_values(config, profile_config):
+    for key, value in profile_config.items():
         if key not in config:
             config[key] = value
 
@@ -121,10 +121,10 @@ def _validate_config_dir(build_dir, cache_name):
                 "{} doesn't look like a build directory".format(build_dir))
 
 
-def write_cache(config_reader, context_config_reader, build_dir,
+def write_cache(config_reader, profile_config_reader, build_dir,
                 cache_name="build.cache"):
     config = config_reader.read_config()
-    context_section = context_config_reader.read_config()
+    profile_section = profile_config_reader.read_config()
     if not os.path.isdir(build_dir):
         os.makedirs(build_dir)
     else:
@@ -140,11 +140,11 @@ def write_cache(config_reader, context_config_reader, build_dir,
         state_variables["build_dir"] = "{}/{}".format(os.getcwd(), build_dir)
 
     _add_section_values(config, state_variables)
-    _add_context_values(config.defaults(), context_section)
+    _add_profile_values(config.defaults(), profile_section)
     _add_default_values(config.defaults(), {
         "dp.build_root": state_variables["build_dir"],
         "dp.src_root": state_variables["src_dir"],
-        "dp.context_name": context_config_reader.name,
+        "dp.profile_name": profile_config_reader.name,
         "dp.build_config": config_abs
     })
     with open("{}/{}".format(build_dir, cache_name), 'w') as output_file:

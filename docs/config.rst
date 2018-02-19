@@ -34,7 +34,7 @@ All variables provided in this manner are prefixed with :code:`dp.`.
 * :code:`dp.build_config` - Full path to the build configuration used by a
   project.
 * :code:`dp.build_root` - The root directory for all package builds.
-* :code:`dp.context_name` -  The name of the context_ a build is configured
+* :code:`dp.profile_name` -  The name of the profile_ a build is configured
   for.
 * :code:`dp.src_dir` - The full path to the source folder for each package.
   This will be some folder within :code:`dp.src_root`.
@@ -83,4 +83,4 @@ human-readable, but comments are inline to help explain.
             ${bureaucracy:dep_args}
 
 
-.. _context: context.rst
+.. _profile: profile.rst
