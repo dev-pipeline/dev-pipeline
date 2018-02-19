@@ -76,10 +76,13 @@ class ProfileConfig:
         self.handler = handler
 
     def _add_profile_values(self, profile_config, names):
+        def add_each_key(items):
+            for key, value in items:
+                self.handler.add(key, value)
+
         for name in names:
             if profile_config.has_section(name):
-                for key, value in profile_config.items(name):
-                    self.handler.add(key, value)
+                add_each_key(profile_config.items(name))
             else:
                 raise Exception(
                     "Profile {} doesn't exist".format(name))
