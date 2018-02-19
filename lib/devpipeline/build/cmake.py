@@ -43,12 +43,13 @@ _usable_args = {
 
 _valid_cflag_suffixes = [
     "DEBUG",
-    "RELEASE"
+    "MINSIZEREL",
+    "RELEASE",
+    "RELWITHDEBINFO"
 ]
 
 
-def _extend_cflags(base, suffix, value):
-    base_flags = "-DCMAKE_{}_FLAGS".format(base)
+def _extend_flags_common(base_flags, suffix, value):
     if suffix:
         suffix = suffix.upper()
         if suffix in _valid_cflag_suffixes:
@@ -58,9 +59,23 @@ def _extend_cflags(base, suffix, value):
     return ["{}={}".format(base_flags, value)]
 
 
+def _extend_cflags(base, suffix, value):
+    return _extend_flags_common("-DCMAKE_{}_FLAGS".format(base),
+                                suffix, value)
+
+
+def _extend_ldflags(base, suffix, value):
+    return _extend_flags_common("-DCMAKE_{}_LINKER_FLAGS".format(base),
+                                suffix, value)
+
+
 _flag_args = {
     "cflags": lambda v, suffix: _extend_cflags("C", suffix, v),
-    "cxxflags": lambda v, suffix: _extend_cflags("CXX", suffix, v)
+    "cxxflags": lambda v, suffix: _extend_cflags("CXX", suffix, v),
+    "ldflags.exe": lambda v, suffix: _extend_ldflags("EXE", suffix, v),
+    "ldflags.module": lambda v, suffix: _extend_ldflags("MODULE", suffix, v),
+    "ldflags.shared": lambda v, suffix: _extend_ldflags("SHARED", suffix, v),
+    "ldflags.static": lambda v, suffix: _extend_ldflags("STATIC", suffix, v)
 }
 
 
