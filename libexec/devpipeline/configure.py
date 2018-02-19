@@ -10,7 +10,10 @@ class Configure(devpipeline.common.GenericTool):
         super().__init__(description="Configure a project")
         self.add_argument("--config", help="Build configuration file",
                           default="build.config")
-        self.add_argument("--profile", help="Build-specific profile to use")
+        self.add_argument("--profile",
+                          help="Build-specific profiles to use.  If more than "
+                               "one profile is required, separate their names "
+                               "with commas.")
         self.add_argument("--build-dir",
                           help="Directory to store configuration.  If "
                                "specified, --build-dir-basename will be "

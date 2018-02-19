@@ -60,16 +60,27 @@ def rebuild_cache(config, force=False):
 
 
 class ProfileConfig:
-    def __init__(self, profile_name=None):
-        self.name = profile_name
+    def __init__(self, profile_names=None):
+        self.names = profile_names
 
     def _get_specific_profile(self, profile_config):
-        if self.name:
-            if not profile_config.has_section(self.name):
-                raise Exception(
-                    "Profile {} doesn't exist".format(self.name))
-            else:
-                return profile_config[self.name]
+        if self.names:
+            names = [x.strip() for x in self.names.split(",")]
+            profile_vals = {}
+            # Build profile_vals with everything from all the profiles.
+            for name in names:
+                if profile_config.has_section(name):
+                    # This part sucks :(
+                    # Make sure we don't set an option if a previous profile
+                    # already set the same option.  This needs to be more
+                    # flexible, since one size won't fit all.
+                    for key, value in profile_config.items(name):
+                        if key not in profile_vals:
+                            profile_vals[key] = value
+                else:
+                    raise Exception(
+                        "Profile {} doesn't exist".format(name))
+            return profile_vals
         else:
             return profile_config.defaults()
 
@@ -144,7 +155,7 @@ def write_cache(config_reader, profile_config_reader, build_dir,
     _add_default_values(config.defaults(), {
         "dp.build_root": state_variables["build_dir"],
         "dp.src_root": state_variables["src_dir"],
-        "dp.profile_name": profile_config_reader.name,
+        "dp.profile_name": profile_config_reader.names,
         "dp.build_config": config_abs
     })
     with open("{}/{}".format(build_dir, cache_name), 'w') as output_file:
