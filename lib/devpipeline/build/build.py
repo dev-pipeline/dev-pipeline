@@ -41,6 +41,6 @@ def build_task(target):
     builder = _make_builder(target)
     builder.configure(target.get("dp.src_dir"), build_path)
     builder.build(build_path)
-    if not target.get("no_install"):
+    if "no_install" not in target:
         builder.install(build_path, path=target.get("install_path",
                                                     "install"))
