@@ -6,37 +6,51 @@ import devpipeline.common
 import devpipeline.resolve
 
 
+def _print_list(targets, components):
+    build_order = devpipeline.resolve.order_dependencies(targets, components)
+    print(build_order)
+
+
+def _print_dot(targets, components):
+    rev_deps = devpipeline.resolve._build_dep_data(targets, components)[1]
+
+    def remove_hyphen(s):
+        return re.sub("-", lambda m: "_", s)
+
+    print("digraph dependencies {{")
+    for p, deps in rev_deps.items():
+        stripped_p = remove_hyphen(p)
+        print("\t{}".format(stripped_p))
+        for d in deps:
+            print("\t{} -> {}".format(remove_hyphen(d), stripped_p))
+    print("}}")
+
+
+_order_outputs = {
+    "list": _print_list,
+    "dot": _print_dot
+}
+
+
 class BuildOrderer(devpipeline.common.TargetTool):
 
     def __init__(self):
         super().__init__(description="Determinte all dependencies of a set of"
                                      " targets and the order they should be "
                                      "built in.")
-        self.add_argument("--dot",
-                          help="Generate a dot graph showing dependencies.",
-                          action="store_true")
+        self.add_argument("--method",
+                          help="The method used to display build order.  Valid"
+                               " options are list (an order to resolve "
+                               "specified targets) and dot (a dot graph).",
+                          default="list")
 
     def setup(self, arguments):
-        self.dot = arguments.dot
+        self.fn = _order_outputs.get(arguments.method)
+        if not self.fn:
+            raise Exception("Invalid method: {}".format(arguments.method))
 
     def process(self):
-        if not self.dot:
-            build_order = devpipeline.resolve.order_dependencies(
-                self.targets, self.components)
-            print(build_order)
-        else:
-            rev_deps = devpipeline.resolve._build_dep_data(self.targets,
-                                                           self.components)[1]
-            def remove_hyphen(s):
-                return re.sub("-", lambda m: "_", s)
-
-            print("digraph dependencies {{")
-            for p, deps in rev_deps.items():
-                stripped_p = remove_hyphen(p)
-                print("\t{}".format(stripped_p))
-                for d in deps:
-                    print("\t{} -> {}".format(remove_hyphen(d), stripped_p))
-            print("}}")
+        self.fn(self.targets, self.components)
 
 
 build_orderer = BuildOrderer()

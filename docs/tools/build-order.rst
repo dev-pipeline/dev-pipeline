@@ -17,8 +17,10 @@ satisfy pacakge dependencies.
 
 Options
 -------
-  -h, --help  show this help message and exit
-  --dot       Generate a dot graph showing dependencies. (default: False)
+  -h, --help       show this help message and exit
+  --method METHOD  The method used to display build order. Valid options are
+                   list (an order to resolve specified targets) and dot (a dot
+                   graph). (default: list)
 
 
 Config Options
