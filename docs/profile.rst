@@ -14,9 +14,10 @@ Example
 -------
 .. code::
 
-    # I want to put all my favorite flags in one place so I get them by
-    # default when using a profile
-    [DEFAULT]
+    # I want to put all my favorite flags in one place so I get them when
+    # using profiles.  Since these are the flags I like, I named the profile
+    # after myself.
+    [newell]
     cmake.cflags = -pipe -Wall -Wextra -Wshadow -Wundef -pedantic
     cmake.cflags.debug = -ggdb3 -O0
     cmake.cflags.release = -O2
@@ -25,8 +26,8 @@ Example
     cmake.cxxflags.debug = ${cmake.cflags.debug}
     cmake.cxxflags.release = ${cmake.cflags.release}
 
-    # Each section represents a profile.  Because key/values in [DEFAULT]
-    # are inherited, I can just set cmake.build_type.
+    # I like to have each profile do a specific thing since they can be
+    # stacked.  Let's make debug/release profiles.
     [debug]
     cmake.build_type = Debug
 
@@ -37,6 +38,11 @@ Example
     [clang]
     camke.cc = clang
     cmake.cxx = clang++
+
+    # This profile is intended to be used with the clang profile
+    [libc++]
+    # If I use multiple profiles, cmake.cxxflags will be appended
+    cmake.cxxflags = -stdlib=libc++
 
     # I also keep a mingw64 compiler around, so I want that available as a
     # profile option.

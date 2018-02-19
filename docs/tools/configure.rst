@@ -14,8 +14,8 @@ Description
 -----------
 Confiugure a project for dev-pipeline with an optional profile_.  More than
 one profile can be specified (.e.g, :code:`--profile clang,debug`), but
-earlier values will take precedence if there's a conflict.  This *also*
-applies to values specified in the DEFAULTS section.
+if multiple profiles set the same option, their values will be appended.  This
+also applies to things set in DEFAULTS, so use multiple profiles with caution.
 
 This is required before most other tools will work.
 

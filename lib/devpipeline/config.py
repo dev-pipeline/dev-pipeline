@@ -70,13 +70,15 @@ class ProfileConfig:
             # Build profile_vals with everything from all the profiles.
             for name in names:
                 if profile_config.has_section(name):
-                    # This part sucks :(
-                    # Make sure we don't set an option if a previous profile
-                    # already set the same option.  This needs to be more
-                    # flexible, since one size won't fit all.
                     for key, value in profile_config.items(name):
+                        # This part sucks :(
+                        # If a value is already set, append it.  This works
+                        # well when stacking cflags with multiple profiles,
+                        # but there are scenarios where this won't work.
                         if key not in profile_vals:
                             profile_vals[key] = value
+                        else:
+                            profile_vals[key] += " {}".format(value)
                 else:
                     raise Exception(
                         "Profile {} doesn't exist".format(name))
