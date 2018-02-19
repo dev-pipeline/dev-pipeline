@@ -59,30 +59,37 @@ def rebuild_cache(config, force=False):
         return data
 
 
+class ValueAppender():
+    def __init__(self):
+        self.profile_vals = {}
+
+    def add(self, key, value):
+        if key not in self.profile_vals:
+            self.profile_vals[key] = value
+        else:
+            self.profile_vals[key] += " {}".format(value)
+
+
 class ProfileConfig:
-    def __init__(self, profile_names=None):
+    def __init__(self, profile_names=None, handler=ValueAppender()):
         self.names = profile_names
+        self.handler = handler
+
+    def _add_profile_values(self, profile_config, names):
+        for name in names:
+            if profile_config.has_section(name):
+                for key, value in profile_config.items(name):
+                    self.handler.add(key, value)
+            else:
+                raise Exception(
+                    "Profile {} doesn't exist".format(name))
 
     def _get_specific_profile(self, profile_config):
         if self.names:
             names = [x.strip() for x in self.names.split(",")]
-            profile_vals = {}
             # Build profile_vals with everything from all the profiles.
-            for name in names:
-                if profile_config.has_section(name):
-                    for key, value in profile_config.items(name):
-                        # This part sucks :(
-                        # If a value is already set, append it.  This works
-                        # well when stacking cflags with multiple profiles,
-                        # but there are scenarios where this won't work.
-                        if key not in profile_vals:
-                            profile_vals[key] = value
-                        else:
-                            profile_vals[key] += " {}".format(value)
-                else:
-                    raise Exception(
-                        "Profile {} doesn't exist".format(name))
-            return profile_vals
+            self._add_profile_values(profile_config, names)
+            return self.handler.profile_vals
         else:
             return profile_config.defaults()
 
