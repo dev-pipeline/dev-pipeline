@@ -33,14 +33,14 @@ desired tool.
 The first thing you'll need to do is write a `build configuration`_.  Once
 you're ready, configure_ a build directory.
 
-.. code::
+.. ::
 
     # configure with default settings
     $ dev-pipeline configure
 
 If everything went well, you're ready to build.
 
-.. code::
+.. ::
 
     # enter whatever directory the configure step used
     $ cd build
@@ -62,12 +62,10 @@ Common Tools
   dependencies.
 
 
-.. |codacy| image::
-    https://api.codacy.com/project/badge/Grade/f7052d1a0fba4dde89e0e358f358b952
+.. |codacy| image:: https://api.codacy.com/project/badge/Grade/f7052d1a0fba4dde89e0e358f358b952
     :target: https://www.codacy.com/app/snewell/dev-pipeline?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=snewell/dev-pipeline&amp;utm_campaign=Badge_Grade
 
-.. |code-climate| image::
-    https://api.codeclimate.com/v1/badges/aa74c89202fefddff664/maintainability
+.. |code-climate| image:: https://api.codeclimate.com/v1/badges/aa74c89202fefddff664/maintainability
    :target: https://codeclimate.com/github/snewell/dev-pipeline/maintainability
 
 .. _build configuration: docs/config.rst
