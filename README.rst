@@ -33,14 +33,14 @@ desired tool.
 The first thing you'll need to do is write a `build configuration`_.  Once
 you're ready, configure_ a build directory.
 
-.. ::
+.. code:: bash
 
     # configure with default settings
     $ dev-pipeline configure
 
 If everything went well, you're ready to build.
 
-.. ::
+.. code:: bash
 
     # enter whatever directory the configure step used
     $ cd build
