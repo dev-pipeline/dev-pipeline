@@ -28,6 +28,16 @@ Keep lines limited to 80 characters and consider how your change will look
 when diffed.
 
 
+Opening Issues
+--------------
+Issues are tracked on Github_.
+
+Before opening a new issue, please do a cursory check.  Time spent looking at
+duplicates is time that's not spent working on the code.
+
+If you have code to resolve the issue, please submit a pull request.
+
+
 .. _autopep8: https://pypi.python.org/pypi/autopep8
 .. _Github: https://github.com/snewell/dev-pipeline
 .. _PEP8: https://www.python.org/dev/peps/pep-0008/
