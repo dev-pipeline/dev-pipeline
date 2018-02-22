@@ -92,11 +92,12 @@ binFiles=" \
 	bin/dev-pipeline.sh \
 "
 libexecFiles=" \
-	libexec/devpipeline/bootstrap.py \
-	libexec/devpipeline/build.py \
-	libexec/devpipeline/build-order.py \
-	libexec/devpipeline/checkout.py \
-	libexec/devpipeline/configure.py \
+	lib/devpipeline/exec/__init__.py \
+	lib/devpipeline/exec/bootstrap.py \
+	lib/devpipeline/exec/build.py \
+	lib/devpipeline/exec/build-order.py \
+	lib/devpipeline/exec/checkout.py \
+	lib/devpipeline/exec/configure.py \
 "
 libFiles=" \
 	lib/devpipeline/__init__.py \
@@ -123,4 +124,4 @@ install_helper install_exec "bin" ${binFiles}
 install_helper install_share "lib/devpipeline/" ${libFiles}
 install_helper install_share "lib/devpipeline/build" ${libBuildFiles}
 install_helper install_share "lib/devpipeline/scm" ${libScmFiles}
-install_helper install_exec "libexec/devpipeline" ${libexecFiles}
+install_helper install_share "lib/devpipeline/exec" ${libexecFiles}

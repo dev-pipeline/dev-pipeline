@@ -41,5 +41,6 @@ class Configure(devpipeline.common.GenericTool):
             self.build_dir)
 
 
-configure = Configure()
-devpipeline.common.execute_tool(configure)
+if __name__ == '__main__':
+    configure = Configure()
+    devpipeline.common.execute_tool(configure)
