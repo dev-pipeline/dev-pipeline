@@ -53,6 +53,10 @@ class BuildOrderer(devpipeline.common.TargetTool):
         self.fn(self.targets, self.components)
 
 
-if __name__ == '__main__':
+def main(args=None):
     build_orderer = BuildOrderer()
-    devpipeline.common.execute_tool(build_orderer)
+    devpipeline.common.execute_tool(build_orderer, args)
+
+
+if __name__ == '__main__':
+    main()
