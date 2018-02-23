@@ -108,13 +108,20 @@ def _add_root_values(config, state_variables):
     defaults["dp.src_root"] = state_variables["src_dir"]
 
 
+def _make_src_path(config, state):
+    section = state["section"]
+    src_path = config.get(section, "src_path", raw=True, fallback=None)
+    if not src_path:
+        return "${{dp.src_root}}/{}".format(section)
+    else:
+        return src_path
+
+
 _ex_values = {
     "dp.build_dir":
-        lambda state:
+        lambda config, state:
             "${{dp.build_root}}/{}".format(state["section"]),
-    "dp.src_dir":
-        lambda state:
-            "${{dp.src_root}}/{}".format(state["section"])
+    "dp.src_dir": _make_src_path
 }
 
 
@@ -122,7 +129,7 @@ def _add_section_values(config, state_variables):
     for section in config.sections():
         state_variables["section"] = section
         for key, fn in _ex_values.items():
-            config[section][key] = fn(state_variables)
+            config[section][key] = fn(config, state_variables)
 
 
 def _add_default_values(config, state_variables):

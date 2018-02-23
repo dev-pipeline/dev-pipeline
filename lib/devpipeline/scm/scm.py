@@ -33,5 +33,6 @@ def scm_task(target):
     target - The target to operate on.
     """
     scm = _make_scm(target)
-    scm.checkout(target.get("dp.src_dir"))
-    scm.update(target.get("dp.src_dir"))
+    src_dir = target.get("dp.src_dir")
+    scm.checkout(src_dir)
+    scm.update(src_dir)
