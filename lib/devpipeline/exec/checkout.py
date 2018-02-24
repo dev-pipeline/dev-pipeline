@@ -7,7 +7,7 @@ import devpipeline.common
 def main(args=None):
     checkout = devpipeline.common.TargetTool([
         devpipeline.scm.scm.scm_task
-    ], description="Checkout repositories")
+    ], prog="dev-pipeline checkout", description="Checkout repositories")
     devpipeline.common.execute_tool(checkout, args)
 
 

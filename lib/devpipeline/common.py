@@ -62,7 +62,7 @@ class TargetTool(GenericTool):
 
 
 def execute_tool(tool, args):
-    if not args:
+    if args == None:
         args = sys.argv[1:]
     try:
         tool.execute(args)

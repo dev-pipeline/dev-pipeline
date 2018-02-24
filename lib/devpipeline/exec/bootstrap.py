@@ -9,7 +9,8 @@ def main(args=None):
     builder = devpipeline.common.TargetTool([
         devpipeline.scm.scm.scm_task,
         devpipeline.build.build.build_task
-    ])
+    ], prog="dev-pipeline bootstrap",
+        description="Checkout and build packages")
     devpipeline.common.execute_tool(builder, args)
 
 

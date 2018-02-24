@@ -7,7 +7,8 @@ import devpipeline.config
 class Configure(devpipeline.common.GenericTool):
 
     def __init__(self):
-        super().__init__(description="Configure a project")
+        super().__init__(prog="dev-pipeline configure",
+                         description="Configure a project")
         self.add_argument("--config", help="Build configuration file",
                           default="build.config")
         self.add_argument("--profile",
