@@ -37,3 +37,14 @@ class Builder:
         path - The folder to install package artifacts.
         """
         pass
+
+
+class CommonBuilder:
+    def configure(self, src_dir, build_dir):
+        return None
+
+    def build(self, build_dir):
+        return None
+
+    def install(self, build_dir, path=None):
+        return None

@@ -10,11 +10,11 @@ import devpipeline.toolsupport
 # Scm.
 _scm_lookup = {
     "git": devpipeline.scm.git.make_git,
-    "nothing": lambda c: devpipeline.scm.Scm()
+    "nothing": lambda c, cw: cw(devpipeline.scm.CommonScm())
 }
 
 
-def _make_scm(component):
+def _make_scm(component, common_wrapper):
     """
     Create an Scm for a component.
 
@@ -22,17 +22,40 @@ def _make_scm(component):
     component - The component being operated on.
     """
     return devpipeline.toolsupport.tool_builder(component, "scm",
-                                                _scm_lookup)
+                                                _scm_lookup, common_wrapper)
 
 
-def scm_task(target):
+class SimpleTool(devpipeline.scm.Scm):
+    def __init__(self, executor, name, real):
+        self.executor = executor
+        self.name = name
+        self.real = real
+
+    def checkout(self, repo_dir):
+        self.executor.message("Checking out {}".format(self.name))
+        args = self.real.checkout(repo_dir)
+        if args:
+            self.executor.execute(**args)
+        else:
+            self.executor.message("\t(Nothing to do)")
+
+    def update(self, repo_dir):
+        self.executor.message("Updating {}".format(self.name))
+        args = self.real.update(repo_dir)
+        if args:
+            self.executor.execute(**args)
+        else:
+            self.executor.message("\t(Nothing to do)")
+
+
+def scm_task(target, target_name, executor):
     """
     Update or a local checkout.
 
     Arguments
     target - The target to operate on.
     """
-    scm = _make_scm(target)
+    scm = _make_scm(target, lambda r: SimpleTool(executor, target_name, r))
     src_dir = target.get("dp.src_dir")
     scm.checkout(src_dir)
     scm.update(src_dir)

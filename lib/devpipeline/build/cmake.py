@@ -1,11 +1,9 @@
 #!/usr/bin/python3
 
-import subprocess
-
 import devpipeline.toolsupport
 
 
-class CMake(devpipeline.build.Builder):
+class CMake(devpipeline.build.CommonBuilder):
     def __init__(self, ex_args, config_args):
         self.ex_args = ex_args
         self._config_args = config_args
@@ -15,15 +13,22 @@ class CMake(devpipeline.build.Builder):
         if ex_path:
             src_dir += "/{}".format(ex_path)
 
-        subprocess.check_call(['cmake',
-                               src_dir,
-                               ] + self._config_args,
-                              cwd=build_dir)
+        return {
+            "args": [
+                'cmake',
+                src_dir,
+            ] + self._config_args,
+            "cwd": build_dir
+        }
 
     def build(self, build_dir):
-        subprocess.check_call(['cmake',
-                               '--build',
-                               build_dir])
+        return {
+            "args": [
+                'cmake',
+                '--build',
+                build_dir
+            ]
+        }
 
     def install(self, build_dir, path=None):
         install_args = ['cmake',
@@ -34,7 +39,9 @@ class CMake(devpipeline.build.Builder):
         if path:
             install_args.extend(['--',
                                  "DESTDIR={}".format(path)])
-        subprocess.check_call(install_args)
+        return {
+            "args": install_args
+        }
 
 
 _usable_args = {
@@ -88,7 +95,7 @@ _ex_args = {
 }
 
 
-def make_cmake(component):
+def make_cmake(component, common_wrapper):
     configure_args = []
     cmake_args = {}
 
@@ -105,4 +112,4 @@ def make_cmake(component):
                                                       fn(v, suffix)))
     devpipeline.toolsupport.args_builder("cmake", component, _ex_args,
                                          add_value)
-    return CMake(cmake_args, configure_args)
+    return common_wrapper(CMake(cmake_args, configure_args))

@@ -22,3 +22,11 @@ class Scm():
         repo_dir - The absolute path where the repository is located.
         """
         pass
+
+
+class CommonScm():
+    def checkout(self, repo_dir):
+        return None
+
+    def update(self, repo_dir):
+        return None

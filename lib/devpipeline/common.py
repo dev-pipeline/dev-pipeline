@@ -5,6 +5,7 @@ import errno
 import sys
 
 import devpipeline.config
+import devpipeline.executor
 import devpipeline.resolve
 
 
@@ -30,12 +31,34 @@ class GenericTool:
         pass
 
 
+_executor_types = {
+    "dry-run": lambda: devpipeline.executor.DryRunExecutor(),
+    "quiet": lambda: devpipeline.executor.QuietExecutor(),
+    "silent": lambda: devpipeline.executor.SilentExecutor(),
+    "verbose": lambda: devpipeline.executor.VerboseExecutor(),
+}
+
+
 class TargetTool(GenericTool):
-    def __init__(self, tasks=None, *args, **kwargs):
+    def __init__(self, tasks=None, executors=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.add_argument("targets", nargs="*",
                           help="The targets to operate on")
         self.tasks = tasks
+        if executors:
+            self.add_argument("--executor",
+                              help="The amount of verbosity to use.  Options "
+                                   "are \"quiet\" (print no extra "
+                                   "information), \"verbose\" (print "
+                                   "additional information), \"dry-run\" "
+                                   "(print commands to execute, but don't run"
+                                   " them), and \"silent\" (print nothing).  "
+                                   "Regardless of this option, errors are "
+                                   "always printed.",
+                              default="quiet")
+            self.verbosity = True
+        else:
+            self.verbosity = False
 
     def execute(self, *args, **kwargs):
         args = self.parser.parse_args(*args, **kwargs)
@@ -47,6 +70,13 @@ class TargetTool(GenericTool):
         else:
             self.targets = self.components.sections()
         self.setup(args)
+        if self.verbosity:
+            fn = _executor_types.get(args.executor)
+            if not fn:
+                raise Exception(
+                    "{} isn't a valid executor".format(args.executor))
+            else:
+                self.executor = fn()
         self.process()
 
     def process(self):
@@ -56,9 +86,12 @@ class TargetTool(GenericTool):
 
     def process_targets(self, build_order):
         for target in build_order:
+            self.executor.message("  {}".format(target))
+            self.executor.message("-" * (4 + len(target)))
             current = self.components[target]
             for task in self.tasks:
-                task(current)
+                task(current, target, self.executor)
+            self.executor.message("")
 
 
 def execute_tool(tool):

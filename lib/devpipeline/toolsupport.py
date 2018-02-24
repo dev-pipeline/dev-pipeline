@@ -3,12 +3,12 @@
 import re
 
 
-def tool_builder(component, key, tool_map):
+def tool_builder(component, key, tool_map, *args):
     tool_name = component.get(key)
     if tool_name:
         tool_fn = tool_map.get(tool_name)
         if tool_fn:
-            return tool_fn(component)
+            return tool_fn(component, *args)
         else:
             raise Exception(
                 "Unknown {} '{}' for {}".format(key, tool_name, component._name))
