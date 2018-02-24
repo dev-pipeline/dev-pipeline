@@ -36,7 +36,7 @@ _ex_tools = {
 }
 
 
-if __name__ == "__main__":
+def main():
     if len(sys.argv) > 1:
         tool = _tools.get(sys.argv[1])
         if tool:
@@ -50,3 +50,6 @@ if __name__ == "__main__":
                 sys.exit(1)
     else:
         _do_help()
+
+if __name__ == "__main__":
+    main()

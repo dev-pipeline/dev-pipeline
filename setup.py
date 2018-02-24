@@ -10,6 +10,12 @@ setup(
     },
     packages=find_packages("lib"),
 
+    entry_points={
+        "console_scripts":[
+            "dev-pipeline = devpipeline.exec.driver:main"
+        ]
+    },
+
     author="Stephen Newell",
     description="Manage projects spread across multiple repositories",
     license="BSD-2",
