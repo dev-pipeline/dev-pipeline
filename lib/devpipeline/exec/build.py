@@ -4,8 +4,13 @@ import devpipeline.build.build
 import devpipeline.common
 
 
-if __name__ == '__main__':
+def main(args=None):
+    print(args)
     builder = devpipeline.common.TargetTool([
         devpipeline.build.build.build_task
-    ], description="Build targets")
-    devpipeline.common.execute_tool(builder)
+    ], prog="dev-pipeline build", description="Build targets")
+    devpipeline.common.execute_tool(builder, args)
+
+
+if __name__ == '__main__':
+    main()

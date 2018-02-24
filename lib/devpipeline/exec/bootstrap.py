@@ -5,9 +5,14 @@ import devpipeline.scm.scm
 import devpipeline.common
 
 
-if __name__ == '__main__':
+def main(args=None):
     builder = devpipeline.common.TargetTool([
         devpipeline.scm.scm.scm_task,
         devpipeline.build.build.build_task
-    ])
-    devpipeline.common.execute_tool(builder)
+    ], prog="dev-pipeline bootstrap",
+        description="Checkout and build packages")
+    devpipeline.common.execute_tool(builder, args)
+
+
+if __name__ == '__main__':
+    main()

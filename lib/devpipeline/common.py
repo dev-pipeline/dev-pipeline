@@ -38,15 +38,15 @@ class TargetTool(GenericTool):
         self.tasks = tasks
 
     def execute(self, *args, **kwargs):
-        args = self.parser.parse_args(*args, **kwargs)
+        parsed_args = self.parser.parse_args(*args, **kwargs)
 
         self.components = devpipeline.config.rebuild_cache(
             devpipeline.config.find_config())
-        if args.targets:
-            self.targets = args.targets
+        if parsed_args.targets:
+            self.targets = parsed_args.targets
         else:
             self.targets = self.components.sections()
-        self.setup(args)
+        self.setup(parsed_args)
         self.process()
 
     def process(self):
@@ -61,9 +61,11 @@ class TargetTool(GenericTool):
                 task(current)
 
 
-def execute_tool(tool):
+def execute_tool(tool, args):
+    if args == None:
+        args = sys.argv[1:]
     try:
-        tool.execute()
+        tool.execute(args)
 
     except IOError as e:
         if e.errno == errno.EPIPE:

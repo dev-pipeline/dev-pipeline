@@ -35,8 +35,9 @@ _order_outputs = {
 class BuildOrderer(devpipeline.common.TargetTool):
 
     def __init__(self):
-        super().__init__(description="Determinte all dependencies of a set of"
-                                     " targets and the order they should be "
+        super().__init__(prog="dev-pipeline build-order",
+                         description="Determinte all dependencies of a set of "
+                                     "targets and the order they should be "
                                      "built in.")
         self.add_argument("--method",
                           help="The method used to display build order.  Valid"
@@ -53,6 +54,10 @@ class BuildOrderer(devpipeline.common.TargetTool):
         self.fn(self.targets, self.components)
 
 
-if __name__ == '__main__':
+def main(args=None):
     build_orderer = BuildOrderer()
-    devpipeline.common.execute_tool(build_orderer)
+    devpipeline.common.execute_tool(build_orderer, args)
+
+
+if __name__ == '__main__':
+    main()
