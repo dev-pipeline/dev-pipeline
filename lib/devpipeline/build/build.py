@@ -35,29 +35,22 @@ class SimpleTool(devpipeline.build.Builder):
         self.name = name
         self.real = real
 
+    def _call_helper(self, step, fn, *fn_args):
+        devpipeline.toolsupport.common_tool_helper(
+            self.executor, step, self.env,
+            self.name, fn, *fn_args)
+
     def configure(self, src_dir, build_dir):
-        self.executor.message("Configuring {}".format(self.name))
-        args = self.real.configure(src_dir, build_dir)
-        if args:
-            self.executor.execute(self.env, **args)
-        else:
-            self.executor.message("\t(Nothing to do)")
+        self._call_helper("Configuring", self.real.configure,
+                          src_dir, build_dir)
 
     def build(self, build_dir):
-        self.executor.message("Building {}".format(self.name))
-        args = self.real.build(build_dir)
-        if args:
-            self.executor.execute(self.env, **args)
-        else:
-            self.executor.message("\t(Nothing to do)")
+        self._call_helper("Building", self.real.build,
+                          build_dir)
 
     def install(self, build_dir, path=None):
-        self.executor.message("Installing {}".format(self.name))
-        args = self.real.install(build_dir, path)
-        if args:
-            self.executor.execute(self.env, **args)
-        else:
-            self.executor.message("\t(Nothing to do)")
+        self._call_helper("Installing", self.real.install,
+                          build_dir, path)
 
 
 def build_task(target, target_name, env, executor):

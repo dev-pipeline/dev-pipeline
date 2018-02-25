@@ -32,21 +32,18 @@ class SimpleTool(devpipeline.scm.Scm):
         self.name = name
         self.real = real
 
+    def _call_helper(self, step, fn, *fn_args):
+        devpipeline.toolsupport.common_tool_helper(
+            self.executor, step, self.env,
+            self.name, fn, *fn_args)
+
     def checkout(self, repo_dir):
-        self.executor.message("Checking out {}".format(self.name))
-        args = self.real.checkout(repo_dir)
-        if args:
-            self.executor.execute(self.env, **args)
-        else:
-            self.executor.message("\t(Nothing to do)")
+        self._call_helper("Checking out", self.real.checkout,
+                          repo_dir)
 
     def update(self, repo_dir):
-        self.executor.message("Updating {}".format(self.name))
-        args = self.real.update(repo_dir)
-        if args:
-            self.executor.execute(self.env, **args)
-        else:
-            self.executor.message("\t(Nothing to do)")
+        self._call_helper("Updating", self.real.update,
+                          repo_dir)
 
 
 def scm_task(target, target_name, env, executor):

@@ -40,3 +40,12 @@ def flex_args_builder(prefix, component, args_dict, val_found_fn):
         _args_helper(pattern, component,
                      lambda k, v, m:
                      val_found_fn(v, k[m.end():], flex_fn))
+
+
+def common_tool_helper(executor, step, env, name, fn, *fn_args):
+    executor.message("{} {}".format(step, name))
+    args = fn(*fn_args)
+    if args:
+        executor.execute(env, **args)
+    else:
+        executor.message("\t(Nothing to do)")
