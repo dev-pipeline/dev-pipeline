@@ -185,10 +185,20 @@ def _override_append(config, overrides):
             config[key] = value
 
 
+def _override_set(config, overrides):
+    for key, value in overrides.items():
+        config[key] = value
+
+
+def _override_delete(config, overrides):
+    for key, value in overrides.items():
+        del config[key]
+
+
 _override_rules = {
     "append": _override_append,
-    # "set": _override_set,
-    # "delete": _override_delete
+    "set": _override_set,
+    "delete": _override_delete
 }
 
 
