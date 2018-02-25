@@ -34,10 +34,10 @@ class GenericTool:
 
 
 _executor_types = {
-    "dry-run": lambda: devpipeline.executor.DryRunExecutor(),
-    "quiet": lambda: devpipeline.executor.QuietExecutor(),
-    "silent": lambda: devpipeline.executor.SilentExecutor(),
-    "verbose": lambda: devpipeline.executor.VerboseExecutor(),
+    "dry-run": devpipeline.executor.DryRunExecutor,
+    "quiet": devpipeline.executor.QuietExecutor,
+    "silent": devpipeline.executor.SilentExecutor,
+    "verbose": devpipeline.executor.VerboseExecutor
 }
 
 

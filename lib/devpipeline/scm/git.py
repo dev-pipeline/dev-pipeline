@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import os.path
-import subprocess
 
 import devpipeline.toolsupport
 
