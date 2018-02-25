@@ -14,6 +14,10 @@ class Configure(devpipeline.common.GenericTool):
                           help="Build-specific profiles to use.  If more than "
                                "one profile is required, separate their names "
                                "with commas.")
+        self.add_argument("--override",
+                          help="Collection of override options to use.  If you"
+                               " require multiple types of overrides, separate"
+                               " the names with commas.")
         self.add_argument("--build-dir",
                           help="Directory to store configuration.  If "
                                "specified, --build-dir-basename will be "
@@ -33,12 +37,16 @@ class Configure(devpipeline.common.GenericTool):
                 self.build_dir = arguments.build_dir_basename
         self.profile = arguments.profile
         self.config = arguments.config
+        if arguments.override:
+            self.overrides = arguments.override
+        else:
+            self.overrides = ""
 
     def process(self):
         devpipeline.config.write_cache(
             devpipeline.config.ConfigFinder(self.config),
             devpipeline.config.ProfileConfig(self.profile),
-            self.build_dir)
+            self.overrides, self.build_dir)
 
 
 configure = Configure()
