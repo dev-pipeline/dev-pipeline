@@ -3,7 +3,7 @@
 import devpipeline.toolsupport
 
 
-class CMake(devpipeline.build.CommonBuilder):
+class CMake:
     def __init__(self, ex_args, config_args):
         self.ex_args = ex_args
         self._config_args = config_args

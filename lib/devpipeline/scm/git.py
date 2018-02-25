@@ -5,7 +5,7 @@ import os.path
 import devpipeline.toolsupport
 
 
-class Git(devpipeline.scm.CommonScm):
+class Git:
     def __init__(self, args):
         self._args = args
 
