@@ -26,7 +26,8 @@ def _make_scm(component, common_wrapper):
 
 
 class SimpleTool(devpipeline.scm.Scm):
-    def __init__(self, executor, name, real):
+    def __init__(self, executor, name, env, real):
+        self.env = env
         self.executor = executor
         self.name = name
         self.real = real
@@ -35,7 +36,7 @@ class SimpleTool(devpipeline.scm.Scm):
         self.executor.message("Checking out {}".format(self.name))
         args = self.real.checkout(repo_dir)
         if args:
-            self.executor.execute(**args)
+            self.executor.execute(self.env, **args)
         else:
             self.executor.message("\t(Nothing to do)")
 
@@ -43,19 +44,20 @@ class SimpleTool(devpipeline.scm.Scm):
         self.executor.message("Updating {}".format(self.name))
         args = self.real.update(repo_dir)
         if args:
-            self.executor.execute(**args)
+            self.executor.execute(self.env, **args)
         else:
             self.executor.message("\t(Nothing to do)")
 
 
-def scm_task(target, target_name, executor):
+def scm_task(target, target_name, env, executor):
     """
     Update or a local checkout.
 
     Arguments
     target - The target to operate on.
     """
-    scm = _make_scm(target, lambda r: SimpleTool(executor, target_name, r))
+    scm = _make_scm(target, lambda r: SimpleTool(executor, target_name,
+                                                 env, r))
     src_dir = target.get("dp.src_dir")
     scm.checkout(src_dir)
     scm.update(src_dir)

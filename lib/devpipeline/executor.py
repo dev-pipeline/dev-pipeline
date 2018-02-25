@@ -19,28 +19,28 @@ class QuietExecutor(_ExecutorBase):
     def message(self, msg):
         pass
 
-    def execute(self, **kwargs):
-        subprocess.check_call(**kwargs)
+    def execute(self, environment, **kwargs):
+        subprocess.check_call(env=environment, **kwargs)
 
 
 class SilentExecutor(_ExecutorBase):
     def message(self, msg):
         pass
 
-    def execute(self, **kwargs):
+    def execute(self, environment, **kwargs):
         with open(os.devnull, 'w') as FNULL:
             kwargs["stdout"] = FNULL
-            subprocess.check_call(**kwargs)
+            subprocess.check_call(env=environment, **kwargs)
 
 
 class VerboseExecutor(_ExecutorBase):
-    def execute(self, **kwargs):
+    def execute(self, environment, **kwargs):
         args = kwargs.get("args")
         self.message("\tExecuting: {}".format(args))
-        subprocess.check_call(**kwargs)
+        subprocess.check_call(env=environment, **kwargs)
 
 
 class DryRunExecutor(_ExecutorBase):
-    def execute(self, **kwargs):
+    def execute(self, environment, **kwargs):
         args = kwargs.get("args")
         self.message("\tExecuting: {}".format(args))

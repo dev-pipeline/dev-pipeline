@@ -29,7 +29,8 @@ def _make_builder(component, common_wrapper):
 
 
 class SimpleTool(devpipeline.build.Builder):
-    def __init__(self, executor, name, real):
+    def __init__(self, executor, name, env, real):
+        self.env = env
         self.executor = executor
         self.name = name
         self.real = real
@@ -38,7 +39,7 @@ class SimpleTool(devpipeline.build.Builder):
         self.executor.message("Configuring {}".format(self.name))
         args = self.real.configure(src_dir, build_dir)
         if args:
-            self.executor.execute(**args)
+            self.executor.execute(self.env, **args)
         else:
             self.executor.message("\t(Nothing to do)")
 
@@ -46,7 +47,7 @@ class SimpleTool(devpipeline.build.Builder):
         self.executor.message("Building {}".format(self.name))
         args = self.real.build(build_dir)
         if args:
-            self.executor.execute(**args)
+            self.executor.execute(self.env, **args)
         else:
             self.executor.message("\t(Nothing to do)")
 
@@ -54,12 +55,12 @@ class SimpleTool(devpipeline.build.Builder):
         self.executor.message("Installing {}".format(self.name))
         args = self.real.install(build_dir, path)
         if args:
-            self.executor.execute(**args)
+            self.executor.execute(self.env, **args)
         else:
             self.executor.message("\t(Nothing to do)")
 
 
-def build_task(target, target_name, executor):
+def build_task(target, target_name, env, executor):
     """
     Build a target.
 
@@ -71,7 +72,7 @@ def build_task(target, target_name, executor):
     if not os.path.exists(build_path):
         os.makedirs(build_path)
     builder = _make_builder(
-        target, lambda r: SimpleTool(executor, target_name, r))
+        target, lambda r: SimpleTool(executor, target_name, env, r))
     builder.configure(target.get("dp.src_dir"), build_path)
     builder.build(build_path)
     if "no_install" not in target:
