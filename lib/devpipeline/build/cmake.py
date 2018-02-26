@@ -13,22 +13,22 @@ class CMake:
         if ex_path:
             src_dir += "/{}".format(ex_path)
 
-        return {
+        return [{
             "args": [
                 'cmake',
                 src_dir,
             ] + self._config_args,
             "cwd": build_dir
-        }
+        }]
 
     def build(self, build_dir):
-        return {
+        return [{
             "args": [
                 'cmake',
                 '--build',
                 build_dir
             ]
-        }
+        }]
 
     def install(self, build_dir, path=None):
         install_args = ['cmake',
@@ -39,9 +39,9 @@ class CMake:
         if path:
             install_args.extend(['--',
                                  "DESTDIR={}".format(path)])
-        return {
+        return [{
             "args": install_args
-        }
+        }]
 
 
 _usable_args = {

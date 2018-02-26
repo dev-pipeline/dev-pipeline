@@ -44,8 +44,8 @@ def flex_args_builder(prefix, component, args_dict, val_found_fn):
 
 def common_tool_helper(executor, step, env, name, fn, *fn_args):
     executor.message("{} {}".format(step, name))
-    args = fn(*fn_args)
-    if args:
-        executor.execute(env, **args)
+    cmds = fn(*fn_args)
+    if cmds:
+        executor.execute(env, *cmds)
     else:
         executor.message("\t(Nothing to do)")

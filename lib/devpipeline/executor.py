@@ -17,11 +17,15 @@ class _ExecutorBase:
     def warning(self, msg):
         print("WARNING: {}".format(msg))
 
-    def execute(self, environment, **kwargs):
+    def _execute_single(self, environment, **kwargs):
         try:
             subprocess.check_call(env=environment, **kwargs)
         except Exception as e:
             self.error(str(e))
+
+    def execute(self, environment, *args):
+        for cmd in args:
+            self._execute_single(environment, **cmd)
 
 
 class QuietExecutor(_ExecutorBase):
@@ -33,20 +37,23 @@ class SilentExecutor(_ExecutorBase):
     def message(self, msg):
         pass
 
-    def execute(self, environment, **kwargs):
+    def execute(self, environment, *args):
         with open(os.devnull, 'w') as FNULL:
-            kwargs["stdout"] = FNULL
-            super(SilentExecutor, self).execute(environment, **kwargs)
+            for cmd in args:
+                cmd["stdout"] = FNULL
+                self._execute_single(environment, **cmd)
 
 
 class VerboseExecutor(_ExecutorBase):
-    def execute(self, environment, **kwargs):
-        args = kwargs.get("args")
-        self.message("\tExecuting: {}".format(args))
-        super(VerboseExecutor, self).execute(environment, **kwargs)
+    def execute(self, environment, *args):
+        for cmd in args:
+            cmd_args = cmd.get("args")
+            self.message("\tExecuting: {}".format(cmd_args))
+            self._execute_single(environment, **cmd)
 
 
 class DryRunExecutor(_ExecutorBase):
-    def execute(self, environment, **kwargs):
-        args = kwargs.get("args")
-        super(DryRunExecutor, self).message("\tExecuting: {}".format(args))
+    def execute(self, environment, *args):
+        for cmd in args:
+            cmd_args = cmd.get("args")
+            self.message("\tExecuting: {}".format(cmd_args))
