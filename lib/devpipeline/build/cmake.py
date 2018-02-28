@@ -1,24 +1,34 @@
 #!/usr/bin/python3
 
-import subprocess
-
 import devpipeline.toolsupport
 
 
-class CMake(devpipeline.build.Builder):
-    def __init__(self, config_args):
+class CMake:
+    def __init__(self, ex_args, config_args):
+        self.ex_args = ex_args
         self._config_args = config_args
 
     def configure(self, src_dir, build_dir):
-        subprocess.check_call(['cmake',
-                               src_dir,
-                               ] + self._config_args,
-                              cwd=build_dir)
+        ex_path = self.ex_args.get("project_path")
+        if ex_path:
+            src_dir += "/{}".format(ex_path)
+
+        return {
+            "args": [
+                'cmake',
+                src_dir,
+            ] + self._config_args,
+            "cwd": build_dir
+        }
 
     def build(self, build_dir):
-        subprocess.check_call(['cmake',
-                               '--build',
-                               build_dir])
+        return {
+            "args": [
+                'cmake',
+                '--build',
+                build_dir
+            ]
+        }
 
     def install(self, build_dir, path=None):
         install_args = ['cmake',
@@ -29,7 +39,9 @@ class CMake(devpipeline.build.Builder):
         if path:
             install_args.extend(['--',
                                  "DESTDIR={}".format(path)])
-        subprocess.check_call(install_args)
+        return {
+            "args": install_args
+        }
 
 
 _usable_args = {
@@ -78,14 +90,26 @@ _flag_args = {
     "ldflags.static": lambda v, suffix: _extend_ldflags("STATIC", suffix, v)
 }
 
+_ex_args = {
+    "project_path": lambda v: ("project_path", v)
+}
 
-def make_cmake(component):
-    cmake_args = []
+
+def make_cmake(component, common_wrapper):
+    configure_args = []
+    cmake_args = {}
+
+    def add_value(v, fn):
+        k, r = fn(v)
+        cmake_args[k] = r
 
     devpipeline.toolsupport.args_builder("cmake", component, _usable_args,
-                                         lambda v, fn: cmake_args.extend(fn(v)))
+                                         lambda v, fn:
+                                             configure_args.extend(fn(v)))
     devpipeline.toolsupport.flex_args_builder("cmake", component, _flag_args,
                                               lambda v, suffix, fn:
-                                                  cmake_args.extend(
+                                                  configure_args.extend(
                                                       fn(v, suffix)))
-    return CMake(cmake_args)
+    devpipeline.toolsupport.args_builder("cmake", component, _ex_args,
+                                         add_value)
+    return common_wrapper(CMake(cmake_args, configure_args))

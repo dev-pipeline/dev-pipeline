@@ -1,33 +1,46 @@
 #!/usr/bin/python3
 
 import os.path
-import subprocess
 
 import devpipeline.toolsupport
 
 
-class Git(devpipeline.scm.Scm):
+class Git:
     def __init__(self, args):
         self._args = args
 
     def checkout(self, repo_dir):
         if not os.path.isdir(repo_dir):
-            subprocess.check_call(['git',
-                                   'clone',
-                                   self._args["uri"],
-                                   repo_dir])
+            return {
+                "args": [
+                    'git',
+                    'clone',
+                    self._args["uri"],
+                    repo_dir
+                ]
+            }
         else:
-            subprocess.check_call(['git',
-                                   'fetch'],
-                                  cwd=repo_dir)
+            return {
+                "args": [
+                    'git',
+                    'fetch'
+                ],
+                "cwd": repo_dir
+            }
 
     def update(self, repo_dir):
         rev = self._args.get("revision")
         if rev:
-            subprocess.check_call(['git',
-                                   'checkout',
-                                   rev],
-                                  cwd=repo_dir)
+            return {
+                "args": [
+                    'git',
+                    'checkout',
+                    rev
+                ],
+                "cwd": repo_dir
+            }
+        else:
+            return None
 
 
 _git_args = {
@@ -36,7 +49,7 @@ _git_args = {
 }
 
 
-def make_git(component):
+def make_git(component, common_wrapper):
     git_args = {}
 
     def add_value(v, fn):
@@ -49,4 +62,4 @@ def make_git(component):
     if not git_args.get("uri"):
         raise Exception("Not git uri ({})".format(component._name))
     else:
-        return Git(git_args)
+        return common_wrapper(Git(git_args))
