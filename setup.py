@@ -20,7 +20,4 @@ setup(
     description="Manage projects spread across multiple repositories",
     license="BSD-2",
     url="https://github.com/snewell/dev-pipeline",
-    project_urls={
-        "Source Code": "https://github.com/snewell/dev-pipeline"
-    }
 )
