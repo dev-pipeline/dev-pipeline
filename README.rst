@@ -18,18 +18,27 @@ working well together, without the issues that sub-repositories introduce.
 
 Installation
 ------------
-dev-pipeline is installed using :code:`install.sh`.  Typical Unix system utils
-are assumed to be installed in their usual locations, but additional tools may
-be required based on the configuration of your projects.  As a general rule,
-programs like :code:`git` and :code:`cmake` are expected to be in :code:`PATH`.
+The simplest way to install is using pip_.
+
+.. code:: bash
+
+    $ cd /path/to/dev-pipeline
+    $ pip install
+
+If you don't have pip available, you can run :code:`setup.py` directly.
+
+.. code:: bash
+
+    $ cd /path/to/dev-pipeline
+    $ python setup.py install
+
+If the install completes you're good to go.  Depending on your project
+configuration you may need to install additional tools such as cmake or git;
+installing those tools is beyond the scope of this document.
 
 
 Using
 -----
-dev-pipeline follows the libexec model, with a single front-end
-(:code:`dev-pipeline`) that prepares the environment before invoking the
-desired tool.
-
 The first thing you'll need to do is write a `build configuration`_.  Once
 you're ready, configure_ a build directory.
 
@@ -74,3 +83,4 @@ Common Tools
 .. _build-order: docs/tools/build-order.rst
 .. _checkout: docs/tools/checkout.rst
 .. _configure: docs/tools/configure.rst
+.. _pip: https://pypi.python.org/pypi/pip
