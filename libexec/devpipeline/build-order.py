@@ -17,13 +17,13 @@ def _print_dot(targets, components):
     def remove_hyphen(s):
         return re.sub("-", lambda m: "_", s)
 
-    print("digraph dependencies {{")
+    print("digraph dependencies {")
     for p, deps in rev_deps.items():
         stripped_p = remove_hyphen(p)
         print("\t{}".format(stripped_p))
         for d in deps:
             print("\t{} -> {}".format(remove_hyphen(d), stripped_p))
-    print("}}")
+    print("}")
 
 
 _order_outputs = {
