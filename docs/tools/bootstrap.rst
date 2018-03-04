@@ -5,7 +5,8 @@ Synopsis
 --------
 .. code::
 
-    bootstrap [-h] [targets [targets ...]]
+    dev-pipeline bootstrap [-h] [--executor EXECUTOR]
+                           [targets [targets ...]]
 
 
 Description
@@ -20,13 +21,21 @@ If no targets are specified, all targets will be used.
 
 Options
 -------
-  -h, --help            show this help message and exit
+  -h, --help           show this help message and exit
+  --executor EXECUTOR  The amount of verbosity to use. Options are "quiet"
+                       (print no extra information), "verbose" (print
+                       additional information), "dry-run" (print commands to
+                       execute, but don't run them), and "silent" (print
+                       nothing). Regardless of this option, errors are always
+                       printed. (default: quiet)
+
 
 
 Config Options
 --------------
-No extra options are consumed.  See the build and checkout documentation for
+No extra options are consumed.  See the build_ and checkout_ documentation for
 available options.
 
 
-.. _CMake: https://www.cmake.org
+.. _build: build.rst
+.. _checkout: checkout.rst

@@ -35,7 +35,8 @@ _order_outputs = {
 class BuildOrderer(devpipeline.common.TargetTool):
 
     def __init__(self):
-        super().__init__(prog="dev-pipeline build-order",
+        super().__init__(executors=False,
+                         prog="dev-pipeline build-order",
                          description="Determinte all dependencies of a set of "
                                      "targets and the order they should be "
                                      "built in.")

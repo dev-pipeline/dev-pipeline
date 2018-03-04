@@ -5,9 +5,9 @@ Synopsis
 --------
 .. code::
 
-    configure [-h] [--config CONFIG] [--profile PROFILE]
-              [--build-dir BUILD_DIR]
-              [--build-dir-basename BUILD_DIR_BASENAME]
+    dev-pipeline configure [-h] [--config CONFIG] [--profile PROFILE]
+                           [--build-dir BUILD_DIR]
+                           [--build-dir-basename BUILD_DIR_BASENAME]
 
 
 Description

@@ -16,8 +16,17 @@ packages in a configuration.
 
 Available Configuration Options
 -------------------------------
-* depends - A comma-separated list of packages to depend on.  This is used by
-  most dev-pipeline tools.
+* :code:`depends` - A comma-separated list of packages to depend on.  This is
+  used by most dev-pipeline tools.
+
+Environment variables can be customized as well.  Because different platforms
+use different syntax to manipulate environments (e.g., colon-separated values
+in Unix and semi-colon-separated values in Windows) these values are best set
+in local files instead of a shared build.config.
+
+* :code:`env.XXX` - Set the environment variable :code:`XXX`.
+* :code:`env_append.XXX` - Append the environment variable :code:`XXX`.  If it
+  isn't already set in the environment, this is equivalent to :code:`env.XXX`.
 
 
 Expanded Options
@@ -29,10 +38,10 @@ results are undefined but at minimum you can expect strange behavior.
 
 All variables provided in this manner are prefixed with :code:`dp.`.
 
-* :code:`dp.build_dir` - The build directory of a specific package.  This will
-  be a folder within :code:`dp.build_root`.
 * :code:`dp.build_config` - Full path to the build configuration used by a
   project.
+* :code:`dp.build_dir` - The build directory of a specific package.  This will
+  be a folder within :code:`dp.build_root`.
 * :code:`dp.build_root` - The root directory for all package builds.
 * :code:`dp.profile_name` -  The name of the profile_ a build is configured
   for.

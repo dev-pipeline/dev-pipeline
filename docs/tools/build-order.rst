@@ -5,7 +5,7 @@ Synopsis
 --------
 .. code::
 
-    build-order [-h] [targets [targets ...]]
+    dev-pipeline build-order [-h] [--method METHOD] [targets [targets ...]]
 
 
 Description
