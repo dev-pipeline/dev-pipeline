@@ -3,6 +3,23 @@
 import re
 
 
+class SimpleTool():
+    def __init__(self, executor, name, env, real):
+        self.env = env
+        self.executor = executor
+        self.name = name
+        self.real = real
+        # print("executor={}".format(executor))
+        # print("name={}".format(name))
+        # print("env={}".format(env))
+        # print("real={}".format(real))
+
+    def _call_helper(self, step, fn, *fn_args):
+        common_tool_helper(
+            self.executor, step, self.env,
+            self.name, fn, *fn_args)
+
+
 def tool_builder(component, key, tool_map, *args):
     tool_name = component.get(key)
     if tool_name:

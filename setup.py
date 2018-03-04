@@ -11,7 +11,7 @@ setup(
     packages=find_packages("lib"),
 
     entry_points={
-        "console_scripts":[
+        "console_scripts": [
             "dev-pipeline = devpipeline.exec.driver:main"
         ]
     },

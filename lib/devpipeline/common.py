@@ -127,12 +127,12 @@ class TargetTool(GenericTool):
             current = self.components[target]
             env = _create_target_environment(current)
             for task in self.tasks:
-                task(current, target, env, self.executor)
+                task(current, name=target, env=env, executor=self.executor)
             self.executor.message("")
 
 
 def execute_tool(tool, args):
-    if args == None:
+    if args is None:
         args = sys.argv[1:]
     try:
         tool.execute(args)
