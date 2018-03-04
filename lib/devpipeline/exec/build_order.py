@@ -17,13 +17,13 @@ def _print_dot(targets, components):
     def remove_hyphen(s):
         return re.sub("-", lambda m: "_", s)
 
-    print("digraph dependencies {{")
+    print("digraph dependencies {")
     for p, deps in rev_deps.items():
         stripped_p = remove_hyphen(p)
         print("\t{}".format(stripped_p))
         for d in deps:
             print("\t{} -> {}".format(remove_hyphen(d), stripped_p))
-    print("}}")
+    print("}")
 
 
 _order_outputs = {
@@ -35,8 +35,9 @@ _order_outputs = {
 class BuildOrderer(devpipeline.common.TargetTool):
 
     def __init__(self):
-        super().__init__(description="Determinte all dependencies of a set of"
-                                     " targets and the order they should be "
+        super().__init__(prog="dev-pipeline build-order",
+                         description="Determinte all dependencies of a set of "
+                                     "targets and the order they should be "
                                      "built in.")
         self.add_argument("--method",
                           help="The method used to display build order.  Valid"
@@ -53,5 +54,10 @@ class BuildOrderer(devpipeline.common.TargetTool):
         self.fn(self.targets, self.components)
 
 
-build_orderer = BuildOrderer()
-devpipeline.common.execute_tool(build_orderer)
+def main(args=None):
+    build_orderer = BuildOrderer()
+    devpipeline.common.execute_tool(build_orderer, args)
+
+
+if __name__ == '__main__':
+    main()
