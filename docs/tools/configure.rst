@@ -6,7 +6,7 @@ Synopsis
 .. code::
 
     dev-pipeline configure [-h] [--config CONFIG] [--profile PROFILE]
-                           [--build-dir BUILD_DIR]
+                           [--override OVERRIDE] [--build-dir BUILD_DIR]
                            [--build-dir-basename BUILD_DIR_BASENAME]
 
 
@@ -26,7 +26,11 @@ Options
   --config CONFIG       Build configuration file (default: build.config)
   --profile PROFILE     Build-specific profiles to use. If more than one
                         profile is required, separate their names with commas.
-                        (default: None)
+                        (default: None
+  --override OVERRIDE   Collection of override options to use. If you require
+                        multiple types of overrides, separate the names with
+                        commas. (default: None)
+)
   --build-dir BUILD_DIR
                         Directory to store configuration. If specified,
                         --build-dir-basename will be ignored. (default: None)

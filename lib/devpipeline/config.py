@@ -17,6 +17,8 @@ class ConfigFinder:
         return config
 
 
+_overrides_root = "{}/{}".format(os.path.expanduser("~"),
+                                 ".dev-pipeline.d/overrides.d")
 _profile_file = "{}/{}".format(os.path.expanduser("~"),
                                ".dev-pipeline.d/profiles.conf")
 
@@ -34,6 +36,32 @@ def find_config():
     raise Exception("Can't find build cache")
 
 
+def _override_deleted(config, package):
+    override_list = [x.strip() for x in config.get(
+        "dp.override_list", fallback="").split(",")]
+    for override in override_list:
+        override_path = "{}/{}/{}.conf".format(
+            _overrides_root, override, package)
+        if not os.path.isfile(override_path):
+            return True
+    return False
+
+
+def _updated_override(config_data, cache_time):
+    override_list = [x.strip() for x in config_data.get(
+        "DEFAULT", "dp.overrides", fallback="").split(",")]
+    for package in config_data.sections():
+        for override in override_list:
+            override_path = "{}/{}/{}.conf".format(
+                _overrides_root, override, package)
+            if os.path.isfile(override_path) and (
+                    os.path.getmtime(override_path) > cache_time):
+                return True
+            if _override_deleted(config_data[package], package):
+                return True
+    return False
+
+
 def _cache_outdated(config_data, build_cache_path):
     cache_time = os.path.getmtime(build_cache_path)
     input_files = [
@@ -44,7 +72,7 @@ def _cache_outdated(config_data, build_cache_path):
         mt = os.path.getmtime(input_file)
         if cache_time < mt:
             return True
-    return False
+    return _updated_override(config_data, cache_time)
 
 
 def rebuild_cache(config, force=False):
@@ -54,6 +82,7 @@ def rebuild_cache(config, force=False):
                                                  "dp.build_config")),
                            ProfileConfig(data.get("DEFAULT",
                                                   "dp.profile_name")),
+                           data.get("DEFAULT", "dp.overrides"),
                            data.get("DEFAULT", "dp.build_root"))
     else:
         return data
@@ -151,8 +180,71 @@ def _validate_config_dir(build_dir, cache_name):
                 "{} doesn't look like a build directory".format(build_dir))
 
 
-def write_cache(config_reader, profile_config_reader, build_dir,
-                cache_name="build.cache"):
+def _find_overrides(target, overrides):
+    override_list = ""
+    values = []
+    for current_override in overrides:
+        override_file = "{}/{}/{}.conf".format(_overrides_root,
+                                               current_override, target)
+        if os.path.isfile(override_file):
+            if override_list:
+                override_list += ",{}".format(current_override)
+            else:
+                override_list = current_override
+            values.append(ConfigFinder(override_file).read_config())
+    return {
+        "overrides": override_list,
+        "values": values
+    }
+
+
+def _override_append(config, overrides):
+    for key, value in overrides.items():
+        if key in config:
+            config[key] += " {}".format(value)
+        else:
+            config[key] = value
+
+
+def _override_set(config, overrides):
+    for key, value in overrides.items():
+        config[key] = value
+
+
+def _override_delete(config, overrides):
+    for key, value in overrides.items():
+        del config[key]
+
+
+_override_rules = {
+    "append": _override_append,
+    "set": _override_set,
+    "delete": _override_delete
+}
+
+
+def _apply_override(config, target, overrides, override_names):
+    for override in overrides:
+        for section in override.sections():
+            fn = _override_rules.get(section)
+            if fn:
+                fn(config[target], override[section])
+            else:
+                raise Exception("Unknown override section: {}".format(section))
+    config[target]["dp.applied_overrides"] = override_names
+
+
+def _apply_overrides(config, overrides):
+    override_list = [x.strip() for x in overrides.split(",")]
+    for target in config.sections():
+        override = _find_overrides(target, override_list)
+        values = override.get("values")
+        if values:
+            _apply_override(config, target, values, override["overrides"])
+
+
+def write_cache(config_reader, profile_config_reader, overrides,
+                build_dir, cache_name="build.cache"):
     config = config_reader.read_config()
     profile_section = profile_config_reader.read_config()
     if not os.path.isdir(build_dir):
@@ -175,8 +267,10 @@ def write_cache(config_reader, profile_config_reader, build_dir,
         "dp.build_root": state_variables["build_dir"],
         "dp.src_root": state_variables["src_dir"],
         "dp.profile_name": profile_config_reader.names,
+        "dp.overrides": overrides,
         "dp.build_config": config_abs
     })
+    _apply_overrides(config, overrides)
     with open("{}/{}".format(build_dir, cache_name), 'w') as output_file:
         config.write(output_file)
     return config
