@@ -36,6 +36,17 @@ def find_config():
     raise Exception("Can't find build cache")
 
 
+def _override_deleted(config, package):
+    override_list = [x.strip() for x in config.get(
+        "dp.override_list", fallback="").split(",")]
+    for override in override_list:
+        override_path = "{}/{}/{}.conf".format(
+            _overrides_root, override, package)
+        if not os.path.isfile(override_path):
+            return True
+    return False
+
+
 def _updated_override(config_data, cache_time):
     override_list = [x.strip() for x in config_data.get(
         "DEFAULT", "dp.overrides", fallback="").split(",")]
@@ -45,6 +56,8 @@ def _updated_override(config_data, cache_time):
                 _overrides_root, override, package)
             if os.path.isfile(override_path) and (
                     os.path.getmtime(override_path) > cache_time):
+                return True
+            if _override_deleted(config_data[package], package):
                 return True
     return False
 
@@ -168,13 +181,21 @@ def _validate_config_dir(build_dir, cache_name):
 
 
 def _find_overrides(target, overrides):
-    ret = []
+    override_list = ""
+    values = []
     for current_override in overrides:
         override_file = "{}/{}/{}.conf".format(_overrides_root,
                                                current_override, target)
         if os.path.isfile(override_file):
-            ret.append(ConfigFinder(override_file).read_config())
-    return ret
+            if override_list:
+                override_list += ",{}".format(current_override)
+            else:
+                override_list = current_override
+            values.append(ConfigFinder(override_file).read_config())
+    return {
+        "overrides": override_list,
+        "values": values
+    }
 
 
 def _override_append(config, overrides):
@@ -202,7 +223,7 @@ _override_rules = {
 }
 
 
-def _apply_override(config, target, overrides):
+def _apply_override(config, target, overrides, override_names):
     for override in overrides:
         for section in override.sections():
             fn = _override_rules.get(section)
@@ -210,14 +231,16 @@ def _apply_override(config, target, overrides):
                 fn(config[target], override[section])
             else:
                 raise Exception("Unknown override section: {}".format(section))
+    config[target]["dp.applied_overrides"] = override_names
 
 
 def _apply_overrides(config, overrides):
     override_list = [x.strip() for x in overrides.split(",")]
     for target in config.sections():
         override = _find_overrides(target, override_list)
-        if override:
-            _apply_override(config, target, override)
+        values = override.get("values")
+        if values:
+            _apply_override(config, target, values, override["overrides"])
 
 
 def write_cache(config_reader, profile_config_reader, overrides,
