@@ -8,32 +8,56 @@ import subprocess
 import devpipeline.toolsupport
 
 
+def _merge_command(match, repo_dir):
+    branch_pattern = re.compile(R"^{} ([\w/]+)".format(match.group(1)))
+
+    def _check_line(line):
+        # We're going to take a line from the git for-each-ref command and
+        # look for the normalized name.  If we get a match, we'll try a
+        # fast-forward merge.
+        m = branch_pattern.match(line)
+        if m:
+            return [{
+                "args": [
+                    "git",
+                    "merge",
+                    "--ff-only",
+                    m.group(1)
+                ],
+                "cwd": repo_dir
+            }]
+        else:
+            return None
+
+    # This will give output similar to this:
+    #   master origin/master
+    #   feature-branch some-remote/remote-branch-name
+    #
+    # We're going to use this output to figure out the *proper* upstream
+    # branch for a fastforward merge.  This protects against somebody using
+    # dev-pipeline to get started on a project, then switching the branch to
+    # track their fork of an upstream project.
+    with subprocess.Popen([
+        "git",
+        "for-each-ref",
+        "--format=%(refname:short) %(upstream:short)",
+        "refs/heads"
+    ], cwd=repo_dir, stdout=subprocess.PIPE) as proc:
+        for line in io.TextIOWrapper(proc.stdout, encoding="utf-8"):
+            result = _check_line(line)
+            if result:
+                return result
+    return []
+
+
 def _ff_command(revision, repo_dir):
     # If the revision is something weird like master~~^4~14, we want to get
     # the actual branch so it can be updated.
     match = re.match(R"([\w\-\.]+)(?:[~^\d]+)?", revision)
     if match:
-        branch_pattern = re.compile(R"^{} ([\w/]+)".format(match.group(1)))
-        with subprocess.Popen([
-            "git",
-            "for-each-ref",
-            "--format=%(refname:short) %(upstream:short)",
-            "refs/heads"
-        ], cwd=repo_dir, stdout=subprocess.PIPE) as proc:
-            for line in io.TextIOWrapper(proc.stdout, encoding="utf-8"):
-                m = branch_pattern.match(line)
-                if m:
-                    return [{
-                        "args": [
-                            "git",
-                            "merge",
-                            "--ff-only",
-                            m.group(1)
-                        ],
-                        "cwd": repo_dir
-                    }]
-    # If we made it this far, there's no match
-    return []
+        return _merge_command(match, repo_dir)
+    else:
+        return []
 
 
 class Git:
