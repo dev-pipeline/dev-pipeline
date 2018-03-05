@@ -9,6 +9,7 @@ import sys
 import devpipeline.config
 import devpipeline.executor
 import devpipeline.resolve
+import devpipeline.version
 
 
 class GenericTool:
@@ -17,6 +18,9 @@ class GenericTool:
         self.parser = argparse.ArgumentParser(
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
             *args, **kwargs)
+        self.parser.add_argument("--version", action="version",
+                                 version="%(prog)s {}".format(
+                                     devpipeline.version.string))
 
     def add_argument(self, *args, **kwargs):
         self.parser.add_argument(*args, **kwargs)

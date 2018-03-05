@@ -4,6 +4,8 @@ import configparser
 import os.path
 import os
 
+import devpipeline.version
+
 
 class ConfigFinder:
     def __init__(self, filename):
@@ -21,6 +23,9 @@ _overrides_root = "{}/{}".format(os.path.expanduser("~"),
                                  ".dev-pipeline.d/overrides.d")
 _profile_file = "{}/{}".format(os.path.expanduser("~"),
                                ".dev-pipeline.d/profiles.conf")
+_version_id = (devpipeline.version.major << 24) | (
+               devpipeline.version.minor << 16) | (
+               devpipeline.version.patch << 8)
 
 
 def find_config():
@@ -37,12 +42,16 @@ def find_config():
 
 
 def _override_deleted(config, package):
-    override_list = [x.strip() for x in config.get(
-        "dp.override_list", fallback="").split(",")]
+    raw_overrides = config.get("dp.override_list", fallback="")
+    if raw_overrides:
+        override_list = [x.strip() for x in raw_overrides]
+    else:
+        override_list = []
     for override in override_list:
         override_path = "{}/{}/{}.conf".format(
             _overrides_root, override, package)
         if not os.path.isfile(override_path):
+            print("missing {}".format(override_path))
             return True
     return False
 
@@ -62,6 +71,11 @@ def _updated_override(config_data, cache_time):
     return False
 
 
+def _updated_software(config):
+    config_version = config.get("DEFAULT", "dp.version", fallback="0")
+    return _version_id > int(config_version, 16)
+
+
 def _cache_outdated(config_data, build_cache_path):
     cache_time = os.path.getmtime(build_cache_path)
     input_files = [
@@ -72,7 +86,10 @@ def _cache_outdated(config_data, build_cache_path):
         mt = os.path.getmtime(input_file)
         if cache_time < mt:
             return True
-    return _updated_override(config_data, cache_time)
+    if _updated_software(config_data):
+        return True
+    else:
+        return _updated_override(config_data, cache_time)
 
 
 def rebuild_cache(config, force=False):
@@ -264,11 +281,12 @@ def write_cache(config_reader, profile_config_reader, overrides,
     _add_section_values(config, state_variables)
     _add_profile_values(config.defaults(), profile_section)
     _add_default_values(config.defaults(), {
+        "dp.build_config": config_abs,
         "dp.build_root": state_variables["build_dir"],
-        "dp.src_root": state_variables["src_dir"],
-        "dp.profile_name": profile_config_reader.names,
         "dp.overrides": overrides,
-        "dp.build_config": config_abs
+        "dp.profile_name": profile_config_reader.names,
+        "dp.src_root": state_variables["src_dir"],
+        "dp.version": format(_version_id, '02x')
     })
     _apply_overrides(config, overrides)
     with open("{}/{}".format(build_dir, cache_name), 'w') as output_file:
