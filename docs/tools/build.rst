@@ -31,11 +31,11 @@ Options
 
 Config Options
 --------------
-* build - (**Required**) The build tool to use.  It must be an option listed
-  in Builders_.
-* install_path - The path *within the build directory* to install a package.
-  If unspecified, :code:`install` will be used.
-* no_install - Prevent a package from being installed.
+* :code:`build` - (**Required**) The build tool to use.  It must be an option
+  listed in Builders_.
+* :code:`install_path` - The path *within the build directory* to install a
+  package.  If unspecified, :code:`install` will be used.
+* :code:`no_install` - Prevent a package from being installed.
 
 
 Builders

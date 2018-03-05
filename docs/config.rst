@@ -14,6 +14,15 @@ overridden.  This is useful if a value is common across all (or most) of the
 packages in a configuration.
 
 
+Best Practices
+--------------
+A package build configuration should be as portable as the software you want
+to support; try not to embed anything platform-specific (e.g., paths,
+environment variables, compiler information) in your main configuration since
+that could cause breakage on other systems.  If you have configuration
+specific to your system, it should go in either a profile_ or overrides_.
+
+
 Available Configuration Options
 -------------------------------
 * :code:`depends` - A comma-separated list of packages to depend on.  This is
@@ -43,6 +52,10 @@ All variables provided in this manner are prefixed with :code:`dp.`.
 * :code:`dp.build_dir` - The build directory of a specific package.  This will
   be a folder within :code:`dp.build_root`.
 * :code:`dp.build_root` - The root directory for all package builds.
+* :code:`dp.overrides` - A comma-separated list of overrides_ that should be
+  considered for this project.
+* :code:`dp.override_list` - A comma-separated list of overrides_ applied to a
+  specific package.
 * :code:`dp.profile_name` -  The name of the profile_ a build is configured
   for.
 * :code:`dp.src_dir` - The full path to the source folder for each package.
@@ -92,4 +105,5 @@ human-readable, but comments are inline to help explain.
             ${bureaucracy:dep_args}
 
 
+.. _overrides: overrides.rst
 .. _profile: profile.rst

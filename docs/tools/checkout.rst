@@ -34,8 +34,11 @@ Options
 
 Config Options
 --------------
-* scm - (**Required**) The source control tool to use.  This must be one of the
-  options listed in SCMs_.
+* :code:`scm` - (**Required**) The source control tool to use.  This must be
+  one of the options listed in SCMs_.
+* :code:`src_path` - The path where a package's source tree lives.  If
+  unspecified, packages will be checked out in a folder matching their name
+  under :code:`dp.src_root`.
 
 
 SCMs

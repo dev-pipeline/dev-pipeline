@@ -30,7 +30,6 @@ Options
   --override OVERRIDE   Collection of override options to use. If you require
                         multiple types of overrides, separate the names with
                         commas. (default: None)
-)
   --build-dir BUILD_DIR
                         Directory to store configuration. If specified,
                         --build-dir-basename will be ignored. (default: None)
