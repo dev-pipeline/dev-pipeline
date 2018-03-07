@@ -7,13 +7,17 @@ import os
 import devpipeline.version
 
 
+def _make_parser():
+    return configparser.ConfigParser(
+        interpolation=configparser.ExtendedInterpolation())
+
+
 class ConfigFinder:
     def __init__(self, filename):
         self.filename = filename
 
     def read_config(self):
-        config = configparser.ConfigParser(
-            interpolation=configparser.ExtendedInterpolation())
+        config = _make_parser()
         config.read(self.filename)
 
         return config
@@ -23,9 +27,10 @@ _overrides_root = "{}/{}".format(os.path.expanduser("~"),
                                  ".dev-pipeline.d/overrides.d")
 _profile_file = "{}/{}".format(os.path.expanduser("~"),
                                ".dev-pipeline.d/profiles.conf")
-_version_id = (devpipeline.version.major << 24) | (
-               devpipeline.version.minor << 16) | (
-               devpipeline.version.patch << 8)
+_version_id = (
+    devpipeline.version.major << 24) | (
+    devpipeline.version.minor << 16) | (
+    devpipeline.version.patch << 8)
 
 
 def find_config():
@@ -71,6 +76,14 @@ def _updated_override(config_data, cache_time):
     return False
 
 
+def _profile_outdated(config_data, cache_time):
+    if config_data.has_option("DEFAULT", "dp.profile_name"):
+        mt = os.path.getmtime(_profile_file)
+        return mt > cache_time
+    else:
+        return False
+
+
 def _updated_software(config):
     config_version = config.get("DEFAULT", "dp.version", fallback="0")
     return _version_id > int(config_version, 16)
@@ -80,7 +93,6 @@ def _cache_outdated(config_data, build_cache_path):
     cache_time = os.path.getmtime(build_cache_path)
     input_files = [
         config_data.get("DEFAULT", "dp.build_config"),
-        _profile_file
     ]
     for input_file in input_files:
         mt = os.path.getmtime(input_file)
@@ -146,6 +158,8 @@ class ProfileConfig:
         if os.path.isfile(_profile_file):
             return self._get_specific_profile(
                 ConfigFinder(_profile_file).read_config())
+        else:
+            return {}
 
 
 def _add_root_values(config, state_variables):
@@ -180,7 +194,8 @@ def _add_section_values(config, state_variables):
 
 def _add_default_values(config, state_variables):
     for key, value in state_variables.items():
-        config[key] = value
+        if value:
+            config[key] = value
 
 
 def _add_profile_values(config, profile_config):
