@@ -10,7 +10,7 @@ import devpipeline.toolsupport
 # Scm.
 _scm_lookup = {
     "git": devpipeline.scm.git.make_git,
-    "nothing": lambda c, cw: cw(devpipeline.scm.CommonScm())
+    "nothing": lambda c, cw: cw(devpipeline.scm.Scm())
 }
 
 
