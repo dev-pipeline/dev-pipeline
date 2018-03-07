@@ -5,7 +5,6 @@ import devpipeline.common
 
 
 def main(args=None):
-    print(args)
     builder = devpipeline.common.TargetTool([
         devpipeline.build.build.build_task
     ], prog="dev-pipeline build", description="Build targets")
