@@ -46,7 +46,7 @@ def main():
             if tool:
                 tool()
             else:
-                print("{} isn't an available tool")
+                print("{} isn't an available tool".format(sys.argv[1]))
                 sys.exit(1)
     else:
         _do_help()
