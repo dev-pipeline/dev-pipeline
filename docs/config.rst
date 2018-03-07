@@ -68,7 +68,7 @@ Example Configuration
 A simple :code:`build.config` looks like this.  It should be fairly
 human-readable, but comments are inline to help explain.
 
-.. code::
+.. code:: ini
 
     [DEFAULT]
     # options used across projects

@@ -12,7 +12,7 @@ identical to a build.config file.
 
 Example
 -------
-.. code::
+.. code:: ini
 
     # I want to put all my favorite flags in one place so I get them when
     # using profiles.  Since these are the flags I like, I named the profile
