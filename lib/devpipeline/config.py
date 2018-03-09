@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+"""This module parses and manages the configuration file"""
 
 import configparser
 import os.path
@@ -13,27 +14,31 @@ def _make_parser():
 
 
 class ConfigFinder:
+    """This class reads a configuration file but not until read_config is called."""
+    # pylint: disable=too-few-public-methods
     def __init__(self, filename):
         self.filename = filename
 
     def read_config(self):
+        """Returns the configuration file read from disk."""
         config = _make_parser()
         config.read(self.filename)
 
         return config
 
 
-_overrides_root = "{}/{}".format(os.path.expanduser("~"),
+_OVERRIDES_ROOT = "{}/{}".format(os.path.expanduser("~"),
                                  ".dev-pipeline.d/overrides.d")
-_profile_file = "{}/{}".format(os.path.expanduser("~"),
+_PROFILE_FILE = "{}/{}".format(os.path.expanduser("~"),
                                ".dev-pipeline.d/profiles.conf")
-_version_id = (
-    devpipeline.version.MAJOR << 24) | (
-    devpipeline.version.MINOR << 16) | (
-    devpipeline.version.PATCH << 8)
+_VERSION_ID = (devpipeline.version.MAJOR << 24)
+_VERSION_ID |= (devpipeline.version.MINOR << 16)
+_VERSION_ID |= (devpipeline.version.PATCH << 8)
 
 
 def find_config():
+    """This function returns an object to read the configuration. If the cache file
+    cannot be found an exception will be raised."""
     previous = ""
     current = os.getcwd()
     while previous != current:
@@ -54,7 +59,7 @@ def _override_deleted(config, package):
         override_list = []
     for override in override_list:
         override_path = "{}/{}/{}.conf".format(
-            _overrides_root, override, package)
+            _OVERRIDES_ROOT, override, package)
         if not os.path.isfile(override_path):
             print("missing {}".format(override_path))
             return True
@@ -67,7 +72,7 @@ def _updated_override(config_data, cache_time):
     for package in config_data.sections():
         for override in override_list:
             override_path = "{}/{}/{}.conf".format(
-                _overrides_root, override, package)
+                _OVERRIDES_ROOT, override, package)
             if os.path.isfile(override_path) and (
                     os.path.getmtime(override_path) > cache_time):
                 return True
@@ -78,15 +83,15 @@ def _updated_override(config_data, cache_time):
 
 def _profile_outdated(config_data, cache_time):
     if config_data.has_option("DEFAULT", "dp.profile_name"):
-        mt = os.path.getmtime(_profile_file)
-        return mt > cache_time
+        modified = os.path.getmtime(_PROFILE_FILE)
+        return modified > cache_time
     else:
         return False
 
 
 def _updated_software(config):
     config_version = config.get("DEFAULT", "dp.version", fallback="0")
-    return _version_id > int(config_version, 16)
+    return _VERSION_ID > int(config_version, 16)
 
 
 def _cache_outdated(config_data, build_cache_path):
@@ -95,8 +100,8 @@ def _cache_outdated(config_data, build_cache_path):
         config_data.get("DEFAULT", "dp.build_config"),
     ]
     for input_file in input_files:
-        mt = os.path.getmtime(input_file)
-        if cache_time < mt:
+        modified = os.path.getmtime(input_file)
+        if cache_time < modified:
             return True
     if _updated_software(config_data):
         return True
@@ -105,6 +110,7 @@ def _cache_outdated(config_data, build_cache_path):
 
 
 def rebuild_cache(config, force=False):
+    """This function returns the config, rebuilding the cache file if necessary."""
     data = config.read_config()
     if force or _cache_outdated(data, config.filename):
         return write_cache(ConfigFinder(data.get("DEFAULT",
@@ -118,10 +124,14 @@ def rebuild_cache(config, force=False):
 
 
 class ValueAppender():
+    """This class maintains a list of profile key/value pairs. Multiple values
+    for a key are supported."""
+    # pylint: disable=too-few-public-methods
     def __init__(self):
         self.profile_vals = {}
 
     def add(self, key, value):
+        """This function Sets or appends a value for the provided key."""
         if key not in self.profile_vals:
             self.profile_vals[key] = value
         else:
@@ -129,12 +139,15 @@ class ValueAppender():
 
 
 class ProfileConfig:
+    """This class abstracts read and update operations for profile-based configuration."""
+    # pylint: disable=too-few-public-methods
     def __init__(self, profile_names=None, handler=ValueAppender()):
         self.names = profile_names
         self.handler = handler
 
     def _add_profile_values(self, profile_config, names):
         def add_each_key(items):
+            """Adds the key/value pairs to the current configuration."""
             for key, value in items:
                 self.handler.add(key, value)
 
@@ -155,9 +168,11 @@ class ProfileConfig:
             return profile_config.defaults()
 
     def read_config(self):
-        if os.path.isfile(_profile_file):
+        """This function reads the profile configuration file from disk. An empty configuration
+        is returned if the profile is not found."""
+        if os.path.isfile(_PROFILE_FILE):
             return self._get_specific_profile(
-                ConfigFinder(_profile_file).read_config())
+                ConfigFinder(_PROFILE_FILE).read_config())
         else:
             return {}
 
@@ -177,19 +192,19 @@ def _make_src_path(config, state):
         return src_path
 
 
-_ex_values = {
+_EX_VALUES = {
     "dp.build_dir":
-        lambda config, state:
-            "${{dp.build_root}}/{}".format(state["section"]),
-    "dp.src_dir": _make_src_path
+        lambda config, state: "${{dp.build_root}}/{}".format(state["section"]),
+    "dp.src_dir":
+        _make_src_path
 }
 
 
 def _add_section_values(config, state_variables):
     for section in config.sections():
         state_variables["section"] = section
-        for key, fn in _ex_values.items():
-            config[section][key] = fn(config, state_variables)
+        for key, helper_fn in _EX_VALUES.items():
+            config[section][key] = helper_fn(config, state_variables)
 
 
 def _add_default_values(config, state_variables):
@@ -207,7 +222,7 @@ def _add_profile_values(config, profile_config):
 def _validate_config_dir(build_dir, cache_name):
     files = os.listdir(build_dir)
     if files:
-        if not cache_name in files:
+        if cache_name not in files:
             raise Exception(
                 "{} doesn't look like a build directory".format(build_dir))
 
@@ -216,7 +231,7 @@ def _find_overrides(target, overrides):
     override_list = ""
     values = []
     for current_override in overrides:
-        override_file = "{}/{}/{}.conf".format(_overrides_root,
+        override_file = "{}/{}/{}.conf".format(_OVERRIDES_ROOT,
                                                current_override, target)
         if os.path.isfile(override_file):
             if override_list:
@@ -244,11 +259,11 @@ def _override_set(config, overrides):
 
 
 def _override_delete(config, overrides):
-    for key, value in overrides.items():
+    for key in overrides.keys():
         del config[key]
 
 
-_override_rules = {
+_OVERRIDE_RULES = {
     "append": _override_append,
     "set": _override_set,
     "delete": _override_delete
@@ -258,9 +273,9 @@ _override_rules = {
 def _apply_override(config, target, overrides, override_names):
     for override in overrides:
         for section in override.sections():
-            fn = _override_rules.get(section)
-            if fn:
-                fn(config[target], override[section])
+            helper_fn = _OVERRIDE_RULES.get(section)
+            if helper_fn:
+                helper_fn(config[target], override[section])
             else:
                 raise Exception("Unknown override section: {}".format(section))
     config[target]["dp.applied_overrides"] = override_names
@@ -277,6 +292,7 @@ def _apply_overrides(config, overrides):
 
 def write_cache(config_reader, profile_config_reader, overrides,
                 build_dir, cache_name="build.cache"):
+    """This function writes the build cache file to disk."""
     config = config_reader.read_config()
     profile_section = profile_config_reader.read_config()
     if not os.path.isdir(build_dir):
@@ -301,7 +317,7 @@ def write_cache(config_reader, profile_config_reader, overrides,
         "dp.overrides": overrides,
         "dp.profile_name": profile_config_reader.names,
         "dp.src_root": state_variables["src_dir"],
-        "dp.version": format(_version_id, '02x')
+        "dp.version": format(_VERSION_ID, '02x')
     })
     _apply_overrides(config, overrides)
     with open("{}/{}".format(build_dir, cache_name), 'w') as output_file:
