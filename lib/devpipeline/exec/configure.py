@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import devpipeline.common
-import devpipeline.config
+import devpipeline.config.config
 
 
 class Configure(devpipeline.common.GenericTool):
@@ -44,10 +44,7 @@ class Configure(devpipeline.common.GenericTool):
             self.overrides = ""
 
     def process(self):
-        devpipeline.config.write_cache(
-            devpipeline.config.ConfigFinder(self.config),
-            devpipeline.config.ProfileConfig(self.profile),
-            self.overrides, self.build_dir)
+        devpipeline.config.config.create_cache(self.config, self.build_dir, "build.cache")
 
 
 def main(args=None):
