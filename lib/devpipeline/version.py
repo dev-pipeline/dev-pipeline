@@ -1,7 +1,9 @@
 #!/usr/bin/python3
 
-major = 0
-minor = 1
-patch = 0
+"""Version string for module"""
 
-string = "{}.{}.{}".format(major, minor, patch)
+MAJOR = 0
+MINOR = 1
+PATCH = 0
+
+STRING = "{}.{}.{}".format(MAJOR, MINOR, PATCH)
