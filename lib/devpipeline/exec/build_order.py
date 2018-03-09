@@ -36,7 +36,9 @@ _ORDER_OUTPUTS = {
 
 
 class BuildOrderer(devpipeline.common.TargetTool):
+
     """This class outputs an ordered list of the packages to satisfy dependencies."""
+
     def __init__(self):
         super().__init__(executors=False,
                          prog="dev-pipeline build-order",

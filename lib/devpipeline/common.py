@@ -16,11 +16,13 @@ import devpipeline.version
 
 
 class GenericTool(object):
+
     """This is the base class for tools that can be used by dev-pipeline.
 
     In subclasses, override the following as needed:
         execute()
         setup()"""
+
     def __init__(self, *args, **kwargs):
         self.parser = argparse.ArgumentParser(
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
@@ -91,7 +93,9 @@ def _create_target_environment(target):
 
 
 class TargetTool(GenericTool):
+
     """A devpipeline tool that executes a list of tasks against a list of targets"""
+
     def __init__(self, tasks=None, executors=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.add_argument("targets", nargs="*",

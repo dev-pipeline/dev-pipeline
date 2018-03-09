@@ -8,6 +8,7 @@ import subprocess
 
 class _ExecutorBase:
     # pylint: disable=R0201,missing-docstring
+
     def message(self, msg):
         print(msg)
 
@@ -32,13 +33,17 @@ class _ExecutorBase:
 
 
 class QuietExecutor(_ExecutorBase):
+
     """This executor class runs logging minimal information."""
+
     def message(self, msg):
         pass
 
 
 class SilentExecutor(_ExecutorBase):
+
     """This executor class runs and logs nothing except errors."""
+
     def message(self, msg):
         pass
 
@@ -51,7 +56,9 @@ class SilentExecutor(_ExecutorBase):
 
 
 class VerboseExecutor(_ExecutorBase):
+
     """This executor class logs verbosely."""
+
     def execute(self, environment, *args):
         for cmd in args:
             cmd_args = cmd.get("args")
@@ -60,8 +67,10 @@ class VerboseExecutor(_ExecutorBase):
 
 
 class DryRunExecutor(_ExecutorBase):
+
     """This executor class outputs the commands that would have been run but
     does not execute them."""
+
     def execute(self, environment, *args):
         for cmd in args:
             cmd_args = cmd.get("args")

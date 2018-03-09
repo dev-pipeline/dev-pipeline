@@ -30,7 +30,9 @@ def _make_builder(component, common_wrapper):
 
 
 class SimpleBuild(devpipeline.toolsupport.SimpleTool):
+
     """This class does a simple build - configure, build, and install."""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

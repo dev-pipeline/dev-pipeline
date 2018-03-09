@@ -1,7 +1,9 @@
 #!/usr/bin/python3
 """This module defines a base class for builds to inherit from."""
 
+
 class Builder:
+
     """A class capable of performing the build steps for a single target."""
 
     def configure(self, src_dir, build_dir):

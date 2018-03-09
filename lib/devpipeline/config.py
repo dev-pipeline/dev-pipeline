@@ -14,8 +14,10 @@ def _make_parser():
 
 
 class ConfigFinder:
+
     """This class reads a configuration file but not until read_config is called."""
     # pylint: disable=too-few-public-methods
+
     def __init__(self, filename):
         self.filename = filename
 
@@ -124,9 +126,11 @@ def rebuild_cache(config, force=False):
 
 
 class ValueAppender():
+
     """This class maintains a list of profile key/value pairs. Multiple values
     for a key are supported."""
     # pylint: disable=too-few-public-methods
+
     def __init__(self):
         self.profile_vals = {}
 
@@ -139,8 +143,10 @@ class ValueAppender():
 
 
 class ProfileConfig:
+
     """This class abstracts read and update operations for profile-based configuration."""
     # pylint: disable=too-few-public-methods
+
     def __init__(self, profile_names=None, handler=ValueAppender()):
         self.names = profile_names
         self.handler = handler

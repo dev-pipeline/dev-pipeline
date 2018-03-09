@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """Resolve dependencies into an order build list"""
 
+
 def _build_dep_data(targets, components):
     """Returns dependency data for a set of targets. An exception will be raised if a target does
     not have component configuration available."""
@@ -24,7 +25,8 @@ def _build_dep_data(targets, components):
     while to_be_processed:
         current = to_be_processed.pop(0)
         if not components[current]:
-            raise Exception("Missing configuration for target (target={})".format(current))
+            raise Exception(
+                "Missing configuration for target (target={})".format(current))
 
         if current not in processed_targets:
             component_deps = get_deps_from_component(components[current])

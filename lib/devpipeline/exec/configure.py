@@ -6,7 +6,9 @@ import devpipeline.config
 
 
 class Configure(devpipeline.common.GenericTool):
+
     """This class manages the configuration of the project."""
+
     def __init__(self):
         super().__init__(prog="dev-pipeline configure",
                          description="Configure a project")

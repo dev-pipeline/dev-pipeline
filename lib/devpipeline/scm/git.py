@@ -62,7 +62,9 @@ def _ff_command(revision, repo_dir):
 
 
 class Git:
+
     """This class is the core class to handle Git SCM operations."""
+
     def __init__(self, args):
         self._args = args
 

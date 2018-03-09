@@ -5,7 +5,9 @@ import devpipeline.toolsupport
 
 
 class CMake:
+
     """This class manages the details of building using CMake."""
+
     def __init__(self, ex_args, config_args):
         self.ex_args = ex_args
         self._config_args = config_args

@@ -3,9 +3,12 @@
 
 import re
 
+
 class SimpleTool():
+
     """This class implements a simple tool for the dev-pipeline infrastructure."""
     # pylint: disable=too-few-public-methods
+
     def __init__(self, executor, name, env, real):
         self.env = env
         self.executor = executor

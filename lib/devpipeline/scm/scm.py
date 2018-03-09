@@ -27,7 +27,9 @@ def _make_scm(component, common_wrapper):
 
 
 class SimpleScm(devpipeline.toolsupport.SimpleTool):
+
     """This class is a simple SCM tool."""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
