@@ -36,7 +36,6 @@ def _build_dep_data(targets, components):
             to_be_processed += component_deps
             processed_targets.append(current)
 
-    print("DEBUG: reverse_deps: {}".format(reverse_deps))
     return (counts, reverse_deps)
 
 
@@ -67,7 +66,6 @@ def order_dependencies(targets, components):
 
         # Every pass must resolve at least one target. An exception is raised if
         # no targets are resolved to avoid an infinte loop.
-        print("DEBUG: resolved_targets: {}".format(resolved_targets))
         if len(resolved_targets) == 0:
             raise Exception("Resolve error")
 
