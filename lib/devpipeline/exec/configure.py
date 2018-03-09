@@ -44,7 +44,12 @@ class Configure(devpipeline.common.GenericTool):
             self.overrides = ""
 
     def process(self):
-        devpipeline.config.config.create_cache(self.config, self.build_dir, "build.cache")
+        devpipeline.config.config.process_config(
+            self.config,
+            self.build_dir,
+            "build.cache",
+            profiles=self.profile,
+            overrides=self.overrides)
 
 
 def main(args=None):

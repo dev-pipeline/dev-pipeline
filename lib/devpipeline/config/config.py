@@ -4,6 +4,11 @@ import os.path
 import os
 
 import devpipeline.config.parser
+import devpipeline.version
+
+
+def split_list(values, token=","):
+    return [value.strip() for value in values.split(token)]
 
 
 def _is_cache_dir_appropriate(cache_dir, cache_file):
@@ -51,19 +56,49 @@ def _add_package_options_all(config, state):
         _add_package_options(config[package], package, state)
 
 
-def create_cache(raw_path, cache_dir, cache_file):
+def _create_cache(raw_path, cache_dir, cache_file):
     if _is_cache_dir_appropriate(cache_dir, cache_file):
         config = devpipeline.config.parser.read_config(raw_path)
         abs_path = os.path.abspath(raw_path)
         root_state = {
-            "dp.build_root": "{}/{}".format(os.path.dirname(abs_path), cache_dir),
-            "dp.src_root": os.path.dirname(abs_path)
+            "dp.build_config": abs_path,
+            "dp.build_root": "{}/{}".format(
+                os.path.dirname(abs_path), cache_dir),
+            "dp.src_root": os.path.dirname(abs_path),
+            "dp.version": format(devpipeline.version.id, "02x")
         }
         _add_default_options(config, root_state)
         _add_package_options_all(config, root_state)
-        with open("{}/{}".format(cache_dir, cache_file), 'w') as output_file:
-            config.write(output_file)
         return config
     else:
         raise Exception(
             "{} doesn't look like a dev-pipeline folder".format(cache_dir))
+
+
+def _write_config(config, cache_dir, cache_file):
+    if not os.path.isdir(cache_dir):
+        os.makedirs(cache_dir)
+    with open("{}/{}".format(cache_dir, cache_file), 'w') as output_file:
+        config.write(output_file)
+
+
+def _set_list(config, kwargs_key, config_key, **kwargs):
+    values = kwargs.get(kwargs_key)
+    if values:
+        config["DEFAULT"][config_key] = values
+
+
+_config_modifiers = [
+    lambda config, **kwargs:
+        _set_list(config, "profiles", "dp.profile_name", **kwargs),
+    lambda config, **kwargs:
+        _set_list(config, "overrides", "dp.overrides", **kwargs)
+]
+
+
+def process_config(raw_path, cache_dir, cache_file, **kwargs):
+    config = _create_cache(raw_path, cache_dir, cache_file)
+    for modifier in _config_modifiers:
+        modifier(config, **kwargs)
+    _write_config(config, cache_dir, cache_file)
+    return config
