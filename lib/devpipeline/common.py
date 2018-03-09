@@ -27,7 +27,7 @@ class GenericTool(object):
             *args, **kwargs)
         self.parser.add_argument("--version", action="version",
                                  version="%(prog)s {}".format(
-                                     devpipeline.version.string))
+                                     devpipeline.version.STRING))
 
     def add_argument(self, *args, **kwargs):
         """Subclasses inject additional cli arguments to parse by calling this function"""

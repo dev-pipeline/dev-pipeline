@@ -28,9 +28,9 @@ _overrides_root = "{}/{}".format(os.path.expanduser("~"),
 _profile_file = "{}/{}".format(os.path.expanduser("~"),
                                ".dev-pipeline.d/profiles.conf")
 _version_id = (
-    devpipeline.version.major << 24) | (
-    devpipeline.version.minor << 16) | (
-    devpipeline.version.patch << 8)
+    devpipeline.version.MAJOR << 24) | (
+    devpipeline.version.MINOR << 16) | (
+    devpipeline.version.PATCH << 8)
 
 
 def find_config():

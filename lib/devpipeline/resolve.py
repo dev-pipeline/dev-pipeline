@@ -1,67 +1,82 @@
 #!/usr/bin/python3
-
+"""Resolve dependencies into an order build list"""
 
 def _build_dep_data(targets, components):
-    counts = {}
-    reverse_deps = {}
+    """Returns dependency data for a set of targets. An exception will be raised if a target does
+    not have component configuration available."""
+    counts = {target: 0 for target in targets}
+    reverse_deps = {target: list() for target in targets}
 
-    def add_reverse_deps(current, deps):
-        for dep in deps:
-            if dep not in reverse_deps:
-                reverse_deps[dep] = [current]
-            else:
-                reverse_deps[dep].append(current)
-
-    def add_counts(current, counts):
-        nonlocal depends
-        if current not in counts:
-            dep_string = component.get("depends")
-            if dep_string:
-                current_deps = [x.strip() for x in dep_string.split(",")]
-            else:
-                current_deps = []
-            add_reverse_deps(current, current_deps)
-            counts[current] = len(current_deps)
-            depends = depends + current_deps
+    def get_deps_from_component(component):
+        """Given a component, return a list of dependencies. An empty list will be returned for
+        components with no dependencies."""
+        dependencies = component.get("depends")
+        if dependencies:
+            return list(x.strip() for x in dependencies.split(','))
+        else:
+            return list()
 
     # seed the initial dependencies
-    depends = list(targets)
-    # build our intermediary objects
-    while depends:
-        current = depends[0]
-        del depends[0]
-        # We'll add dependencies in reverse order, so that the original target
-        # is built last.
-        component = components[current]
-        add_counts(current, counts)
+    to_be_processed = list(targets)
+    processed_targets = list()
 
+    # populate reverse_deps with who depends on each target
+    while to_be_processed:
+        current = to_be_processed.pop(0)
+        if not components[current]:
+            raise Exception("Missing configuration for target (target={})".format(current))
+
+        if current not in processed_targets:
+            component_deps = get_deps_from_component(components[current])
+            counts[current] = len(component_deps)
+            for dep in component_deps:
+                reverse_deps[dep].append(current)
+
+            # process component dependencies as well
+            to_be_processed += component_deps
+            processed_targets.append(current)
+
+    print("DEBUG: reverse_deps: {}".format(reverse_deps))
     return (counts, reverse_deps)
 
 
 def order_dependencies(targets, components):
-    def find_zero_count(counts):
-        for key, count in counts.items():
+    """Given a list of targets and component configurations, return a list of targets in build
+    order. The list order guarantees every target's dependencies are included prior to that target.
+
+    An exception will be thrown if dependencies can't be resolved."""
+    def get_resolved_targets(counts):
+        """Get a list of targets with a dependency count of 0."""
+        resolved_targets = list()
+        for target, count in counts.items():
             if count == 0:
-                return key
-        raise Exception("Resolve error")
+                resolved_targets.append(target)
 
-    def remove_reverse_deps(key, reverse_deps, counts):
-        if key in reverse_deps:
-            for rev_deps in reverse_deps[key]:
-                counts[rev_deps] = counts[rev_deps] - 1
-            del reverse_deps[key]
+        return resolved_targets
 
-    dep_info = _build_dep_data(targets, components)
-    counts = dep_info[0]
-    reverse_deps = dep_info[1]
-    ret = []
+    def remove_reverse_deps(target, reverse_deps, counts):
+        """Remove a given target from the dependency list of all other targets."""
+        for rev_deps in reverse_deps[target]:
+            counts[rev_deps] -= 1
+        del reverse_deps[target]
+
+    counts, reverse_deps = _build_dep_data(targets, components)
+    target_build_order = list()
     while counts:
-        key = find_zero_count(counts)
-        # key has no deps, so add it
-        ret.append(key)
-        # reduce remaining dependencies in reverse_deps
-        # delete entry from counts and reverse_deps since it's resolved
-        remove_reverse_deps(key, reverse_deps, counts)
-        del counts[key]
+        resolved_targets = get_resolved_targets(counts)
 
-    return ret
+        # Every pass must resolve at least one target. An exception is raised if
+        # no targets are resolved to avoid an infinte loop.
+        print("DEBUG: resolved_targets: {}".format(resolved_targets))
+        if len(resolved_targets) == 0:
+            raise Exception("Resolve error")
+
+        target_build_order += resolved_targets
+
+        # cleanup resolved targets
+        for target in resolved_targets:
+            if target in reverse_deps:
+                remove_reverse_deps(target, reverse_deps, counts)
+            del counts[target]
+
+    return target_build_order
