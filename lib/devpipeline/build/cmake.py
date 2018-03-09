@@ -1,14 +1,17 @@
 #!/usr/bin/python3
+"""This modules supports building CMake projects."""
 
 import devpipeline.toolsupport
 
 
 class CMake:
+    """This class manages the details of building using CMake."""
     def __init__(self, ex_args, config_args):
         self.ex_args = ex_args
         self._config_args = config_args
 
     def configure(self, src_dir, build_dir):
+        """This function builds the cmake configure command."""
         ex_path = self.ex_args.get("project_path")
         if ex_path:
             src_dir += "/{}".format(ex_path)
@@ -22,6 +25,8 @@ class CMake:
         }]
 
     def build(self, build_dir):
+        """This function builds the cmake build command."""
+        # pylint: disable=no-self-use
         return [{
             "args": [
                 'cmake',
@@ -31,6 +36,8 @@ class CMake:
         }]
 
     def install(self, build_dir, path=None):
+        """THis function builds the cmake install command."""
+        # pylint: disable=no-self-use
         install_args = ['cmake',
                         '--build',
                         build_dir,
@@ -44,7 +51,7 @@ class CMake:
         }]
 
 
-_usable_args = {
+_USABLE_ARGS = {
     "args": lambda v: [x.strip() for x in v.split(",")],
     "prefix": lambda v: ["-DCMAKE_INSTALL_PREFIX={}".format(v)],
     "cc": lambda v: ["-DCMAKE_C_COMPILER={}".format(v)],
@@ -53,7 +60,7 @@ _usable_args = {
     "build_type": lambda v: ["-DCMAKE_BUILD_TYPE={}".format(v)],
 }
 
-_valid_cflag_suffixes = [
+_VALID_CFLAG_SUFFIXES = [
     "DEBUG",
     "MINSIZEREL",
     "RELEASE",
@@ -64,7 +71,7 @@ _valid_cflag_suffixes = [
 def _extend_flags_common(base_flags, suffix, value):
     if suffix:
         suffix = suffix.upper()
-        if suffix in _valid_cflag_suffixes:
+        if suffix in _VALID_CFLAG_SUFFIXES:
             base_flags += "_{}".format(suffix)
         else:
             raise Exception("{} is an invalid modifier".format(suffix))
@@ -81,7 +88,7 @@ def _extend_ldflags(base, suffix, value):
                                 suffix, value)
 
 
-_flag_args = {
+_FLAG_ARGS = {
     "cflags": lambda v, suffix: _extend_cflags("C", suffix, v),
     "cxxflags": lambda v, suffix: _extend_cflags("CXX", suffix, v),
     "ldflags.exe": lambda v, suffix: _extend_ldflags("EXE", suffix, v),
@@ -90,26 +97,29 @@ _flag_args = {
     "ldflags.static": lambda v, suffix: _extend_ldflags("STATIC", suffix, v)
 }
 
-_ex_args = {
+_EX_ARGS = {
     "project_path": lambda v: ("project_path", v)
 }
 
 
 def make_cmake(component, common_wrapper):
+    """This function initializes a CMake builder for building the project."""
+    # pylint: disable=bad-continuation
     configure_args = []
     cmake_args = {}
 
     def add_value(v, fn):
+        # pylint: disable=missing-docstring,invalid-name
         k, r = fn(v)
         cmake_args[k] = r
 
-    devpipeline.toolsupport.args_builder("cmake", component, _usable_args,
+    devpipeline.toolsupport.args_builder("cmake", component, _USABLE_ARGS,
                                          lambda v, fn:
                                              configure_args.extend(fn(v)))
-    devpipeline.toolsupport.flex_args_builder("cmake", component, _flag_args,
+    devpipeline.toolsupport.flex_args_builder("cmake", component, _FLAG_ARGS,
                                               lambda v, suffix, fn:
                                                   configure_args.extend(
                                                       fn(v, suffix)))
-    devpipeline.toolsupport.args_builder("cmake", component, _ex_args,
+    devpipeline.toolsupport.args_builder("cmake", component, _EX_ARGS,
                                          add_value)
     return common_wrapper(CMake(cmake_args, configure_args))
