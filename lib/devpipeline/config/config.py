@@ -102,3 +102,54 @@ def process_config(raw_path, cache_dir, cache_file, **kwargs):
         modifier(config, **kwargs)
     _write_config(config, cache_dir, cache_file)
     return config
+
+
+def find_config():
+    previous = ""
+    current = os.getcwd()
+    while previous != current:
+        check_path = "{}/build.cache".format(current)
+        if os.path.isfile(check_path):
+            return check_path
+        else:
+            previous = current
+            current = os.path.dirname(current)
+    raise Exception("Can't find build cache")
+
+
+def _raw_updated(config, cache_mtime):
+    raw_mtime = os.path.getmtime(config.get("DEFAULT", "dp.build_config"))
+    return cache_mtime < raw_mtime
+
+
+def _updated_software(config, cache_mtime):
+    config_version = config.get("DEFAULT", "dp.version", fallback="0")
+    return devpipeline.version.id > int(config_version, 16)
+
+
+_outdated_checks = [
+    _raw_updated,
+    _updated_software
+]
+
+
+def _is_outdated(cache_file, cache_config):
+    cache_mt = os.path.getmtime(cache_file)
+    for check in _outdated_checks:
+        if check(cache_config, cache_mt):
+            return True
+    return False
+
+
+def update_cache(force=False):
+    cache_file = find_config()
+    cache_config = devpipeline.config.parser.read_config(cache_file)
+    if force or _is_outdated(cache_file, cache_config):
+        return (process_config(
+            cache_config.get("DEFAULT", "dp.build_config"),
+            os.path.dirname(cache_file), "build.cache",
+            profiles=cache_config.get("DEFAULT", "dp.profile_name",
+                                      fallback=None),
+            overrides=cache_config.get("DEFAULT", "dp.overrides",
+                                       fallback=None)), True)
+    return (cache_config, False)

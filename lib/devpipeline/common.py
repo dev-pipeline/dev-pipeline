@@ -6,7 +6,7 @@ import os
 import re
 import sys
 
-import devpipeline.config
+import devpipeline.config.config
 import devpipeline.executor
 import devpipeline.resolve
 import devpipeline.version
@@ -103,8 +103,7 @@ class TargetTool(GenericTool):
     def execute(self, *args, **kwargs):
         parsed_args = self.parser.parse_args(*args, **kwargs)
 
-        self.components = devpipeline.config.rebuild_cache(
-            devpipeline.config.find_config())
+        self.components, self.updated = devpipeline.config.config.update_cache()
         if parsed_args.targets:
             self.targets = parsed_args.targets
         else:
