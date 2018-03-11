@@ -130,7 +130,7 @@ class TargetTool(GenericTool):
             current = self.components[target]
             env = _create_target_environment(current)
             for task in self.tasks:
-                task(current, name=target, env=env, executor=self.executor)
+                task(current, self.updated, name=target, env=env, executor=self.executor)
             self.executor.message("")
 
 

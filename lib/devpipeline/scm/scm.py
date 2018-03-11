@@ -38,7 +38,7 @@ class SimpleScm(devpipeline.toolsupport.SimpleTool):
                           repo_dir)
 
 
-def scm_task(target, *args, **kwargs):
+def scm_task(target, updated_config, *args, **kwargs):
     """
     Update or a local checkout.
 

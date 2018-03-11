@@ -95,7 +95,7 @@ _ex_args = {
 }
 
 
-def make_cmake(component, common_wrapper):
+def make_cmake(component, common_wrapper, updated_config):
     configure_args = []
     cmake_args = {}
 

@@ -12,20 +12,20 @@ import devpipeline.toolsupport
 # the value should be a function that takes a component and returns a Builder.
 _builder_lookup = {
     "cmake": devpipeline.build.cmake.make_cmake,
-    "nothing": lambda c, cw: cw(devpipeline.build.Builder())
+    "nothing": lambda c, uc, cw: cw(devpipeline.build.Builder())
 }
 
 
-def _make_builder(component, common_wrapper):
+def _make_builder(component, updated_config, common_wrapper):
     """
     Create and return a Builder for a component.
 
     Arguments
     component - The component the builder should be created for.
     """
-    return devpipeline.toolsupport.tool_builder(component, "build",
-                                                _builder_lookup,
-                                                common_wrapper)
+    return devpipeline.toolsupport.tool_builder(
+        component, "build", _builder_lookup,
+        common_wrapper, updated_config)
 
 
 class SimpleBuild(devpipeline.toolsupport.SimpleTool):
@@ -45,7 +45,7 @@ class SimpleBuild(devpipeline.toolsupport.SimpleTool):
                           build_dir, path)
 
 
-def build_task(target, *args, **kwargs):
+def build_task(target, updated_config, *args, **kwargs):
     """
     Build a target.
 
@@ -57,7 +57,8 @@ def build_task(target, *args, **kwargs):
     if not os.path.exists(build_path):
         os.makedirs(build_path)
     builder = _make_builder(
-        target, lambda r: SimpleBuild(real=r, *args, **kwargs))
+        target, updated_config,
+        lambda r: SimpleBuild(real=r, *args, **kwargs))
     builder.configure(target.get("dp.src_dir"), build_path)
     builder.build(build_path)
     if "no_install" not in target:

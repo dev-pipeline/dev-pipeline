@@ -2,6 +2,8 @@
 
 import re
 
+import devpipeline.config.modifier
+
 
 class SimpleTool():
     def __init__(self, executor, name, env, real):
@@ -34,9 +36,11 @@ def tool_builder(component, key, tool_map, *args):
 
 
 def _args_helper(pattern, component, fn):
-    for key, value in component.items():
+    key_list = devpipeline.config.modifier.get_keys(component)
+    for key in key_list:
         m = pattern.match(key)
         if m:
+            value = devpipeline.config.modifier.modify_everything(component.get(key), component, key, ",")
             fn(key, value, m)
 
 

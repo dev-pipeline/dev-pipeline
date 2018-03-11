@@ -5,6 +5,7 @@ import unittest
 
 import loader
 
+import devpipeline.config.paths
 import devpipeline.config.profile
 
 _config_dir = "{}/../files".format(os.path.dirname(os.path.abspath(__file__)))
@@ -24,7 +25,7 @@ class TestConfigProfile(unittest.TestCase):
             raise Exception("Shouldn't have been called")
 
         count = devpipeline.config.profile.read_all_profiles(
-            _config_dir, [], _dont_call)
+            devpipeline.config.paths.get_profile_path(_config_dir), [], _dont_call)
         self.assertEqual(0, count)
 
     def test_single(self):
@@ -35,7 +36,7 @@ class TestConfigProfile(unittest.TestCase):
         }
 
         count = devpipeline.config.profile.read_all_profiles(
-            _config_dir, ["debug"],
+            devpipeline.config.paths.get_profile_path(_config_dir), ["debug"],
             lambda p, v: self._validate(expected, p, v))
         self.assertEqual(1, count)
 
@@ -51,7 +52,7 @@ class TestConfigProfile(unittest.TestCase):
         }
 
         count = devpipeline.config.profile.read_all_profiles(
-            _config_dir, ["debug", "clang"],
+            devpipeline.config.paths.get_profile_path(_config_dir), ["debug", "clang"],
             lambda p, v: self._validate(expected, p, v))
         self.assertEqual(2, count)
 

@@ -6,8 +6,7 @@ import devpipeline.config.parser
 import devpipeline.config.paths
 
 
-def read_all_profiles(base_dir, profile_list, fn):
-    path = devpipeline.config.paths.get_profile_path(base_dir)
+def read_all_profiles(path, profile_list, fn):
     count = 0
     if os.path.isfile(path):
         parser = devpipeline.config.parser.read_config(path)
