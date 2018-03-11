@@ -11,10 +11,6 @@ class SimpleTool():
         self.executor = executor
         self.name = name
         self.real = real
-        # print("executor={}".format(executor))
-        # print("name={}".format(name))
-        # print("env={}".format(env))
-        # print("real={}".format(real))
 
     def _call_helper(self, step, fn, *fn_args):
         common_tool_helper(
