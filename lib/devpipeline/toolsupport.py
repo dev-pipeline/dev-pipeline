@@ -35,32 +35,25 @@ def tool_builder(component, key, tool_map, *args):
         raise Exception("{} does not specify {}".format(component._name, key))
 
 
-def _args_helper(pattern, component, fn):
-    key_list = devpipeline.config.modifier.get_keys(component)
-    for key in key_list:
-        m = pattern.match(key)
-        if m:
-            value = devpipeline.config.modifier.modify_everything(component.get(key), component, key, ",")
-            fn(key, value, m)
+def args_builder(prefix, component, args_dict, value_found_fn):
+    for key, fn in args_dict.items():
+        option = "{}.{}".format(prefix, key)
+        value = devpipeline.config.modifier.modify_everything(component.get(option), component, option, ",")
+        value_found_fn(value, fn)
 
 
-def args_builder(prefix, component, args_dict, val_found_fn):
-    def call_fn(key, value, m):
-        real_key = key[m.end():]
-        hit = args_dict.get(real_key)
-        if hit:
-            val_found_fn(value, hit)
-
-    pattern = re.compile(R"^{}\.".format(prefix))
-    _args_helper(pattern, component, call_fn)
-
-
-def flex_args_builder(prefix, component, args_dict, val_found_fn):
-    for key, flex_fn in args_dict.items():
-        pattern = re.compile(R"^{}\.({})\.?".format(prefix, key))
-        _args_helper(pattern, component,
-                     lambda k, v, m:
-                     val_found_fn(v, k[m.end():], flex_fn))
+def build_flex_args_keys(components):
+    if len(components) > 1:
+        sub_components = build_flex_args_keys(components[1:])
+        ret = []
+        for first in components[0]:
+            for sub_component in sub_components:
+                ret.append("{}.{}".format(first, sub_component))
+        return ret
+    elif len(components) == 1:
+        return components[0]
+    else:
+        return []
 
 
 def common_tool_helper(executor, step, env, name, fn, *fn_args):
