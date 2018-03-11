@@ -48,13 +48,28 @@ class CMake:
 
 _all_cmake_args = None
 
+def _handle_cmake_arg(value, fn):
+    if value:
+        return fn(value)
+    else:
+        return []
+
+_usable_arg_fns = {
+    "args": lambda v: _handle_cmake_arg(v, lambda v: [x.strip() for x in v.split(",")]),
+    "prefix": lambda v: _handle_cmake_arg(v, lambda v: ["-DCMAKE_INSTALL_PREFIX={}".format(v)]),
+    "cc": lambda v: _handle_cmake_arg(v, lambda v: ["-DCMAKE_C_COMPILER={}".format(v)]),
+    "cxx": lambda v: _handle_cmake_arg(v, lambda v: ["-DCMAKE_CXX_COMPILER={}".format(v)]),
+    "toolchain_file": lambda v: _handle_cmake_arg(v, lambda v: ["-DCMAKE_TOOLCHAIN_FILE={}".format(v)]),
+    "build_type": lambda v: _handle_cmake_arg(v, lambda v: ["-DCMAKE_BUILD_TYPE={}".format(v)])
+}
+
 _usable_args = {
-    "args": lambda v: [x.strip() for x in v.split(",")],
-    "prefix": lambda v: ["-DCMAKE_INSTALL_PREFIX={}".format(v)],
-    "cc": lambda v: ["-DCMAKE_C_COMPILER={}".format(v)],
-    "cxx": lambda v: ["-DCMAKE_CXX_COMPILER={}".format(v)],
-    "toolchain_file": lambda v: ["-DCMAKE_TOOLCHAIN_FILE={}".format(v)],
-    "build_type": lambda v: ["-DCMAKE_BUILD_TYPE={}".format(v)],
+    "args": " ",
+    "prefix": None,
+    "cc": None,
+    "cxx": None,
+    "toolchain_file": None,
+    "build_type": None
 }
 
 _valid_flag_suffixes = [
@@ -63,7 +78,6 @@ _valid_flag_suffixes = [
     "release",
     "relwithdebinfo"
 ]
-
 
 
 def _extend_flags_common(base_flags, suffix, value):
@@ -89,15 +103,18 @@ def _make_cflag_args():
     new_args = devpipeline.toolsupport.build_flex_args_keys([_cflag_args, _valid_flag_suffixes])
     prefix_pattern = re.compile(R"(.*)flags")
     suffix_pattern = re.compile(R"\.(\w+)$")
-    ret = {}
+    ret_args = {}
+    ret_fns = {}
     for arg in new_args:
         prefix_match = prefix_pattern.search(arg)
         suffix_match = suffix_pattern.search(arg)
-        ret[arg] = lambda v, pm=prefix_match, sm=suffix_match: _extend_cflags(pm.group(1).upper(), sm.group(1).upper(), v)
+        ret_args[arg] = " "
+        ret_fns[arg] = lambda v, pm=prefix_match, sm=suffix_match: _extend_cflags(pm.group(1).upper(), sm.group(1).upper(), v)
     for arg in _cflag_args:
         prefix_match = prefix_pattern.search(arg)
-        ret[arg] = lambda v, pm=prefix_match: _extend_cflags(pm.group(1).upper(), None, v)
-    return ret
+        ret_args[arg] = " "
+        ret_fns[arg] = lambda v, pm=prefix_match: _extend_cflags(pm.group(1).upper(), None, v)
+    return (ret_args, ret_fns)
 
 
 def _extend_ldflags(base, suffix, value):
@@ -117,15 +134,18 @@ def _make_ldflag_args():
     new_args = devpipeline.toolsupport.build_flex_args_keys([base_args, _valid_flag_suffixes])
     type_pattern = re.compile(R"ldflags\.(\w+)")
     suffix_pattern = re.compile(R"\.(\w+)$")
-    ret = {}
+    ret_args = {}
+    ret_fns = {}
     for arg in new_args:
         type_match = type_pattern.search(arg)
         suffix_match = suffix_pattern.search(arg)
-        ret[arg] = lambda v, tm=type_match, sm=suffix_match: _extend_cflags(tm.group(1).upper(), sm.group(1).upper(), v)
+        ret_args[arg] = " "
+        ret_fns[arg] = lambda v, tm=type_match, sm=suffix_match: _extend_cflags(tm.group(1).upper(), sm.group(1).upper(), v)
     for arg in base_args:
         type_match = type_pattern.search(arg)
-        ret[arg] = lambda v, tm=type_match: _extend_cflags(tm.group(1).upper(), None, v)
-    return ret
+        ret_args[arg] = " "
+        ret_fns[arg] = lambda v, tm=type_match: _extend_cflags(tm.group(1).upper(), None, v)
+    return (ret_args, ret_fns)
 
 _arg_builder_functions = [
     _make_cflag_args,
@@ -136,16 +156,22 @@ _arg_builder_functions = [
 def _make_all_options():
     global _all_cmake_args
 
-    if _all_cmake_args:
-        return _all_cmake_args
-    else:
-        _all_cmake_args = _usable_args.copy()
+    if not _all_cmake_args:
+        cmake_args = _usable_args.copy()
+        cmake_arg_fns = _usable_arg_fns.copy()
         for arg_builder in _arg_builder_functions:
-            _all_cmake_args.update(arg_builder())
-        return _all_cmake_args
+            new_cmake_args, new_cmake_arg_fns = arg_builder()
+            cmake_args.update(new_cmake_args)
+            cmake_arg_fns.update(new_cmake_arg_fns)
+        _all_cmake_args = (cmake_args, cmake_arg_fns)
+    return _all_cmake_args
 
 
 _ex_args = {
+    "project_path": None
+}
+
+_ex_arg_fns = {
     "project_path": lambda v: ("project_path", v)
 }
 
@@ -154,15 +180,15 @@ def make_cmake(component, common_wrapper, updated_config):
     configure_args = []
     cmake_args = {}
 
-    def add_value(v, fn):
-        k, r = fn(v)
+    options, option_fns = _make_all_options()
+
+    def add_value(v, key):
+        k, r = _ex_arg_fns[key](fn(v))
         cmake_args[k] = r
 
-    options = _make_all_options()
-
     devpipeline.toolsupport.args_builder("cmake", component, options,
-                                         lambda v, fn:
-                                             configure_args.extend(fn(v)))
+                                         lambda v, key:
+                                             configure_args.extend(option_fns[key](v)))
     devpipeline.toolsupport.args_builder("cmake", component, _ex_args,
                                          add_value)
     return common_wrapper(CMake(cmake_args, configure_args))

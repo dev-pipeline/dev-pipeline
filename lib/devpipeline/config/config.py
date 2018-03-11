@@ -62,11 +62,13 @@ def _create_cache(raw_path, cache_dir, cache_file):
         abs_path = os.path.abspath(raw_path)
         root_state = {
             "dp.build_config": abs_path,
-            "dp.build_root": "{}/{}".format(
-                os.path.dirname(abs_path), cache_dir),
             "dp.src_root": os.path.dirname(abs_path),
             "dp.version": format(devpipeline.version.id, "02x")
         }
+        if not os.path.isabs(cache_dir):
+            root_state["dp.build_root"] = "{}/{}".format(os.path.dirname(abs_path), cache_dir)
+        else:
+            root_state["dp.build_root"] = cache_dir
         _add_default_options(config, root_state)
         _add_package_options_all(config, root_state)
         return config

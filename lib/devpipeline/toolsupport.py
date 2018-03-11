@@ -32,10 +32,13 @@ def tool_builder(component, key, tool_map, *args):
 
 
 def args_builder(prefix, component, args_dict, value_found_fn):
-    for key, fn in args_dict.items():
+    for key, separator in args_dict.items():
         option = "{}.{}".format(prefix, key)
-        value = devpipeline.config.modifier.modify_everything(component.get(option), component, option, ",")
-        value_found_fn(value, fn)
+        value = devpipeline.config.modifier.modify_everything(component.get(option), component, option, separator)
+        try:
+            value_found_fn(value, key)
+        except Exception as e:
+            pass
 
 
 def build_flex_args_keys(components):
