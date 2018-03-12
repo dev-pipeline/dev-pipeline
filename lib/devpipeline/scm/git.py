@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+"""This modules implement support for Git SCM tools."""
 
 import io
 import os.path
@@ -15,14 +16,14 @@ def _merge_command(match, repo_dir):
         # We're going to take a line from the git for-each-ref command and
         # look for the normalized name.  If we get a match, we'll try a
         # fast-forward merge.
-        m = branch_pattern.match(line)
-        if m:
+        matches = branch_pattern.match(line)
+        if matches:
             return [{
                 "args": [
                     "git",
                     "merge",
                     "--ff-only",
-                    m.group(1)
+                    matches.group(1)
                 ],
                 "cwd": repo_dir
             }]
@@ -51,20 +52,24 @@ def _merge_command(match, repo_dir):
 
 
 def _ff_command(revision, repo_dir):
-    # If the revision is something weird like master~~^4~14, we want to get
-    # the actual branch so it can be updated.
-    match = re.match(R"([\w\-\.]+)(?:[~^\d]+)?", revision)
-    if match:
-        return _merge_command(match, repo_dir)
-    else:
-        return []
+    if os.path.isdir(repo_dir):
+        # If the revision is something weird like master~~^4~14, we want to get
+        # the actual branch so it can be updated.
+        match = re.match(R"([\w\-\.]+)(?:[~^\d]+)?", revision)
+        if match:
+            return _merge_command(match, repo_dir)
+    return []
 
 
 class Git:
+
+    """This class is the core class to handle Git SCM operations."""
+
     def __init__(self, args):
         self._args = args
 
     def checkout(self, repo_dir):
+        """This function checks out code from a Git SCM server."""
         if not os.path.isdir(repo_dir):
             return [{
                 "args": [
@@ -84,6 +89,7 @@ class Git:
             }]
 
     def update(self, repo_dir):
+        """This function updates an existing checkout of source code."""
         rev = self._args.get("revision")
         if rev:
             return [{
@@ -98,26 +104,27 @@ class Git:
             return None
 
 
-_git_args = {
+_GIT_ARGS = {
     "uri": None,
     "revision": None
 }
 
 
-_git_arg_fns = {
+_GIT_ARG_FNS = {
     "uri": lambda v: ("uri", v),
     "revision": lambda v: ("revision", v)
 }
 
 
 def make_git(current_target, common_wrapper):
+    """This function initializes and Git SCM tool object."""
     git_args = {}
 
     def add_value(v, key):
-        k, r = _git_arg_fns[key](v)
+        k, r = _GIT_ARG_FNS[key](v)
         git_args[k] = r
 
-    devpipeline.toolsupport.args_builder("git", current_target, _git_args, add_value)
+    devpipeline.toolsupport.args_builder("git", current_target, _GIT_ARGS, add_value)
     if git_args.get("uri"):
         return common_wrapper(Git(git_args))
     else:

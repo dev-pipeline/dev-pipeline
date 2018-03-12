@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+"""This module is the driver modules for the execution of various tools."""
 
 import sys
 
@@ -16,7 +17,7 @@ def _do_help():
     print("\t--list\tDisplay available tools")
 
 
-_tools = {
+_TOOLS = {
     "bootstrap": devpipeline.exec.bootstrap.main,
     "build-order": devpipeline.exec.build_order.main,
     "build": devpipeline.exec.build.main,
@@ -26,23 +27,24 @@ _tools = {
 
 
 def _do_list():
-    for tool in _tools:
+    for tool in _TOOLS:
         print(tool)
 
 
-_ex_tools = {
+_EX_TOOLS = {
     "--help": _do_help,
     "--list": _do_list
 }
 
 
 def main():
+    # pylint: disable=missing-docstring
     if len(sys.argv) > 1:
-        tool = _tools.get(sys.argv[1])
+        tool = _TOOLS.get(sys.argv[1])
         if tool:
             tool(sys.argv[2:])
         else:
-            tool = _ex_tools.get(sys.argv[1])
+            tool = _EX_TOOLS.get(sys.argv[1])
             if tool:
                 tool()
             else:

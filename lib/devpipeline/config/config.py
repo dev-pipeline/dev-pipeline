@@ -63,7 +63,7 @@ def _create_cache(raw_path, cache_dir, cache_file):
         root_state = {
             "dp.build_config": abs_path,
             "dp.src_root": os.path.dirname(abs_path),
-            "dp.version": format(devpipeline.version.id, "02x")
+            "dp.version": format(devpipeline.version.ID, "02x")
         }
         if not os.path.isabs(cache_dir):
             root_state["dp.build_root"] = "{}/{}".format(os.path.dirname(abs_path), cache_dir)
@@ -126,7 +126,7 @@ def _raw_updated(config, cache_mtime):
 
 def _updated_software(config, cache_mtime):
     config_version = config.get("DEFAULT", "dp.version", fallback="0")
-    return devpipeline.version.id > int(config_version, 16)
+    return devpipeline.version.ID > int(config_version, 16)
 
 
 _outdated_checks = [

@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+"""This modules supports building CMake projects."""
 
 import re
 
@@ -6,11 +7,15 @@ import devpipeline.toolsupport
 
 
 class CMake:
+
+    """This class manages the details of building using CMake."""
+
     def __init__(self, ex_args, config_args):
         self.ex_args = ex_args
         self._config_args = config_args
 
     def configure(self, src_dir, build_dir):
+        """This function builds the cmake configure command."""
         ex_path = self.ex_args.get("project_path")
         if ex_path:
             src_dir += "/{}".format(ex_path)
@@ -24,6 +29,8 @@ class CMake:
         }]
 
     def build(self, build_dir):
+        """This function builds the cmake build command."""
+        # pylint: disable=no-self-use
         return [{
             "args": [
                 'cmake',
@@ -33,6 +40,8 @@ class CMake:
         }]
 
     def install(self, build_dir, path=None):
+        """This function builds the cmake install command."""
+        # pylint: disable=no-self-use
         install_args = ['cmake',
                         '--build',
                         build_dir,
@@ -177,13 +186,14 @@ _ex_arg_fns = {
 
 
 def make_cmake(current_target, common_wrapper):
+    """This function initializes a CMake builder for building the project."""
     configure_args = []
     cmake_args = {}
 
     options, option_fns = _make_all_options()
 
     def add_value(v, key):
-        k, r = _ex_arg_fns[key](fn(v))
+        k, r = _ex_arg_fns[key](v)
         cmake_args[k] = r
 
     devpipeline.toolsupport.args_builder("cmake", current_target, options,

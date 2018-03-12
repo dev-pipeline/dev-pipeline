@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+"""This modules generates a build ordered list of targets."""
 
 import re
 
@@ -12,27 +13,31 @@ def _print_list(targets, components):
 
 
 def _print_dot(targets, components):
+    # pylint: disable=protected-access
     rev_deps = devpipeline.resolve._build_dep_data(targets, components)[1]
 
-    def remove_hyphen(s):
-        return re.sub("-", lambda m: "_", s)
+    def remove_hyphen(string):
+        """This function swaps '-' for '_'."""
+        return re.sub("-", lambda m: "_", string)
 
     print("digraph dependencies {")
-    for p, deps in rev_deps.items():
-        stripped_p = remove_hyphen(p)
-        print("\t{}".format(stripped_p))
-        for d in deps:
-            print("\t{} -> {}".format(remove_hyphen(d), stripped_p))
+    for pkg, deps in rev_deps.items():
+        stripped_pkg = remove_hyphen(pkg)
+        print("\t{}".format(stripped_pkg))
+        for dep in deps:
+            print("\t{} -> {}".format(remove_hyphen(dep), stripped_pkg))
     print("}")
 
 
-_order_outputs = {
+_ORDER_OUTPUTS = {
     "list": _print_list,
     "dot": _print_dot
 }
 
 
 class BuildOrderer(devpipeline.common.TargetTool):
+
+    """This class outputs an ordered list of the packages to satisfy dependencies."""
 
     def __init__(self):
         super().__init__(executors=False,
@@ -45,17 +50,19 @@ class BuildOrderer(devpipeline.common.TargetTool):
                                " options are list (an order to resolve "
                                "specified targets) and dot (a dot graph).",
                           default="list")
+        self.helper_fn = None
 
     def setup(self, arguments):
-        self.fn = _order_outputs.get(arguments.method)
-        if not self.fn:
+        self.helper_fn = _ORDER_OUTPUTS.get(arguments.method)
+        if not self.helper_fn:
             raise Exception("Invalid method: {}".format(arguments.method))
 
     def process(self):
-        self.fn(self.targets, self.components)
+        self.helper_fn(self.targets, self.components)
 
 
 def main(args=None):
+    # pylint: disable=missing-docstring
     build_orderer = BuildOrderer()
     devpipeline.common.execute_tool(build_orderer, args)
 

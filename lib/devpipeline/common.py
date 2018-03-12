@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 
+"""This module defines several base classes that are common for
+the dev-pipeline utility"""
+
 import argparse
 import errno
 import os
@@ -12,7 +15,13 @@ import devpipeline.resolve
 import devpipeline.version
 
 
-class GenericTool:
+class GenericTool(object):
+
+    """This is the base class for tools that can be used by dev-pipeline.
+
+    In subclasses, override the following as needed:
+        execute()
+        setup()"""
 
     def __init__(self, *args, **kwargs):
         self.parser = argparse.ArgumentParser(
@@ -20,24 +29,28 @@ class GenericTool:
             *args, **kwargs)
         self.parser.add_argument("--version", action="version",
                                  version="%(prog)s {}".format(
-                                     devpipeline.version.string))
+                                     devpipeline.version.STRING))
 
     def add_argument(self, *args, **kwargs):
+        """Subclasses inject additional cli arguments to parse by calling this function"""
         self.parser.add_argument(*args, **kwargs)
 
     def execute(self, *args, **kwargs):
+        """Initializes and runs the tool"""
         args = self.parser.parse_args(*args, **kwargs)
         self.setup(args)
         self.process()
 
     def setup(self, arguments):
+        """Subclasses should override this function to perform any pre-execution setup"""
         pass
 
     def process(self):
+        """Subclasses should override this function to do the work of executing the tool"""
         pass
 
 
-_executor_types = {
+_EXECUTOR_TYPES = {
     "dry-run": devpipeline.executor.DryRunExecutor,
     "quiet": devpipeline.executor.QuietExecutor,
     "silent": devpipeline.executor.SilentExecutor,
@@ -61,7 +74,7 @@ def _append_env(env, key, value):
         env[real_key] = value
 
 
-_env_suffixes = {
+_ENV_SUFFIXES = {
     None: _set_env,
     "append": _append_env
 }
@@ -71,15 +84,18 @@ def _create_target_environment(target):
     ret = os.environ.copy()
     pattern = re.compile(R"^env(?:_(\w+))?\.(\w+)")
     for key, value in target.items():
-        m = pattern.match(key)
-        if m:
-            fn = _env_suffixes.get(m.group(1))
-            if fn:
-                fn(ret, m.group(2), value)
+        matches = pattern.match(key)
+        if matches:
+            helper_fn = _ENV_SUFFIXES.get(matches.group(1))
+            if helper_fn:
+                helper_fn(ret, matches.group(2), value)
     return ret
 
 
 class TargetTool(GenericTool):
+
+    """A devpipeline tool that executes a list of tasks against a list of targets"""
+
     def __init__(self, tasks=None, executors=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.add_argument("targets", nargs="*",
@@ -97,6 +113,9 @@ class TargetTool(GenericTool):
                                    "always printed.",
                               default="quiet")
             self.verbosity = True
+            self.executor = None
+            self.components = None
+            self.targets = None
         else:
             self.verbosity = False
 
@@ -110,12 +129,12 @@ class TargetTool(GenericTool):
             self.targets = self.components.sections()
         self.setup(parsed_args)
         if self.verbosity:
-            fn = _executor_types.get(parsed_args.executor)
-            if not fn:
+            helper_fn = _EXECUTOR_TYPES.get(parsed_args.executor)
+            if not helper_fn:
                 raise Exception(
                     "{} isn't a valid executor".format(parsed_args.executor))
             else:
-                self.executor = fn()
+                self.executor = helper_fn()
         self.process()
 
     def process(self):
@@ -124,6 +143,7 @@ class TargetTool(GenericTool):
         self.process_targets(build_order)
 
     def process_targets(self, build_order):
+        """Calls the tasks with the appropriate options for each of the targets"""
         config_info = {
             "executor": self.executor
         }
@@ -142,18 +162,19 @@ class TargetTool(GenericTool):
 
 
 def execute_tool(tool, args):
+    """Runs the provided tool with the given args. Exceptions are propogated to the caller"""
     if args is None:
         args = sys.argv[1:]
     try:
         tool.execute(args)
 
-    except IOError as e:
-        if e.errno == errno.EPIPE:
+    except IOError as failure:
+        if failure.errno == errno.EPIPE:
             # This probably means we were piped into something that terminated
             # (e.g., head).  Might be a better way to handle this, but for now
             # silently swallowing the error isn't terrible.
             pass
 
-    except Exception as e:
-        print("Error: {}".format(str(e)), file=sys.stderr)
-        exit(1)
+    except Exception as failure:
+        print("Error: {}".format(str(failure)), file=sys.stderr)
+        raise

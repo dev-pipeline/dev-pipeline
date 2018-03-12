@@ -1,11 +1,14 @@
 #!/usr/bin/python3
 
-major = 0
-minor = 1
-patch = 0
+"""Version string for module"""
 
-id = (
-    major << 24) | (
-    minor << 16) | (
-    patch << 8)
-string = "{}.{}.{}".format(major, minor, patch)
+MAJOR = 0
+MINOR = 1
+PATCH = 0
+
+ID = (
+    MAJOR << 24) | (
+    MINOR << 16) | (
+    PATCH << 8)
+
+STRING = "{}.{}.{}".format(MAJOR, MINOR, PATCH)

@@ -1,10 +1,13 @@
 #!/usr/bin/python3
+"""This modules configures the build system - build cache, etc...."""
 
 import devpipeline.common
 import devpipeline.config.config
 
 
 class Configure(devpipeline.common.GenericTool):
+
+    """This class manages the configuration of the project."""
 
     def __init__(self):
         super().__init__(prog="dev-pipeline configure",
@@ -26,6 +29,11 @@ class Configure(devpipeline.common.GenericTool):
         self.add_argument("--build-dir-basename",
                           help="Basename for build directory configuration",
                           default="build")
+
+        self.build_dir = None
+        self.config = None
+        self.overrides = None
+        self.profile = None
 
     def setup(self, arguments):
         if arguments.build_dir:
@@ -53,6 +61,7 @@ class Configure(devpipeline.common.GenericTool):
 
 
 def main(args=None):
+    # pylint: disable=missing-docstring
     configure = Configure()
     devpipeline.common.execute_tool(configure, args)
 

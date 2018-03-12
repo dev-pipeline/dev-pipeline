@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+"""This module has tool helper classes and functions."""
 
 import re
 
@@ -6,19 +7,25 @@ import devpipeline.config.modifier
 
 
 class SimpleTool():
+
+    """This class implements a simple tool for the dev-pipeline infrastructure."""
+    # pylint: disable=too-few-public-methods
+
     def __init__(self, current_target, real):
         self.env = current_target["env"]
         self.executor = current_target["executor"]
         self.name = current_target["current_target"]
         self.real = real
 
-    def _call_helper(self, step, fn, *fn_args):
+    def _call_helper(self, step, helper_fn, *fn_args):
         common_tool_helper(
             self.executor, step, self.env,
-            self.name, fn, *fn_args)
+            self.name, helper_fn, *fn_args)
 
 
 def tool_builder(component, key, tool_map, *args):
+    """This helper function initializes a tool with the given args."""
+    # pylint: disable=protected-access
     tool_name = component.get(key)
     if tool_name:
         tool_fn = tool_map.get(tool_name)
@@ -36,10 +43,7 @@ def args_builder(prefix, current_target, args_dict, value_found_fn):
         option = "{}.{}".format(prefix, key)
         value = devpipeline.config.modifier.modify_everything(
             current_target["current_config"].get(option), current_target, option, separator)
-        try:
-            value_found_fn(value, key)
-        except Exception as e:
-            pass
+        value_found_fn(value, key)
 
 
 def build_flex_args_keys(components):
@@ -56,9 +60,10 @@ def build_flex_args_keys(components):
         return []
 
 
-def common_tool_helper(executor, step, env, name, fn, *fn_args):
+def common_tool_helper(executor, step, env, name, helper_fn, *fn_args):
+    # pylint: disable=missing-docstring
     executor.message("{} {}".format(step, name))
-    cmds = fn(*fn_args)
+    cmds = helper_fn(*fn_args)
     if cmds:
         executor.execute(env, *cmds)
     else:

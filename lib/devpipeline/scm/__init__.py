@@ -1,7 +1,9 @@
 #!/usr/bin/python3
+"""This module defines a base class for all SCM handlers to inherit from."""
 
 
 class Scm():
+
     """An interface for all scms"""
 
     def checkout(self, repo_dir):
