@@ -14,8 +14,7 @@ def _build_dep_data(targets, components):
         dependencies = component.get("depends")
         if dependencies:
             return list(x.strip() for x in dependencies.split(','))
-        else:
-            return list()
+        return list()
 
     # seed the initial dependencies
     to_be_processed = list(targets)
@@ -68,7 +67,7 @@ def order_dependencies(targets, components):
 
         # Every pass must resolve at least one target. An exception is raised if
         # no targets are resolved to avoid an infinte loop.
-        if len(resolved_targets) == 0:
+        if not resolved_targets:
             raise Exception("Resolve error")
 
         target_build_order += resolved_targets

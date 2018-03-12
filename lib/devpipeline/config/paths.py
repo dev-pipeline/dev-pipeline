@@ -2,15 +2,14 @@
 
 import os.path
 
-_default_path = "{}/.dev-pipeline.d".format(os.path.expanduser("~"))
+_DEFAULT_PATH = "{}/.dev-pipeline.d".format(os.path.expanduser("~"))
 
 
 def _get_config_dir():
     env_override = os.environ.get("DEV_PIPELINE_CONFIG")
     if env_override:
         return env_override
-    else:
-        return _default_path
+    return _DEFAULT_PATH
 
 
 def _make_path(base_dir, ending):

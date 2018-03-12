@@ -27,8 +27,7 @@ def _merge_command(match, repo_dir):
                 ],
                 "cwd": repo_dir
             }]
-        else:
-            return None
+        return None
 
     # This will give output similar to this:
     #   master origin/master
@@ -79,14 +78,13 @@ class Git:
                     repo_dir
                 ]
             }]
-        else:
-            return [{
-                "args": [
-                    'git',
-                    'fetch'
-                ],
-                "cwd": repo_dir
-            }]
+        return [{
+            "args": [
+                'git',
+                'fetch'
+            ],
+            "cwd": repo_dir
+        }]
 
     def update(self, repo_dir):
         """This function updates an existing checkout of source code."""
@@ -100,8 +98,7 @@ class Git:
                 ],
                 "cwd": repo_dir
             }] + _ff_command(rev, repo_dir)
-        else:
-            return None
+        return None
 
 
 _GIT_ARGS = {
@@ -120,12 +117,14 @@ def make_git(current_target, common_wrapper):
     """This function initializes and Git SCM tool object."""
     git_args = {}
 
-    def add_value(v, key):
-        k, r = _GIT_ARG_FNS[key](v)
-        git_args[k] = r
+    def add_value(value, key):
+        args_key, args_value = _GIT_ARG_FNS[key](value)
+        git_args[args_key] = args_value
 
-    devpipeline.toolsupport.args_builder("git", current_target, _GIT_ARGS, add_value)
+    devpipeline.toolsupport.args_builder(
+        "git", current_target, _GIT_ARGS, add_value)
     if git_args.get("uri"):
         return common_wrapper(Git(git_args))
     else:
-        raise Exception("No git uri ({})".format(current_target["current_target"]))
+        raise Exception("No git uri ({})".format(
+            current_target["current_target"]))
