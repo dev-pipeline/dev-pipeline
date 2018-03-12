@@ -99,22 +99,26 @@ class Git:
 
 
 _git_args = {
+    "uri": None,
+    "revision": None
+}
+
+
+_git_arg_fns = {
     "uri": lambda v: ("uri", v),
     "revision": lambda v: ("revision", v)
 }
 
 
-def make_git(component, common_wrapper):
+def make_git(current_target, common_wrapper):
     git_args = {}
 
-    def add_value(v, fn):
-        k, r = fn(v)
+    def add_value(v, key):
+        k, r = _git_arg_fns[key](v)
         git_args[k] = r
 
-    devpipeline.toolsupport.args_builder("git", component, _git_args,
-                                         add_value)
-
-    if not git_args.get("uri"):
-        raise Exception("Not git uri ({})".format(component._name))
-    else:
+    devpipeline.toolsupport.args_builder("git", current_target, _git_args, add_value)
+    if git_args.get("uri"):
         return common_wrapper(Git(git_args))
+    else:
+        raise Exception("No git uri ({})".format(current_target["current_target"]))

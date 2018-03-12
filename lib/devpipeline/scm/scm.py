@@ -14,20 +14,20 @@ _scm_lookup = {
 }
 
 
-def _make_scm(component, common_wrapper):
+def _make_scm(current_target, common_wrapper):
     """
     Create an Scm for a component.
 
     Arguments
     component - The component being operated on.
     """
-    return devpipeline.toolsupport.tool_builder(component, "scm",
-                                                _scm_lookup, common_wrapper)
+    return devpipeline.toolsupport.tool_builder(current_target["current_config"], "scm",
+                                                _scm_lookup, current_target, common_wrapper)
 
 
 class SimpleScm(devpipeline.toolsupport.SimpleTool):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, real, current_target):
+        super().__init__(current_target, real)
 
     def checkout(self, repo_dir):
         self._call_helper("Checking out", self.real.checkout,
@@ -38,15 +38,15 @@ class SimpleScm(devpipeline.toolsupport.SimpleTool):
                           repo_dir)
 
 
-def scm_task(target, updated_config, *args, **kwargs):
+def scm_task(current_target):
     """
     Update or a local checkout.
 
     Arguments
     target - The target to operate on.
     """
-    scm = _make_scm(target, lambda r: SimpleScm(real=r, *args, **kwargs))
+    scm = _make_scm(current_target, lambda r: SimpleScm(r, current_target))
 
-    src_dir = target.get("dp.src_dir")
+    src_dir = current_target["current_config"].get("dp.src_dir")
     scm.checkout(src_dir)
     scm.update(src_dir)
