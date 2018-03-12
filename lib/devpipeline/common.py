@@ -122,7 +122,7 @@ class TargetTool(GenericTool):
     def execute(self, *args, **kwargs):
         parsed_args = self.parser.parse_args(*args, **kwargs)
 
-        self.components, self.updated = devpipeline.config.config.update_cache()
+        self.components = devpipeline.config.config.update_cache()
         if parsed_args.targets:
             self.targets = parsed_args.targets
         else:

@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+"""A module to manage configuring a project."""
+
 import os.path
 import os
 
@@ -8,18 +10,31 @@ import devpipeline.version
 
 
 def split_list(values, token=","):
+    """
+    Convert a delimited string to a list.
+
+    Arguments
+    values -- a string to split
+    token -- the token to use for splitting values
+    """
     return [value.strip() for value in values.split(token)]
 
 
 def _is_cache_dir_appropriate(cache_dir, cache_file):
+    """
+    Determine if a directory is acceptable for building.
+
+    A directory is suitable if any of the following are true:
+      - it doesn't exist
+      - it is empty
+      - it contains an existing build cache
+    """
     if os.path.exists(cache_dir):
         files = os.listdir(cache_dir)
         if cache_file in files:
             return True
-        else:
-            return not bool(files)
-    else:
-        return True
+        return not bool(files)
+    return True
 
 
 def _add_default_options(config, state):
@@ -38,17 +53,17 @@ def _make_src_dir(config, package_name):
     return "{}/{}".format(config.get("dp.src_root"), src_path)
 
 
-_package_options = {
-    "dp.build_dir":
-        lambda config, package_name:
-            "{}/{}".format(config.get("dp.build_root"), package_name),
+_PACKAGE_OPTIONS = {
+    "dp.build_dir": lambda config, package_name: "{}/{}".format(
+        config.get("dp.build_root"), package_name),
     "dp.src_dir": _make_src_dir
 }
 
 
 def _add_package_options(config, package_name, state):
-    for key, fn in _package_options.items():
-        config[key] = fn(config, package_name)
+    # pylint: disable=unused-argument
+    for key, option_fn in _PACKAGE_OPTIONS.items():
+        config[key] = option_fn(config, package_name)
 
 
 def _add_package_options_all(config, state):
@@ -73,9 +88,8 @@ def _create_cache(raw_path, cache_dir, cache_file):
         _add_default_options(config, root_state)
         _add_package_options_all(config, root_state)
         return config
-    else:
-        raise Exception(
-            "{} doesn't look like a dev-pipeline folder".format(cache_dir))
+    raise Exception(
+        "{} doesn't look like a dev-pipeline folder".format(cache_dir))
 
 
 def _write_config(config, cache_dir, cache_file):
@@ -91,23 +105,35 @@ def _set_list(config, kwargs_key, config_key, **kwargs):
         config["DEFAULT"][config_key] = values
 
 
-_config_modifiers = [
-    lambda config, **kwargs:
-        _set_list(config, "profiles", "dp.profile_name", **kwargs),
-    lambda config, **kwargs:
-        _set_list(config, "overrides", "dp.overrides", **kwargs)
+_CONFIG_MODIFIERS = [
+    lambda config, **kwargs: _set_list(config, "profiles",
+                                       "dp.profile_name", **kwargs),
+    lambda config, **kwargs: _set_list(config, "overrides",
+                                       "dp.overrides", **kwargs)
 ]
 
 
 def process_config(raw_path, cache_dir, cache_file, **kwargs):
+    """
+    Read a build configuration and create it, storing the result in a build
+    cache.
+
+    Arguments
+    raw_path -- path to a build configuration
+    cache_dir -- the directory where cache should be written
+    cache_file -- The filename to write the cache.  This will live inside
+                  cache_dir.
+    **kwargs -- additional arguments used by some modifiers
+    """
     config = _create_cache(raw_path, cache_dir, cache_file)
-    for modifier in _config_modifiers:
+    for modifier in _CONFIG_MODIFIERS:
         modifier(config, **kwargs)
     _write_config(config, cache_dir, cache_file)
     return config
 
 
 def find_config():
+    """Find a build cache somewhere in a parent directory."""
     previous = ""
     current = os.getcwd()
     while previous != current:
@@ -126,11 +152,12 @@ def _raw_updated(config, cache_mtime):
 
 
 def _updated_software(config, cache_mtime):
+    # pylint: disable=unused-argument
     config_version = config.get("DEFAULT", "dp.version", fallback="0")
     return devpipeline.version.ID > int(config_version, 16)
 
 
-_outdated_checks = [
+_OUTDATED_CHECKS = [
     _raw_updated,
     _updated_software
 ]
@@ -138,13 +165,22 @@ _outdated_checks = [
 
 def _is_outdated(cache_file, cache_config):
     cache_mt = os.path.getmtime(cache_file)
-    for check in _outdated_checks:
+    for check in _OUTDATED_CHECKS:
         if check(cache_config, cache_mt):
             return True
     return False
 
 
 def update_cache(force=False):
+    """
+    Load a build cache, updating it if necessary.
+
+    A cache is considered outdated if any of its inputs have changed.
+
+    Arguments
+    force -- Consider a cache outdated regardless of whether its inputs have
+             been modified.
+    """
     cache_file = find_config()
     cache_config = devpipeline.config.parser.read_config(cache_file)
     if force or _is_outdated(cache_file, cache_config):
@@ -155,4 +191,4 @@ def update_cache(force=False):
                                       fallback=None),
             overrides=cache_config.get("DEFAULT", "dp.overrides",
                                        fallback=None)), True)
-    return (cache_config, False)
+    return cache_config
