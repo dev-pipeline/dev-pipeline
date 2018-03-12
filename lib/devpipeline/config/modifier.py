@@ -8,6 +8,7 @@ import devpipeline.config.parser
 import devpipeline.config.paths
 import devpipeline.config.profile
 
+
 def _prepend(separator, old_value, new_value):
     if old_value:
         return "{}{}{}".format(new_value, separator, old_value)
@@ -51,7 +52,8 @@ def modify(value, config, key, separator):
         mod_key = "{}.{}".format(key, modifier)
         if mod_key in config:
             try:
-                value = _modifiers[modifier](separator, value, config.get(mod_key))
+                value = _modifiers[modifier](
+                    separator, value, config.get(mod_key))
             except Exception as e:
                 pass
     return value
@@ -62,7 +64,8 @@ def _apply_profiles(value, current_target, key, separator):
         nonlocal value
         value = modify(value, profile_config, key, separator)
 
-    devpipeline.config.profile.apply_profiles(current_target["current_config"], key, _apply_values)
+    devpipeline.config.profile.apply_profiles(
+        current_target["current_config"], key, _apply_values)
     return value
 
 
@@ -71,7 +74,10 @@ def _apply_overrides(value, current_target, key, separator):
         nonlocal value
         value = modify(value, values, key, separator)
 
-    devpipeline.config.override.apply_overrides(current_target["current_config"], current_target["current_target"], _apply_values)
+    devpipeline.config.override.apply_overrides(
+        current_target["current_config"],
+        current_target["current_target"],
+        _apply_values)
     return value
 
 

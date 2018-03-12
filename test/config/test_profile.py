@@ -52,7 +52,8 @@ class TestConfigProfile(unittest.TestCase):
         }
 
         count = devpipeline.config.profile.read_all_profiles(
-            devpipeline.config.paths.get_profile_path(_config_dir), ["debug", "clang"],
+            devpipeline.config.paths.get_profile_path(_config_dir), [
+                "debug", "clang"],
             lambda p, v: self._validate(expected, p, v))
         self.assertEqual(2, count)
 

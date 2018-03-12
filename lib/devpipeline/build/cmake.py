@@ -112,7 +112,8 @@ _cflag_args = [
 
 
 def _make_common_args(arg_keys_list, prefix_string, suffix_string):
-    new_args = devpipeline.toolsupport.build_flex_args_keys([arg_keys_list, _valid_flag_suffixes])
+    new_args = devpipeline.toolsupport.build_flex_args_keys(
+        [arg_keys_list, _valid_flag_suffixes])
     prefix_pattern = re.compile(prefix_string)
     suffix_pattern = re.compile(suffix_string)
     ret_args = {}
