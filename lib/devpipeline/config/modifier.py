@@ -3,6 +3,7 @@
 import re
 
 import devpipeline.config.config
+import devpipeline.config.override
 import devpipeline.config.parser
 import devpipeline.config.paths
 import devpipeline.config.profile
@@ -56,27 +57,33 @@ def modify(value, config, key, separator):
     return value
 
 
-def _apply_profiles(value, config, key, separator):
+def _apply_profiles(value, current_target, key, separator):
     def _apply_values(profile_name, profile_config):
         nonlocal value
         value = modify(value, profile_config, key, separator)
 
-    profile_list = config.get("dp.profile_name")
-    if profile_list:
-        devpipeline.config.profile.read_all_profiles(
-            devpipeline.config.paths.get_profile_path(),
-            devpipeline.config.config.split_list(profile_list),
-            _apply_values)
+    devpipeline.config.profile.apply_profiles(current_target["current_config"], key, _apply_values)
+    return value
+
+
+def _apply_overrides(value, current_target, key, separator):
+    def _apply_values(overrides, values):
+        nonlocal value
+        print("key={}\n".format(key))
+        value = modify(value, values, key, separator)
+
+    devpipeline.config.override.apply_overrides(current_target["current_config"], current_target["current_target"], _apply_values)
     return value
 
 
 _modify_functions = [
-    _apply_profiles
+    _apply_profiles,
+    _apply_overrides
 ]
 
 
-def modify_everything(value, config, key, separator):
-    value = modify(value, config, key, separator)
+def modify_everything(value, current_target, key, separator):
+    value = modify(value, current_target["current_config"], key, separator)
     for modifier in _modify_functions:
-        value = modifier(value, config, key, separator)
+        value = modifier(value, current_target, key, separator)
     return value

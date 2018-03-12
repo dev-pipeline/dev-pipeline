@@ -37,11 +37,17 @@ def read_override(path):
 def read_all_overrides(base_dir, override_list, package, fn):
     count = 0
     for override in override_list:
-        path = "{}/{}/{}.conf".format(
-            devpipeline.config.paths.get_overrides_root(base_dir),
-            override, package)
+        path = "{}/{}/{}.conf".format(base_dir, override, package)
         values = read_override(path)
         if values:
             fn(override, values)
             count += 1
     return count
+
+
+def apply_overrides(config, name, fn):
+    override_list = config.get("dp.overrides")
+    if override_list:
+        read_all_overrides(
+            devpipeline.config.paths.get_overrides_root(),
+            devpipeline.config.config.split_list(override_list), name, fn)

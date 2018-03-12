@@ -6,10 +6,10 @@ import devpipeline.config.modifier
 
 
 class SimpleTool():
-    def __init__(self, executor, name, env, real):
-        self.env = env
-        self.executor = executor
-        self.name = name
+    def __init__(self, current_target, real):
+        self.env = current_target["env"]
+        self.executor = current_target["executor"]
+        self.name = current_target["current_target"]
         self.real = real
 
     def _call_helper(self, step, fn, *fn_args):
@@ -23,7 +23,7 @@ def tool_builder(component, key, tool_map, *args):
     if tool_name:
         tool_fn = tool_map.get(tool_name)
         if tool_fn:
-            return tool_fn(component, *args)
+            return tool_fn(*args)
         else:
             raise Exception(
                 "Unknown {} '{}' for {}".format(key, tool_name, component._name))
@@ -31,10 +31,11 @@ def tool_builder(component, key, tool_map, *args):
         raise Exception("{} does not specify {}".format(component._name, key))
 
 
-def args_builder(prefix, component, args_dict, value_found_fn):
+def args_builder(prefix, current_target, args_dict, value_found_fn):
     for key, separator in args_dict.items():
         option = "{}.{}".format(prefix, key)
-        value = devpipeline.config.modifier.modify_everything(component.get(option), component, option, separator)
+        value = devpipeline.config.modifier.modify_everything(
+            current_target["current_config"].get(option), current_target, option, separator)
         try:
             value_found_fn(value, key)
         except Exception as e:

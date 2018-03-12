@@ -16,7 +16,7 @@ _builder_lookup = {
 }
 
 
-def _make_builder(component, updated_config, common_wrapper):
+def _make_builder(current_target, common_wrapper):
     """
     Create and return a Builder for a component.
 
@@ -24,13 +24,13 @@ def _make_builder(component, updated_config, common_wrapper):
     component - The component the builder should be created for.
     """
     return devpipeline.toolsupport.tool_builder(
-        component, "build", _builder_lookup,
-        common_wrapper, updated_config)
+        current_target["current_config"], "build", _builder_lookup,
+        current_target, common_wrapper)
 
 
 class SimpleBuild(devpipeline.toolsupport.SimpleTool):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, real, current_target):
+        super().__init__(current_target, real)
 
     def configure(self, src_dir, build_dir):
         self._call_helper("Configuring", self.real.configure,
@@ -45,7 +45,7 @@ class SimpleBuild(devpipeline.toolsupport.SimpleTool):
                           build_dir, path)
 
 
-def build_task(target, updated_config, *args, **kwargs):
+def build_task(current_target):
     """
     Build a target.
 
@@ -53,12 +53,13 @@ def build_task(target, updated_config, *args, **kwargs):
     target - The target to build.
     """
 
+    target = current_target["current_config"]
     build_path = target.get("dp.build_dir")
     if not os.path.exists(build_path):
         os.makedirs(build_path)
     builder = _make_builder(
-        target, updated_config,
-        lambda r: SimpleBuild(real=r, *args, **kwargs))
+        current_target,
+        lambda r: SimpleBuild(r, current_target))
     builder.configure(target.get("dp.src_dir"), build_path)
     builder.build(build_path)
     if "no_install" not in target:

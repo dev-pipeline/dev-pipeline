@@ -18,3 +18,11 @@ def read_all_profiles(path, profile_list, fn):
                 print("Warning: profile '{}' not in configuration '{}'".format(
                     profile, path))
     return count
+
+
+def apply_profiles(config, key, fn):
+    profile_list = config.get("dp.profile_name")
+    if profile_list:
+        read_all_profiles(
+            devpipeline.config.paths.get_profile_path(),
+            devpipeline.config.config.split_list(profile_list), fn)

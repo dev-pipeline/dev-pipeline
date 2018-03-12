@@ -6,6 +6,7 @@ import unittest
 import loader
 
 import devpipeline.config.override
+import devpipeline.config.paths
 
 _config_dir = "{}/../files".format(os.path.dirname(os.path.abspath(__file__)))
 
@@ -24,7 +25,8 @@ class TestConfigOverride(unittest.TestCase):
             raise Exception("Shouldn't have been called")
 
         count = devpipeline.config.override.read_all_overrides(
-            _config_dir, ["empty"], "foo", _dont_call)
+            devpipeline.config.paths.get_overrides_root(_config_dir),
+            ["empty"], "foo", _dont_call)
         self.assertEqual(0, count)
 
     def test_append(self):
@@ -35,7 +37,8 @@ class TestConfigOverride(unittest.TestCase):
             }
         }
         count = devpipeline.config.override.read_all_overrides(
-            _config_dir, ["simple"], "foo",
+            devpipeline.config.paths.get_overrides_root(_config_dir),
+            ["simple"], "foo",
             lambda override, vals:
                 self._validate(expected, override, vals))
         self.assertEqual(1, count)
@@ -51,7 +54,8 @@ class TestConfigOverride(unittest.TestCase):
             }
         }
         count = devpipeline.config.override.read_all_overrides(
-            _config_dir, ["simple", "trivial"], "foo",
+            devpipeline.config.paths.get_overrides_root(_config_dir),
+            ["simple", "trivial"], "foo",
             lambda override, vals:
                 self._validate(expected, override, vals))
         self.assertEqual(2, count)

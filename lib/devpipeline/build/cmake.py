@@ -176,7 +176,7 @@ _ex_arg_fns = {
 }
 
 
-def make_cmake(component, common_wrapper, updated_config):
+def make_cmake(current_target, common_wrapper):
     configure_args = []
     cmake_args = {}
 
@@ -186,9 +186,9 @@ def make_cmake(component, common_wrapper, updated_config):
         k, r = _ex_arg_fns[key](fn(v))
         cmake_args[k] = r
 
-    devpipeline.toolsupport.args_builder("cmake", component, options,
+    devpipeline.toolsupport.args_builder("cmake", current_target, options,
                                          lambda v, key:
                                              configure_args.extend(option_fns[key](v)))
-    devpipeline.toolsupport.args_builder("cmake", component, _ex_args,
+    devpipeline.toolsupport.args_builder("cmake", current_target, _ex_args,
                                          add_value)
     return common_wrapper(CMake(cmake_args, configure_args))

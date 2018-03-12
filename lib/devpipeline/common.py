@@ -124,13 +124,20 @@ class TargetTool(GenericTool):
         self.process_targets(build_order)
 
     def process_targets(self, build_order):
+        config_info = {
+            "executor": self.executor
+        }
         for target in build_order:
             self.executor.message("  {}".format(target))
             self.executor.message("-" * (4 + len(target)))
             current = self.components[target]
             env = _create_target_environment(current)
+
+            config_info["current_target"] = target
+            config_info["current_config"] = current
+            config_info["env"] = env
             for task in self.tasks:
-                task(current, self.updated, name=target, env=env, executor=self.executor)
+                task(config_info)
             self.executor.message("")
 
 
