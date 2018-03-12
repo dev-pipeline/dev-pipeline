@@ -19,9 +19,12 @@ class SimpleTool():
         self.real = real
 
     def _call_helper(self, step, helper_fn, *fn_args):
-        common_tool_helper(
-            self.executor, step, self.env,
-            self.name, helper_fn, *fn_args)
+        self.executor.message("{} {}".format(step, self.name))
+        cmds = helper_fn(*fn_args)
+        if cmds:
+            self.executor.execute(self.env, *cmds)
+        else:
+            self.executor.message("\t(Nothing to do)")
 
 
 def tool_builder(component, key, tool_map, *args):
@@ -87,13 +90,3 @@ def build_flex_args_keys(components):
     elif len(components) == 1:
         return components[0]
     return []
-
-
-def common_tool_helper(executor, step, env, name, helper_fn, *fn_args):
-    # pylint: disable=missing-docstring
-    executor.message("{} {}".format(step, name))
-    cmds = helper_fn(*fn_args)
-    if cmds:
-        executor.execute(env, *cmds)
-    else:
-        executor.message("\t(Nothing to do)")
