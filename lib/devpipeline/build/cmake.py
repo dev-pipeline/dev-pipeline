@@ -57,11 +57,13 @@ class CMake:
 
 _all_cmake_args = None
 
+
 def _handle_cmake_arg(value, fn):
     if value:
         return fn(value)
     else:
         return []
+
 
 _usable_arg_fns = {
     "args": lambda v: _handle_cmake_arg(v, lambda v: [x.strip() for x in v.split(",")]),
@@ -102,28 +104,35 @@ def _extend_cflags(base, suffix, value):
     return _extend_flags_common("-DCMAKE_{}_FLAGS".format(base),
                                 suffix, value)
 
+
 _cflag_args = [
     "cflags",
     "cxxflags"
 ]
 
 
-def _make_cflag_args():
-    new_args = devpipeline.toolsupport.build_flex_args_keys([_cflag_args, _valid_flag_suffixes])
-    prefix_pattern = re.compile(R"(.*)flags")
-    suffix_pattern = re.compile(R"\.(\w+)$")
+def _make_common_args(arg_keys_list, prefix_string, suffix_string):
+    new_args = devpipeline.toolsupport.build_flex_args_keys([arg_keys_list, _valid_flag_suffixes])
+    prefix_pattern = re.compile(prefix_string)
+    suffix_pattern = re.compile(suffix_string)
     ret_args = {}
     ret_fns = {}
     for arg in new_args:
         prefix_match = prefix_pattern.search(arg)
         suffix_match = suffix_pattern.search(arg)
         ret_args[arg] = " "
-        ret_fns[arg] = lambda v, pm=prefix_match, sm=suffix_match: _extend_cflags(pm.group(1).upper(), sm.group(1).upper(), v)
-    for arg in _cflag_args:
+        ret_fns[arg] = lambda v, pm=prefix_match, sm=suffix_match: _extend_cflags(
+            pm.group(1).upper(), sm.group(1).upper(), v)
+    for arg in arg_keys_list:
         prefix_match = prefix_pattern.search(arg)
         ret_args[arg] = " "
-        ret_fns[arg] = lambda v, pm=prefix_match: _extend_cflags(pm.group(1).upper(), None, v)
+        ret_fns[arg] = lambda v, pm=prefix_match: _extend_cflags(
+            pm.group(1).upper(), None, v)
     return (ret_args, ret_fns)
+
+
+def _make_cflag_args():
+    return _make_common_args(_cflag_args, R"(.*)flags", R"\.(\w+)$")
 
 
 def _extend_ldflags(base, suffix, value):
@@ -138,23 +147,12 @@ _ldflag_args = [
     "static"
 ]
 
+
 def _make_ldflag_args():
-    base_args = devpipeline.toolsupport.build_flex_args_keys([ ["ldflags"], _ldflag_args])
-    new_args = devpipeline.toolsupport.build_flex_args_keys([base_args, _valid_flag_suffixes])
-    type_pattern = re.compile(R"ldflags\.(\w+)")
-    suffix_pattern = re.compile(R"\.(\w+)$")
-    ret_args = {}
-    ret_fns = {}
-    for arg in new_args:
-        type_match = type_pattern.search(arg)
-        suffix_match = suffix_pattern.search(arg)
-        ret_args[arg] = " "
-        ret_fns[arg] = lambda v, tm=type_match, sm=suffix_match: _extend_cflags(tm.group(1).upper(), sm.group(1).upper(), v)
-    for arg in base_args:
-        type_match = type_pattern.search(arg)
-        ret_args[arg] = " "
-        ret_fns[arg] = lambda v, tm=type_match: _extend_cflags(tm.group(1).upper(), None, v)
-    return (ret_args, ret_fns)
+    base_args = devpipeline.toolsupport.build_flex_args_keys(
+        [["ldflags"], _ldflag_args])
+    return _make_common_args(base_args, R"ldflags\.(\w+)", R"\.(\w+)$")
+
 
 _arg_builder_functions = [
     _make_cflag_args,

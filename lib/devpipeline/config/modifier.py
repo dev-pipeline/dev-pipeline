@@ -69,7 +69,6 @@ def _apply_profiles(value, current_target, key, separator):
 def _apply_overrides(value, current_target, key, separator):
     def _apply_values(overrides, values):
         nonlocal value
-        print("key={}\n".format(key))
         value = modify(value, values, key, separator)
 
     devpipeline.config.override.apply_overrides(current_target["current_config"], current_target["current_target"], _apply_values)
