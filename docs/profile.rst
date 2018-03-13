@@ -9,6 +9,8 @@ The profile configuration is stored in
 :code:`${HOME_DIRECTORY}/.dev-pipeline.d/profiles.conf` but is otherwise
 identical to a build.config file.
 
+The options in a profile should *always* have a modifier_ suffix.
+
 
 Example
 -------
@@ -18,33 +20,41 @@ Example
     # using profiles.  Since these are the flags I like, I named the profile
     # after myself.
     [newell]
-    cmake.cflags = -pipe -Wall -Wextra -Wshadow -Wundef -pedantic
-    cmake.cflags.debug = -ggdb3 -O0
-    cmake.cflags.release = -O2
+    cmake.cflags.append = -pipe -Wall -Wextra -Wshadow -Wundef -pedantic
+    cmake.cflags.debug.append = -ggdb3 -O0
+    cmake.cflags.release.append = -O2
     # I can still reference other variables here
-    cmake.cxxflags = ${cmake.cflags}
-    cmake.cxxflags.debug = ${cmake.cflags.debug}
-    cmake.cxxflags.release = ${cmake.cflags.release}
+    cmake.cxxflags.append = ${cmake.cflags.append}
+    cmake.cxxflags.debug.append = ${cmake.cflags.debug.append}
+    cmake.cxxflags.release.append = ${cmake.cflags.release.append}
 
     # I like to have each profile do a specific thing since they can be
     # stacked.  Let's make debug/release profiles.
     [debug]
-    cmake.build_type = Debug
+    cmake.build_type.override = Debug
 
     [release]
-    cmake.build_type = Release
+    cmake.build_type.override = Release
 
     # I like to build with clang sometimes, so set the required values.
     [clang]
-    camke.cc = clang
-    cmake.cxx = clang++
+    camke.cc.override = clang
+    cmake.cxx.override = clang++
 
     # This profile is intended to be used with the clang profile
     [libc++]
-    # If I use multiple profiles, cmake.cxxflags will be appended
-    cmake.cxxflags = -stdlib=libc++
+    cmake.cxxflags.append = -stdlib=libc++
+
+    # /usr/bin/gcc is 6.4.0 on my systme, but sometimes I want to use
+    # something more modern
+    [gcc-7]
+    cmake.cc.override = gcc-7.3.0
+    cmake.cxx.override = g++-7.3.0
 
     # I also keep a mingw64 compiler around, so I want that available as a
     # profile option.
     [mingw64]
-    cmake.toolchain_file = /home/stephen/cmake_toolchains/mingw64.cmake
+    cmake.toolchain_file.override = /home/stephen/cmake_toolchains/mingw64.cmake
+
+
+.. _modifier: modifiers.rst
