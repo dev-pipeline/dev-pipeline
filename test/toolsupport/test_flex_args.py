@@ -10,8 +10,8 @@ import devpipeline.toolsupport
 class TestFlexArgs(unittest.TestCase):
     def validate(self, expected, actual):
         self.assertEqual(len(expected), len(actual))
-        for i in range(0, len(expected)):
-            self.assertEqual(expected[i], actual[i])
+        for index, value in enumerate(expected):
+            self.assertEqual(value, actual[index])
 
     def test_simple(self):
         expected = [

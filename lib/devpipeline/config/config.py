@@ -9,15 +9,15 @@ import devpipeline.config.parser
 import devpipeline.version
 
 
-def split_list(values, token=","):
+def split_list(values, split_string=","):
     """
     Convert a delimited string to a list.
 
     Arguments
     values -- a string to split
-    token -- the token to use for splitting values
+    split_string -- the token to use for splitting values
     """
-    return [value.strip() for value in values.split(token)]
+    return [value.strip() for value in values.split(split_string)]
 
 
 def _is_cache_dir_appropriate(cache_dir, cache_file):
