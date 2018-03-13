@@ -80,13 +80,16 @@ def build_flex_args_keys(components):
     Arguments
     components -- A list of lists that should be combined to form options.
     """
-    if len(components) > 1:
-        sub_components = build_flex_args_keys(components[1:])
+    def _prepend_first(components, sub_components):
         ret = []
         for first in components[0]:
             for sub_component in sub_components:
                 ret.append("{}.{}".format(first, sub_component))
         return ret
+
+    if len(components) > 1:
+        sub_components = build_flex_args_keys(components[1:])
+        return _prepend_first(components, sub_components)
     elif len(components) == 1:
         return components[0]
     return []

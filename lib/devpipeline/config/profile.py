@@ -17,9 +17,8 @@ def read_all_profiles(path, profile_list, found_fn):
     profile_list -- a list of profiles to query
     found_fn -- the function to call for every found profile
     """
-    count = 0
-    if os.path.isfile(path):
-        parser = devpipeline.config.parser.read_config(path)
+    def _iterate_profiles(parser):
+        count = 0
         for profile in profile_list:
             if parser.has_section(profile):
                 found_fn(profile, parser[profile])
@@ -27,7 +26,12 @@ def read_all_profiles(path, profile_list, found_fn):
             else:
                 print("Warning: profile '{}' not in configuration '{}'".format(
                     profile, path))
-    return count
+        return count
+
+    if os.path.isfile(path):
+        parser = devpipeline.config.parser.read_config(path)
+        return _iterate_profiles(parser)
+    return 0
 
 
 def apply_profiles(config, found_fn):
