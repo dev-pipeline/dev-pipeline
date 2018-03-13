@@ -121,7 +121,7 @@ class TargetTool(GenericTool):
             self.targets = self.components.sections()
         self.setup(parsed_args)
         if self.verbosity:
-            helper_fn = _EXECUTOR_TYPES.get(parsed_args.executor)
+            helper_fn = EXECUTOR_TYPES.get(parsed_args.executor)
             if not helper_fn:
                 raise Exception(
                     "{} isn't a valid executor".format(parsed_args.executor))
