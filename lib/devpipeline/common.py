@@ -50,14 +50,6 @@ class GenericTool(object):
         pass
 
 
-_EXECUTOR_TYPES = {
-    "dry-run": devpipeline.executor.DryRunExecutor,
-    "quiet": devpipeline.executor.QuietExecutor,
-    "silent": devpipeline.executor.SilentExecutor,
-    "verbose": devpipeline.executor.VerboseExecutor
-}
-
-
 def _set_env(env, key, value):
     real_key = key.upper()
     if value:
@@ -80,7 +72,7 @@ _ENV_SUFFIXES = {
 }
 
 
-def _create_target_environment(target):
+def create_target_environment(target):
     ret = os.environ.copy()
     pattern = re.compile(R"^env(?:_(\w+))?\.(\w+)")
     for key, value in target.items():
