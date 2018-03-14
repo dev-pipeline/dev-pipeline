@@ -171,7 +171,7 @@ def _is_outdated(cache_file, cache_config):
     return False
 
 
-def update_cache(force=False):
+def update_cache(force=False,cache_file=None):
     """
     Load a build cache, updating it if necessary.
 
@@ -181,7 +181,8 @@ def update_cache(force=False):
     force -- Consider a cache outdated regardless of whether its inputs have
              been modified.
     """
-    cache_file = find_config()
+    if not cache_file:
+        cache_file = find_config()
     cache_config = devpipeline.config.parser.read_config(cache_file)
     if force or _is_outdated(cache_file, cache_config):
         return (process_config(

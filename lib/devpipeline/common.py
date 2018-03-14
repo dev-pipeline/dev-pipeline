@@ -50,14 +50,6 @@ class GenericTool(object):
         pass
 
 
-_EXECUTOR_TYPES = {
-    "dry-run": devpipeline.executor.DryRunExecutor,
-    "quiet": devpipeline.executor.QuietExecutor,
-    "silent": devpipeline.executor.SilentExecutor,
-    "verbose": devpipeline.executor.VerboseExecutor
-}
-
-
 def _set_env(env, key, value):
     real_key = key.upper()
     if value:
@@ -80,7 +72,7 @@ _ENV_SUFFIXES = {
 }
 
 
-def _create_target_environment(target):
+def create_target_environment(target):
     ret = os.environ.copy()
     pattern = re.compile(R"^env(?:_(\w+))?\.(\w+)")
     for key, value in target.items():
@@ -129,7 +121,7 @@ class TargetTool(GenericTool):
             self.targets = self.components.sections()
         self.setup(parsed_args)
         if self.verbosity:
-            helper_fn = _EXECUTOR_TYPES.get(parsed_args.executor)
+            helper_fn = devpipeline.EXECUTOR_TYPES.get(parsed_args.executor)
             if not helper_fn:
                 raise Exception(
                     "{} isn't a valid executor".format(parsed_args.executor))
@@ -151,7 +143,7 @@ class TargetTool(GenericTool):
             self.executor.message("  {}".format(target))
             self.executor.message("-" * (4 + len(target)))
             current = self.components[target]
-            env = _create_target_environment(current)
+            env = create_target_environment(current)
 
             config_info["current_target"] = target
             config_info["current_config"] = current
