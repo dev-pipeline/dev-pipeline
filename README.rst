@@ -18,23 +18,27 @@ working well together, without the issues that sub-repositories introduce.
 
 Installation
 ------------
+dev-pipeline requires python3; python2 will not work.
+
 The simplest way to install is using pip_.
 
 .. code:: bash
 
     $ cd /path/to/dev-pipeline
-    $ pip install
+    $ pip3 install
 
 If you don't have pip available, you can run :code:`setup.py` directly.
 
 .. code:: bash
 
     $ cd /path/to/dev-pipeline
-    $ python setup.py install
+    $ python3 setup.py install
 
-If the install completes you're good to go.  Depending on your project
-configuration you may need to install additional tools such as cmake or git;
-installing those tools is beyond the scope of this document.
+If the install completes without errors, then you're good to go.
+
+Depending on your project configuration you may need to install additional
+tools such as cmake or git; installing those tools is beyond the scope of this
+document.
 
 
 Using
