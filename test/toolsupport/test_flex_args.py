@@ -2,8 +2,6 @@
 
 import unittest
 
-import loader
-
 import devpipeline.toolsupport
 
 

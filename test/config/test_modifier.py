@@ -2,8 +2,6 @@
 
 import unittest
 
-import loader
-
 from devpipeline.config.modifier import modify
 
 

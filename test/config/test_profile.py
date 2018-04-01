@@ -3,8 +3,6 @@
 import os.path
 import unittest
 
-import loader
-
 import devpipeline.config.paths
 import devpipeline.config.profile
 
