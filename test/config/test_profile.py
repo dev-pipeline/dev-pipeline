@@ -6,9 +6,9 @@ import unittest
 import devpipeline.config.paths
 import devpipeline.config.profile
 
-_config_dir = "{}/../files".format(os.path.dirname(os.path.abspath(__file__)))
-_profile_config = devpipeline.config.profile.read_profiles(
-    devpipeline.config.paths.get_profile_path(_config_dir))
+_CONFIG_DIR = "{}/../files".format(os.path.dirname(os.path.abspath(__file__)))
+_PROFILE_CONFIG = devpipeline.config.profile.read_profiles(
+    devpipeline.config.paths.get_profile_path(_CONFIG_DIR))
 
 
 class TestConfigProfile(unittest.TestCase):
@@ -24,7 +24,7 @@ class TestConfigProfile(unittest.TestCase):
         def _dont_call(profile, values):
             raise Exception("Shouldn't have been called")
 
-        count = devpipeline.config.profile.apply_all_profiles(_profile_config,
+        count = devpipeline.config.profile.apply_all_profiles(_PROFILE_CONFIG,
                                                               [], _dont_call)
         self.assertEqual(0, count)
 
@@ -36,7 +36,7 @@ class TestConfigProfile(unittest.TestCase):
         }
 
         count = devpipeline.config.profile.apply_all_profiles(
-            _profile_config, ["debug"],
+            _PROFILE_CONFIG, ["debug"],
             lambda p, v: self._validate(expected, p, v))
         self.assertEqual(1, count)
 
@@ -52,7 +52,7 @@ class TestConfigProfile(unittest.TestCase):
         }
 
         count = devpipeline.config.profile.apply_all_profiles(
-            _profile_config, ["debug", "clang"],
+            _PROFILE_CONFIG, ["debug", "clang"],
             lambda p, v: self._validate(expected, p, v))
         self.assertEqual(2, count)
 

@@ -171,7 +171,7 @@ def _is_outdated(cache_file, cache_config):
     return False
 
 
-def update_cache(force=False,cache_file=None):
+def update_cache(force=False, cache_file=None):
     """
     Load a build cache, updating it if necessary.
 

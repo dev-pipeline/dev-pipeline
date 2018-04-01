@@ -6,7 +6,15 @@ import unittest
 import devpipeline.config.override
 import devpipeline.config.paths
 
-_config_dir = "{}/../files".format(os.path.dirname(os.path.abspath(__file__)))
+_CONFIG_DIR = "{}/../files".format(os.path.dirname(os.path.abspath(__file__)))
+
+
+def _load_overrides(target, override_list, found_fn):
+    overrides = devpipeline.config.override.read_overrides(
+        devpipeline.config.paths.get_overrides_root(_CONFIG_DIR),
+        target, override_list)
+    return devpipeline.config.override.apply_all_overrides(
+        overrides, found_fn)
 
 
 class TestConfigOverride(unittest.TestCase):
@@ -20,13 +28,10 @@ class TestConfigOverride(unittest.TestCase):
 
     def test_empty(self):
         def _dont_call(override, values):
+            # pylint: disable=unused-argument
             raise Exception("Shouldn't have been called")
 
-        overrides = devpipeline.config.override.read_overrides(
-            devpipeline.config.paths.get_overrides_root(_config_dir),
-            "foo", ["empty"])
-        count = devpipeline.config.override.apply_all_overrides(
-            overrides, _dont_call)
+        count = _load_overrides("foo", ["empty"], _dont_call)
         self.assertEqual(0, count)
 
     def test_append(self):
@@ -36,13 +41,11 @@ class TestConfigOverride(unittest.TestCase):
                 "lav.append": "xyz"
             }
         }
-        overrides = devpipeline.config.override.read_overrides(
-            devpipeline.config.paths.get_overrides_root(_config_dir),
-            "foo", ["simple"])
-        count = devpipeline.config.override.apply_all_overrides(
-            overrides,
-            lambda override, vals:
-                self._validate(expected, override, vals))
+
+        count = _load_overrides(
+            "foo", ["simple"],
+            lambda override, vals: self._validate(
+                expected, override, vals))
         self.assertEqual(1, count)
 
     def test_multiappend(self):
@@ -55,13 +58,11 @@ class TestConfigOverride(unittest.TestCase):
                 "val.append": "ijk"
             }
         }
-        overrides = devpipeline.config.override.read_overrides(
-            devpipeline.config.paths.get_overrides_root(_config_dir),
-            "foo", ["simple", "trivial"])
-        count = devpipeline.config.override.apply_all_overrides(
-            overrides,
-            lambda override, vals:
-                self._validate(expected, override, vals))
+
+        count = _load_overrides(
+            "foo", ["simple", "trivial"],
+            lambda override, vals: self._validate(
+                expected, override, vals))
         self.assertEqual(2, count)
 
 
