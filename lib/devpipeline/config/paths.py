@@ -18,9 +18,19 @@ def _make_path(base_dir, ending):
     return "{}/{}".format(base_dir, ending)
 
 
-def get_overrides_root(base_dir=None):
+def _override_base_dir(config_map):
+    if "config_dir" in config_map:
+        return config_map["config_dir"]
+    return None
+
+
+def get_overrides_root(base_dir=None, config_map=None):
+    if config_map:
+        base_dir = _override_base_dir(config_map)
     return _make_path(base_dir, "overrides.d")
 
 
-def get_profile_path(base_dir=None):
+def get_profile_path(base_dir=None, config_map=None):
+    if config_map:
+        base_dir = _override_base_dir(config_map)
     return _make_path(base_dir, "profiles.conf")

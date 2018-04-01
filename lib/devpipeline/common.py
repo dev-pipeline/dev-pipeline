@@ -5,11 +5,10 @@ the dev-pipeline utility"""
 
 import argparse
 import errno
-import os
-import re
 import sys
 
 import devpipeline.config.config
+import devpipeline.config.env
 import devpipeline.executor
 import devpipeline.resolve
 import devpipeline.version
@@ -48,40 +47,6 @@ class GenericTool(object):
     def process(self):
         """Subclasses should override this function to do the work of executing the tool"""
         pass
-
-
-def _set_env(env, key, value):
-    real_key = key.upper()
-    if value:
-        env[real_key] = value
-    else:
-        del env[real_key]
-
-
-def _append_env(env, key, value):
-    real_key = key.upper()
-    if real_key in env:
-        env[real_key] += "{}{}".format(os.pathsep, value)
-    else:
-        env[real_key] = value
-
-
-_ENV_SUFFIXES = {
-    None: _set_env,
-    "append": _append_env
-}
-
-
-def create_target_environment(target):
-    ret = os.environ.copy()
-    pattern = re.compile(R"^env(?:_(\w+))?\.(\w+)")
-    for key, value in target.items():
-        matches = pattern.match(key)
-        if matches:
-            helper_fn = _ENV_SUFFIXES.get(matches.group(1))
-            if helper_fn:
-                helper_fn(ret, matches.group(2), value)
-    return ret
 
 
 class TargetTool(GenericTool):
@@ -142,13 +107,12 @@ class TargetTool(GenericTool):
         for target in build_order:
             self.executor.message("  {}".format(target))
             self.executor.message("-" * (4 + len(target)))
-            current = self.components[target]
-            env = create_target_environment(current)
 
             config_info["current_target"] = target
-            config_info["current_config"] = current
-            config_info["env"] = env
+            config_info["current_config"] = self.components[target]
             config_info[target] = {}
+            config_info["env"] = devpipeline.config.env.create_environment(
+                config_info)
             for task in self.tasks:
                 task(config_info)
             self.executor.message("")

@@ -58,6 +58,7 @@ def apply_overrides(config, name, config_map, found_fn):
         split_list = devpipeline.config.config.split_list(override_list)
         if "overrides" not in config_map[name]:
             config_map[name]["overrides"] = read_overrides(
-                devpipeline.config.paths.get_overrides_root(),
+                devpipeline.config.paths.get_overrides_root(
+                    config_map=config_map),
                 name, split_list)
         apply_all_overrides(config_map[name]["overrides"], found_fn)

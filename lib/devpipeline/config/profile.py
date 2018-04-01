@@ -45,7 +45,7 @@ def apply_profiles(target_config, config_map, found_fn):
     if profile_list:
         if "profile_config" not in config_map:
             config_map["profile_config"] = read_profiles(
-                devpipeline.config.paths.get_profile_path())
+                devpipeline.config.paths.get_profile_path(config_map=config_map))
         apply_all_profiles(config_map["profile_config"],
                            devpipeline.config.config.split_list(profile_list),
                            found_fn)
