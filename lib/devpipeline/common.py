@@ -148,6 +148,7 @@ class TargetTool(GenericTool):
             config_info["current_target"] = target
             config_info["current_config"] = current
             config_info["env"] = env
+            config_info[target] = {}
             for task in self.tasks:
                 task(config_info)
             self.executor.message("")

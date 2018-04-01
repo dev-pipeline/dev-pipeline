@@ -22,9 +22,11 @@ class TestConfigOverride(unittest.TestCase):
         def _dont_call(override, values):
             raise Exception("Shouldn't have been called")
 
-        count = devpipeline.config.override.read_all_overrides(
+        overrides = devpipeline.config.override.read_overrides(
             devpipeline.config.paths.get_overrides_root(_config_dir),
-            ["empty"], "foo", _dont_call)
+            "foo", ["empty"])
+        count = devpipeline.config.override.apply_all_overrides(
+            overrides, _dont_call)
         self.assertEqual(0, count)
 
     def test_append(self):
@@ -34,9 +36,11 @@ class TestConfigOverride(unittest.TestCase):
                 "lav.append": "xyz"
             }
         }
-        count = devpipeline.config.override.read_all_overrides(
+        overrides = devpipeline.config.override.read_overrides(
             devpipeline.config.paths.get_overrides_root(_config_dir),
-            ["simple"], "foo",
+            "foo", ["simple"])
+        count = devpipeline.config.override.apply_all_overrides(
+            overrides,
             lambda override, vals:
                 self._validate(expected, override, vals))
         self.assertEqual(1, count)
@@ -51,9 +55,11 @@ class TestConfigOverride(unittest.TestCase):
                 "val.append": "ijk"
             }
         }
-        count = devpipeline.config.override.read_all_overrides(
+        overrides = devpipeline.config.override.read_overrides(
             devpipeline.config.paths.get_overrides_root(_config_dir),
-            ["simple", "trivial"], "foo",
+            "foo", ["simple", "trivial"])
+        count = devpipeline.config.override.apply_all_overrides(
+            overrides,
             lambda override, vals:
                 self._validate(expected, override, vals))
         self.assertEqual(2, count)

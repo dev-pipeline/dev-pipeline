@@ -85,7 +85,7 @@ def _apply_overrides(value, current_target, key, separator):
     devpipeline.config.override.apply_overrides(
         current_target["current_config"],
         current_target["current_target"],
-        _apply_values)
+        current_target, _apply_values)
     return value
 
 
