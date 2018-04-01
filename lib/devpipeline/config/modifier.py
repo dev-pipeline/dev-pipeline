@@ -72,7 +72,7 @@ def _apply_profiles(value, current_target, key, separator):
         value = modify(value, profile_config, key, separator)
 
     devpipeline.config.profile.apply_profiles(
-        current_target["current_config"], _apply_values)
+        current_target["current_config"], current_target, _apply_values)
     return value
 
 
