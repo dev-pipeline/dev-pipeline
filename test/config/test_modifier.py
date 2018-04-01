@@ -32,6 +32,20 @@ class TestConfigModifier(unittest.TestCase):
         }
         self.assertEqual("barfoo", modify("foo", config, "name", ""))
 
+    def test_empty_append(self):
+        """Verify prepending to nothing works"""
+        config = {
+            "name.append": "foo"
+        }
+        self.assertEqual("foo", modify(None, config, "name", ""))
+
+    def test_empty_prepend(self):
+        """Verify prepending to nothing works"""
+        config = {
+            "name.prepend": "foo"
+        }
+        self.assertEqual("foo", modify(None, config, "name", ""))
+
     def test_override(self):
         """Verify a single override works"""
         config = {
