@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+"""Functionality related to environment configuration"""
+
 import os
 import re
 
@@ -45,6 +47,16 @@ _SOURCE_FUNCTIONS = [
 
 
 def get_env_list(config_map):
+    """
+    Retrieve a list of environemnt variables a configuration will modify.
+
+    The list of variables will include anything in a configuration (including
+    in extra configuration files) that can alter the environment.  The list
+    will include only the variable names, not the env prefix.
+
+    Arguments
+    config_map - A configuration map.
+    """
     env_adjustments = {}
     for source in _SOURCE_FUNCTIONS:
         source(config_map, env_adjustments)
@@ -52,6 +64,12 @@ def get_env_list(config_map):
 
 
 def create_environment(config_map):
+    """
+    Create a modified environment.
+
+    Arguments
+    config_map - A configuration map.
+    """
     def _apply_override(adjustment, ret):
         upper_key = adjustment.upper()
         new_value = devpipeline.config.modifier.modify_everything(

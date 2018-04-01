@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+"""Functionality related to override files"""
+
 import os.path
 import sys
 
@@ -20,7 +22,7 @@ _OVERRIDE_VALUES = {
 }
 
 
-def read_override(config):
+def _build_override(config):
     ret = {}
     for section in config.sections():
         suffix = _OVERRIDE_VALUES.get(section)
@@ -33,9 +35,20 @@ def read_override(config):
 
 
 def apply_all_overrides(override_configs, found_fn):
+    """
+    Pass available overrides to a caller.
+
+    This function will return the number of overrides with values.
+
+    Arguments
+    override_configs - A list of override names and configurations.
+    found_fn - A function to pass available override information.  found_fn
+               should take two arguments: the name of an override, and the
+               configuration.
+    """
     count = 0
     for override, config in override_configs:
-        values = read_override(config)
+        values = _build_override(config)
         if values:
             found_fn(override, values)
             count += 1
@@ -43,6 +56,14 @@ def apply_all_overrides(override_configs, found_fn):
 
 
 def read_overrides(base_dir, name, override_list):
+    """
+    Read any available override files.
+
+    Arguments
+    base_dir - The base directory for override configurations.
+    name - The name of the target.
+    override_list - The list of overrides to consider.
+    """
     ret = []
     for override in override_list:
         path = "{}/{}/{}.conf".format(base_dir, override, name)
@@ -53,6 +74,18 @@ def read_overrides(base_dir, name, override_list):
 
 
 def apply_overrides(config, name, config_map, found_fn):
+    """
+    Apply all available overrides.
+
+    Arguments
+    config - The configuration for some target.
+    name - The target having overrides applied.
+    config_map - A configuration map.  If the overrides haven't been loaded
+                 yet, they'll be stored in this map.
+    found_fn - A function to call when an override has been loaded.  It should
+               take two arguments: the name of the loaded override, and the
+               values provided by that override.
+    """
     override_list = config.get("dp.overrides")
     if override_list:
         split_list = devpipeline.config.config.split_list(override_list)

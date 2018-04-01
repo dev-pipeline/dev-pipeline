@@ -14,7 +14,8 @@ from devpipeline.config.modifier import modify
 class TestConfigModifier(unittest.TestCase):
     """Tests to verify universal modification rules work"""
 
-    def test_simple(self):
+    def test_none(self):
+        """Verify a value is unmodified when there are no modifiers"""
         config = {}
         self.assertEqual("foo", modify("foo", config, "name", ""))
 

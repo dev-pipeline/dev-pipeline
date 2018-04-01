@@ -9,6 +9,16 @@ import devpipeline.config.paths
 
 
 def apply_all_profiles(profile_config, profile_list, found_fn):
+    """
+    Apply a set of profiles.
+
+    Arguments
+    profile_config - The configuration for all available profiles.
+    profile_list - A list of profiles that should be applied.
+    found_fn - The function to call for each profile in profile_list.
+               found_fn takes two parameters: the name of the profile being
+               passed, and that profile's configuration.
+    """
     count = 0
     for profile in profile_list:
         if profile_config.has_section(profile):

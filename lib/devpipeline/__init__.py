@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+"""The main module for devpipeline"""
+
 import devpipeline.executor
 
 EXECUTOR_TYPES = {

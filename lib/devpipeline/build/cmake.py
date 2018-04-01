@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+
 """This modules supports building CMake projects."""
 
 import re
@@ -197,7 +198,7 @@ def make_cmake(current_target, common_wrapper):
 
     options, option_fns = _make_all_options()
 
-    def add_value(value, key):
+    def _add_value(value, key):
         args_key, args_value = _EX_ARG_FNS[key](value)
         cmake_args[args_key] = args_value
 
@@ -206,5 +207,5 @@ def make_cmake(current_target, common_wrapper):
         lambda v, key:
         configure_args.extend(option_fns[key](v)))
     devpipeline.toolsupport.args_builder("cmake", current_target, _EX_ARGS,
-                                         add_value)
+                                         _add_value)
     return common_wrapper(CMake(cmake_args, configure_args))
