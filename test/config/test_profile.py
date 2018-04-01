@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+"""Tests related to working with profiles"""
+
 import os.path
 import unittest
 
@@ -12,6 +14,8 @@ _PROFILE_CONFIG = devpipeline.config.profile.read_profiles(
 
 
 class TestConfigProfile(unittest.TestCase):
+    """Verify profiles are loaded and applied appropriately"""
+
     def _validate(self, expected, override, actual):
         self.assertTrue(override in expected)
         expected_overrides = expected[override]
@@ -21,7 +25,9 @@ class TestConfigProfile(unittest.TestCase):
             self.assertEqual(value, actual[key])
 
     def test_none(self):
+        """Verify nothing happens when no profiles are active"""
         def _dont_call(profile, values):
+            # pylint: disable=unused-argument
             raise Exception("Shouldn't have been called")
 
         count = devpipeline.config.profile.apply_all_profiles(_PROFILE_CONFIG,
@@ -29,6 +35,7 @@ class TestConfigProfile(unittest.TestCase):
         self.assertEqual(0, count)
 
     def test_single(self):
+        """Verify a single profile can alter a configuration"""
         expected = {
             "debug": {
                 "build_type": "Debug"
@@ -41,6 +48,7 @@ class TestConfigProfile(unittest.TestCase):
         self.assertEqual(1, count)
 
     def test_multiple(self):
+        """Verify multiple profiles can alter a configuration"""
         expected = {
             "debug": {
                 "build_type": "Debug"

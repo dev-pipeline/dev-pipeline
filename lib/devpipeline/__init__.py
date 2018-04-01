@@ -1,8 +1,10 @@
+#!/usr/bin/python3
+
 import devpipeline.executor
 
 EXECUTOR_TYPES = {
-    "dry-run": executor.DryRunExecutor,
-    "quiet": executor.QuietExecutor,
-    "silent": executor.SilentExecutor,
-    "verbose": executor.VerboseExecutor
+    "dry-run": devpipeline.executor.DryRunExecutor,
+    "quiet": devpipeline.executor.QuietExecutor,
+    "silent": devpipeline.executor.SilentExecutor,
+    "verbose": devpipeline.executor.VerboseExecutor
 }

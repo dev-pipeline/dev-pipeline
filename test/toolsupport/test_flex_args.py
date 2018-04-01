@@ -1,17 +1,22 @@
 #!/usr/bin/python3
 
+"""Test flexible argument building"""
+
 import unittest
 
 import devpipeline.toolsupport
 
 
 class TestFlexArgs(unittest.TestCase):
-    def validate(self, expected, actual):
+    """Tests related to flex arguments"""
+
+    def _validate(self, expected, actual):
         self.assertEqual(len(expected), len(actual))
         for index, value in enumerate(expected):
             self.assertEqual(value, actual[index])
 
     def test_simple(self):
+        """Verify one level of expansion works"""
         expected = [
             "foo.bar",
             "foo.baz"
@@ -20,9 +25,10 @@ class TestFlexArgs(unittest.TestCase):
             ["foo"],
             ["bar", "baz"]
         ])
-        self.validate(expected, expanded)
+        self._validate(expected, expanded)
 
     def test_complex(self):
+        """Verify multiple levels of expansion work"""
         expected = [
             "foo.bar.baz",
             "foo.bar.bing",
@@ -34,7 +40,7 @@ class TestFlexArgs(unittest.TestCase):
             ["bar", "oof"],
             ["baz", "bing"]
         ])
-        self.validate(expected, expanded)
+        self._validate(expected, expanded)
 
 
 if __name__ == "__main__":

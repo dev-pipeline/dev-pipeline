@@ -9,6 +9,7 @@ import devpipeline.config.profile
 
 _ENV_PATTERN = re.compile(R"env.(\w+)")
 
+
 def _add_override(values, adjustments):
     for key in values:
         match = _ENV_PATTERN.match(key)

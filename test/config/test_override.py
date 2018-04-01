@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+"""Verify override configurations can modify a project"""
+
 import os.path
 import unittest
 
@@ -18,6 +20,8 @@ def _load_overrides(target, override_list, found_fn):
 
 
 class TestConfigOverride(unittest.TestCase):
+    """Tests to validate overrie configurations modify a project correctly"""
+
     def _validate(self, expected, override, actual):
         self.assertTrue(override in expected)
         expected_overrides = expected[override]
@@ -27,6 +31,7 @@ class TestConfigOverride(unittest.TestCase):
             self.assertEqual(value, actual[key])
 
     def test_empty(self):
+        """Verify an empty override configuraiton has no impact"""
         def _dont_call(override, values):
             # pylint: disable=unused-argument
             raise Exception("Shouldn't have been called")
@@ -35,6 +40,7 @@ class TestConfigOverride(unittest.TestCase):
         self.assertEqual(0, count)
 
     def test_append(self):
+        """Verify a single "append" section works correctly"""
         expected = {
             "simple": {
                 "val.append": "abc",
@@ -49,6 +55,7 @@ class TestConfigOverride(unittest.TestCase):
         self.assertEqual(1, count)
 
     def test_multiappend(self):
+        """Verify multiple "append" sections works correctly"""
         expected = {
             "simple": {
                 "val.append": "abc",
