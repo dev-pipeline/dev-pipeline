@@ -75,11 +75,12 @@ Common Tools
   dependencies.
 
 
-.. |codacy| image:: https://api.codacy.com/project/badge/Grade/f7052d1a0fba4dde89e0e358f358b952
-    :target: https://www.codacy.com/app/snewell/dev-pipeline?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=snewell/dev-pipeline&amp;utm_campaign=Badge_Grade
+.. |codacy| image:: https://api.codacy.com/project/badge/Grade/0d9cf1d52ca846dc99de6cc621dfeb7b
+    :target: https://www.codacy.com/app/snewell/dev-pipeline?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dev-pipeline/dev-pipeline&amp;utm_campaign=Badge_Grade
 
-.. |code-climate| image:: https://api.codeclimate.com/v1/badges/aa74c89202fefddff664/maintainability
-   :target: https://codeclimate.com/github/snewell/dev-pipeline/maintainability
+.. |code-climate| image:: https://api.codeclimate.com/v1/badges/9427722fafe270b6716f/maintainability
+   :target: https://codeclimate.com/github/dev-pipeline/dev-pipeline/maintainability
+   :alt: Maintainability
 
 .. _build configuration: docs/config.rst
 .. _bootstrap: docs/tools/bootstrap.rst
