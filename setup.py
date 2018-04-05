@@ -19,5 +19,5 @@ setup(
     author="Stephen Newell",
     description="Manage projects spread across multiple repositories",
     license="BSD-2",
-    url="https://github.com/snewell/dev-pipeline",
+    url="https://github.com/dev-pipeline/dev-pipeline",
 )

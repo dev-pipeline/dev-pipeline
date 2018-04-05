@@ -39,7 +39,7 @@ If you have code to resolve the issue, please submit a pull request.
 
 
 .. _autopep8: https://pypi.python.org/pypi/autopep8
-.. _Github: https://github.com/snewell/dev-pipeline
+.. _Github: https://github.com/dev-pipeline/dev-pipeline
 .. _PEP8: https://www.python.org/dev/peps/pep-0008/
 .. _readme: README.rst
 .. _reStructuredText: http://docutils.sourceforge.net/rst.html
