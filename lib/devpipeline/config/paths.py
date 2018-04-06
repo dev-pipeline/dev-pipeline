@@ -40,6 +40,20 @@ def get_overrides_root(base_dir=None, config_map=None):
     return _make_path(base_dir, "overrides.d")
 
 
+def get_override_path(base_dir, override_name, package_name):
+    """
+    Get the path of a specific override file.
+
+    Override files are organized by the override name and the package name.
+
+    Arguments
+    base_dir - The root directory where override configurations are stored.
+    override_name - The name of the override being considered.
+    package_name - The package being considered.
+    """
+    return "{}/{}/{}.conf".format(base_dir, override_name, package_name)
+
+
 def get_profile_path(base_dir=None, config_map=None):
     """
     Get the path to the profile configuration.
