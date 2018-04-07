@@ -193,7 +193,9 @@ _EX_ARG_FNS = {
 
 def make_cmake(current_target, common_wrapper):
     """This function initializes a CMake builder for building the project."""
-    configure_args = []
+    configure_args = [
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+    ]
     cmake_args = {}
 
     options, option_fns = _make_all_options()
