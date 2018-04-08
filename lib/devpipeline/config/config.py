@@ -185,11 +185,11 @@ def update_cache(force=False, cache_file=None):
         cache_file = find_config()
     cache_config = devpipeline.config.parser.read_config(cache_file)
     if force or _is_outdated(cache_file, cache_config):
-        return (process_config(
+        process_config(
             cache_config.get("DEFAULT", "dp.build_config"),
             os.path.dirname(cache_file), "build.cache",
             profiles=cache_config.get("DEFAULT", "dp.profile_name",
                                       fallback=None),
             overrides=cache_config.get("DEFAULT", "dp.overrides",
-                                       fallback=None)), True)
+                                       fallback=None))
     return cache_config
