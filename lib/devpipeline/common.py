@@ -134,4 +134,4 @@ def execute_tool(tool, args):
 
     except Exception as failure:
         print("Error: {}".format(str(failure)), file=sys.stderr)
-        raise
+        sys.exit(1)

@@ -25,7 +25,7 @@ class _ExecutorBase:
         try:
             subprocess.check_call(env=environment, **kwargs)
         except Exception as failure:
-            self.error(str(failure))
+            raise failure
 
     def execute(self, environment, *args):
         for cmd in args:
