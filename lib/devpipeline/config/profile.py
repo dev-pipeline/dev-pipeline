@@ -40,7 +40,7 @@ def read_profiles(path):
     """
     if os.path.isfile(path):
         return devpipeline.config.parser.read_config(path)
-    return None
+    raise Exception("Unable to load profile file ({})".format(path))
 
 
 def apply_profiles(target_config, config_map, found_fn):
