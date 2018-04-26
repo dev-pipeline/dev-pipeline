@@ -13,7 +13,7 @@ import devpipeline.toolsupport
 # the value should be a function that takes a component and returns a Builder.
 _BUILDER_LOOKUP = {
     "cmake": devpipeline.build.cmake.make_cmake,
-    "nothing": lambda c, uc, cw: cw(devpipeline.build.Builder())
+    "nothing": lambda ct, cw: cw(devpipeline.build.Builder())
 }
 
 
