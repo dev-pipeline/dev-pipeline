@@ -19,6 +19,10 @@ def _add_override(values, adjustments):
             adjustments[match.group(1)] = None
 
 
+def _source_config(config_map, adjustments):
+    _add_override(config_map["current_config"], adjustments)
+
+
 def _source_profiles(config_map, adjustments):
     def _add_override_helper(profile_name, profile_config):
         # pylint: disable=unused-argument
@@ -41,6 +45,7 @@ def _source_overrides(config_map, adjustments):
 
 
 _SOURCE_FUNCTIONS = [
+    _source_config,
     _source_profiles,
     _source_overrides
 ]
@@ -72,8 +77,12 @@ def create_environment(config_map):
     """
     def _apply_override(adjustment, ret):
         upper_key = adjustment.upper()
+        initial_value = config_map["current_config"].get(
+            "env.{}".format(adjustment))
+        if not initial_value:
+            initial_value = ret.get(upper_key)
         new_value = devpipeline.config.modifier.modify_everything(
-            ret.get(upper_key), config_map,
+            initial_value, config_map,
             "env.{}".format(adjustment), os.pathsep)
         if new_value:
             ret[upper_key] = new_value
