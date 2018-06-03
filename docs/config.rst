@@ -70,39 +70,55 @@ human-readable, but comments are inline to help explain.
 
 .. code:: ini
 
+    # Common settings for everything we're building.  These can be overriden
+    # below on a case-by-case basis if the globals don't work.
     [DEFAULT]
-    # options used across projects
     build = cmake
-    # cmake-specific option
-    cmake.prefix = /usr
-
-    # Declare a package
-    [bureaucracy]
-    # Use git for source control.  Also provide information on repository and
-    # revision info
     scm = git
+    cmake.prefix = /usr
+    install_path = install
+
+    # Provide information to build gtest
+    [gtest]
+    git.uri = https://github.com/google/googletest
+    git.revision = release-1.8.0
+    cmake.args =
+        -DBUILD_SHARED_LIBS=ON
+    # dep_args isn't used internally, but you can set arbitrary values.  In
+    # this case, dep_args will be used by everything that depends on gtest.
+    dep_args =
+        -DGTEST_ROOT=${dp.build_dir}/${install_path}/${cmake.prefix}
+
+    [bureaucracy]
+    # Dependent packages are separated with commas.  You can depend on things
+    # that haven't been declared yet (e.g., houseguest).
+    depends =
+        gtest,
+        houseguest
     git.uri = https://github.com/snewell/bureaucracy.git
     git.revision = master
-    # Extra cmake-specific arguments; these are used at configuration time
+    # dep_args is being used here (from both gtest and houseguest)
     cmake.args =
-            -DBUILD_DOCS=OFF,
-            -DBUILD_TESTS=OFF
-    install_path = ${dp.build_dir}/_install_
-    # We can set arbitrary arguments; this is used to help things that depend
-    # on bureaucracy
+        ${gtest:dep_args},
+        ${houseguest:dep_args},
+        -DBUREAUCRAY_BUILD_DOCS=OFF
+    # bureaucracy depends on houseguest, so we'll pass along those dep_args.
+    # This prevents anything that depends on bureaucracy from needing to deal
+    # with all dependant packages too.
     dep_args =
-        -DBureaucracy_DIR=${install_path}/${cmake.prefix}/share/Bureaucracy/cmake
+        -DBureaucracy_DIR=${dp.build_dir}/${install_path}/${cmake.prefix}/share/Bureaucracy/cmake/,
+        ${houseguest:dep_args}
 
-    # Declare another package
-    [bureaucracy-test]
-    # This one lives locally on my system, so no scm
-    scm = nothing
-    # It depends on bureaucracy
-    depends = bureaucracy
-    # CMake-specific arguments, including one we get from bureaucracy
-    no_install =
+    [houseguest]
+    depends =
+        gtest
+    git.uri = https://github.com/snewell/houseguest.git
+    git.revision = master
     cmake.args =
-            ${bureaucracy:dep_args}
+        ${gtest:dep_args},
+        -DHOUSEGUEST_BUILD_DOCS=OFF
+    dep_args =
+        -DHouseguest_DIR=${dp.build_dir}/${install_path}/${cmake.prefix}/share/Houseguest/cmake
 
 
 .. _overrides: overrides.rst
