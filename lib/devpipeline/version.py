@@ -3,7 +3,7 @@
 """Version string for module"""
 
 MAJOR = 0
-MINOR = 1
+MINOR = 2
 PATCH = 0
 
 ID = (MAJOR << 24) | (MINOR << 16) | (PATCH << 8)
