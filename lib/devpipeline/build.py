@@ -4,17 +4,14 @@
 import os.path
 import os
 
-import devpipeline.build.cmake
+import devpipeline.plugin
 import devpipeline.toolsupport
 
 
 # Every builder supported should have an entry in this dictionary.  The key
 # needs to match whatever value the "build" key is set to in build.conf, and
 # the value should be a function that takes a component and returns a Builder.
-_BUILDER_LOOKUP = {
-    "cmake": devpipeline.build.cmake.make_cmake,
-    "nothing": lambda ct, cw: cw(devpipeline.build.Builder())
-}
+_BUILDERS = {}
 
 
 def _make_builder(current_target, common_wrapper):
@@ -24,8 +21,31 @@ def _make_builder(current_target, common_wrapper):
     Arguments
     component - The component the builder should be created for.
     """
+    global _BUILDERS
+
+    if not _BUILDERS:
+        class NothingBuilder:
+            def configure(self, src_dir, build_dir):
+                pass
+
+            def build(self, build_dir):
+                pass
+
+            def install(self, build_dir, path):
+                pass
+
+        _BUILDERS = {
+            "nothing": lambda c, cw: cw(NothingBuilder())
+        }
+
+        def add_plugin(builders):
+            for key, fn in builders.items():
+                _BUILDERS[key] = fn
+
+        devpipeline.plugin.query_plugins("get_builders", add_plugin)
+
     return devpipeline.toolsupport.tool_builder(
-        current_target["current_config"], "build", _BUILDER_LOOKUP,
+        current_target["current_config"], "build", _BUILDERS,
         current_target, common_wrapper)
 
 
