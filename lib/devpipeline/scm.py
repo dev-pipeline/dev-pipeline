@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """This module implements some helper functions and a simple SCM tool."""
 
-import devpipeline.scm.git
+import devpipeline.plugin
 import devpipeline.toolsupport
 
 # A dictionary of all supported scm tools.  Any supported tool should provide
@@ -9,10 +9,8 @@ import devpipeline.toolsupport
 # inherit from that class.  They keys in should match values in the "scm"
 # option in a build.config, and the value should be a function that creates an
 # Scm.
-_SCM_LOOKUP = {
-    "git": devpipeline.scm.git.make_git,
-    "nothing": lambda c, cw: cw(devpipeline.scm.Scm())
-}
+
+_SCMS = {}
 
 
 def _make_scm(current_target, common_wrapper):
@@ -22,8 +20,29 @@ def _make_scm(current_target, common_wrapper):
     Arguments
     component - The component being operated on.
     """
-    return devpipeline.toolsupport.tool_builder(current_target["current_config"], "scm",
-                                                _SCM_LOOKUP, current_target, common_wrapper)
+    global _SCMS
+
+    if not _SCMS:
+        class NothingScm:
+            def checkout(self, repo_dir):
+                pass
+
+            def update(self, repo_dir):
+                pass
+
+        _SCMS = {
+            "nothing": lambda c, cw: cw(NothingScm())
+        }
+
+        def add_plugin(scms):
+            for key, fn in scms.items():
+                _SCMS[key] = fn
+
+        devpipeline.plugin.query_plugins("get_scms", add_plugin)
+
+    return devpipeline.toolsupport.tool_builder(
+        current_target["current_config"], "scm",
+        _SCMS, current_target, common_wrapper)
 
 
 class SimpleScm(devpipeline.toolsupport.SimpleTool):
