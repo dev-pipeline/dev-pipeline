@@ -3,8 +3,6 @@
 import importlib
 import pkgutil
 
-import devpipeline_plugins
-
 
 def iter_namespace(ns_pkg):
     # Specifying the second argument (prefix) to iter_modules makes the
@@ -22,14 +20,18 @@ def find_plugins(ns_pkg):
     }
 
 
-_PLUGINS = None
+_PLUGINS = {}
 
 
 def query_plugins(query_fn, found_fn):
     global _PLUGINS
 
     if not _PLUGINS:
-        _PLUGINS = find_plugins(devpipeline_plugins)
+        try:
+            import devpipeline_plugins
+            _PLUGINS = find_plugins(devpipeline_plugins)
+        except Exception:
+            pass
 
     for name, module in _PLUGINS.items():
         try:
