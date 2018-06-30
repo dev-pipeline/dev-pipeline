@@ -34,18 +34,21 @@ Options
 
 Config Options
 --------------
-* :code:`scm` - (**Required**) The source control tool to use.  This must be
-  one of the options listed in SCMs_.
+* :code:`scm` - (**Required**) The source control tool to use.  Available
+  options are a union of what's built in and what's available via plugins.
 * :code:`src_path` - The path where a package's source tree lives.  If
   unspecified, packages will be checked out in a folder matching their name
   under :code:`dp.src_root`.
 
 
-SCMs
-----
-* git_ - Build using git.
+Supported SCMs
+--------------
+Options here are officially supported by dev-pipeline.  Other options may be
+available using third-party, non-supported plugins.
+
+* git_ - (**Requires the git plugin**) Build using git.
 * nothing - No checkout step.  This is useful for packages that live locally
   under the dev-pipeline project for some reason.
 
 
-.. _git: ../scm/git.rst
+.. _git: https://github.com/dev-pipeline/dev-pipeline-git/blob/master/docs/scm-git.rst

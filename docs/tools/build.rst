@@ -31,18 +31,21 @@ Options
 
 Config Options
 --------------
-* :code:`build` - (**Required**) The build tool to use.  It must be an option
-  listed in Builders_.
+* :code:`build` - (**Required**) The build tool to use.  Available options are
+  a union of what's built in and options available through installed plugins.
 * :code:`install_path` - The path *within the build directory* to install a
   package.  If unspecified, :code:`install` will be used.
 * :code:`no_install` - Prevent a package from being installed.
 
 
-Builders
---------
-* cmake_ - Build using CMake.
+Supported Builders
+------------------
+Options here are officially supported by dev-pipeline.  Other options may be
+available using third-party, non-supported plugins.
+
+* cmake_ - (**Requires the git plugin**) Build using CMake.
 * nothing - No build step.  This is useful for dependencies that don't produce
   any artifacts, but are needed for some reason.
 
 
-.. _cmake: ../builder/cmake.rst
+.. _cmake: https://github.com/dev-pipeline/dev-pipeline-cmake/blob/master/docs/builder-cmake.rst
