@@ -2,6 +2,14 @@
 """Resolve dependencies into an order build list"""
 
 
+class CircularDependencyException(Exception):
+    def __init__(self, circular_components):
+        self._components = circular_components
+
+    def __str__(self):
+        return "Circular dependency: {}".format(self._components)
+
+
 def _build_dep_data(targets, components):
     """
     Returns dependency data for a set of targets. An exception will be raised
@@ -87,10 +95,7 @@ def process_dependencies(targets, components, resolved_fn):
         # Every pass must resolve at least one target. An exception is raised
         # if no targets are resolved to avoid an infinte loop.
         if not resolved_targets:
-            raise Exception(
-                "Circular dependency: {}".format(
-                    list(
-                        reverse_deps.keys())))
+            raise CircularDependencyException(list(reverse_deps.keys()))
 
         resolved_fn(resolved_targets)
 

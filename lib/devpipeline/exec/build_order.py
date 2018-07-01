@@ -14,17 +14,35 @@ def _dotify(string):
     return re.sub("-", lambda m: "_", string)
 
 
-def _print_graph(targets, components):
-    # pylint: disable=protected-access
-    rev_deps = devpipeline.resolve._build_dep_data(targets, components)[1]
+def _do_dot(targets, components, layer_fn):
+    def _handle_layer_dependencies(resolved_dependencies, attributes):
+        for component in resolved_dependencies:
+            stripped_name = _dotify(component)
+            component_dependencies = components[component].get("depends")
+            if component_dependencies:
+                for dep in devpipeline.config.config.split_list(
+                        component_dependencies):
+                    print("{} -> {} {}".format(stripped_name,
+                                               _dotify(dep), attributes))
+            print("{} {}".format(stripped_name, attributes))
 
     print("digraph dependencies {")
-    for pkg, deps in rev_deps.items():
-        stripped_pkg = _dotify(pkg)
-        print("\t{}".format(stripped_pkg))
-        for dep in deps:
-            print("\t{} -> {}".format(_dotify(dep), stripped_pkg))
+    try:
+        devpipeline.resolve.process_dependencies(
+            targets, components, lambda rd: layer_fn(
+                rd, lambda rd: _handle_layer_dependencies(
+                    rd, "")))
+    except devpipeline.resolve.CircularDependencyException as cde:
+        layer_fn(
+            cde._components,
+            lambda rd: _handle_layer_dependencies(
+                rd, "[color=\"red\"]"))
     print("}")
+
+
+def _print_graph(targets, components):
+    # pylint: disable=protected-access
+    _do_dot(targets, components, lambda rd, dep_fn: dep_fn(rd))
 
 
 def _print_dot(targets, components):
@@ -36,25 +54,16 @@ def _print_dot(targets, components):
 def _print_layers(targets, components):
     layer = 0
 
-    def _add_layer(resolved_dependencies):
+    def _add_layer(resolved_dependencies, dep_fn):
         nonlocal layer
 
-        print("\tsubgraph cluster_{} {{".format(layer))
-        print("\t\tlabel=\"Layer {}\"".format(layer))
-        for component in resolved_dependencies:
-            stripped_name = _dotify(component)
-            component_dependencies = components[component].get("depends")
-            if component_dependencies:
-                for dep in devpipeline.config.config.split_list(
-                        component_dependencies):
-                    print("\t\t{} -> {}".format(stripped_name, _dotify(dep)))
-            print("\t\t{}".format(stripped_name))
-        print("\t}")
+        print("subgraph cluster_{} {{".format(layer))
+        print("label=\"Layer {}\"".format(layer))
+        dep_fn(resolved_dependencies)
+        print("}")
         layer += 1
 
-    print("digraph layers {")
-    devpipeline.resolve.process_dependencies(targets, components, _add_layer)
-    print("}")
+    _do_dot(targets, components, _add_layer)
 
 
 def _print_list(targets, components):
