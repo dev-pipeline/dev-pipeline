@@ -3,8 +3,51 @@
 
 import re
 
+import devpipeline.config.config
 import devpipeline.common
 import devpipeline.resolve
+
+
+def _dotify(string):
+    """This function swaps '-' for '_'."""
+    return re.sub("-", lambda m: "_", string)
+
+
+def _print_dot(targets, components):
+    # pylint: disable=protected-access
+    rev_deps = devpipeline.resolve._build_dep_data(targets, components)[1]
+
+    print("digraph dependencies {")
+    for pkg, deps in rev_deps.items():
+        stripped_pkg = _dotify(pkg)
+        print("\t{}".format(stripped_pkg))
+        for dep in deps:
+            print("\t{} -> {}".format(_dotify(dep), stripped_pkg))
+    print("}")
+
+
+def _print_layers(targets, components):
+    layer = 0
+
+    def _add_layer(resolved_dependencies):
+        nonlocal layer
+
+        print("\tsubgraph cluster_{} {{".format(layer))
+        print("\t\tlabel=\"Layer {}\"".format(layer))
+        for component in resolved_dependencies:
+            stripped_name = _dotify(component)
+            component_dependencies = components[component].get("depends")
+            if component_dependencies:
+                for dep in devpipeline.config.config.split_list(
+                        component_dependencies):
+                    print("\t\t{} -> {}".format(stripped_name, _dotify(dep)))
+            print("\t\t{}".format(stripped_name))
+        print("\t}")
+        layer += 1
+
+    print("digraph layers {")
+    devpipeline.resolve.process_dependencies(targets, components, _add_layer)
+    print("}")
 
 
 def _print_list(targets, components):
@@ -12,26 +55,10 @@ def _print_list(targets, components):
     print(build_order)
 
 
-def _print_dot(targets, components):
-    # pylint: disable=protected-access
-    rev_deps = devpipeline.resolve._build_dep_data(targets, components)[1]
-
-    def remove_hyphen(string):
-        """This function swaps '-' for '_'."""
-        return re.sub("-", lambda m: "_", string)
-
-    print("digraph dependencies {")
-    for pkg, deps in rev_deps.items():
-        stripped_pkg = remove_hyphen(pkg)
-        print("\t{}".format(stripped_pkg))
-        for dep in deps:
-            print("\t{} -> {}".format(remove_hyphen(dep), stripped_pkg))
-    print("}")
-
-
 _ORDER_OUTPUTS = {
+    "dot": _print_dot,
+    "layer": _print_layers,
     "list": _print_list,
-    "dot": _print_dot
 }
 
 
@@ -48,7 +75,9 @@ class BuildOrderer(devpipeline.common.TargetTool):
         self.add_argument("--method",
                           help="The method used to display build order.  Valid"
                                " options are list (an order to resolve "
-                               "specified targets) and dot (a dot graph).",
+                               "specified targets), dot (a dot graph), and "
+                               "layer (a dot graph that groups components "
+                               "into layers based on their dependencies)..",
                           default="list")
         self.helper_fn = None
 
