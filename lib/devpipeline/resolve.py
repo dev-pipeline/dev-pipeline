@@ -51,7 +51,7 @@ def _build_dep_data(targets, components):
     return (counts, reverse_deps)
 
 
-def order_dependencies(targets, components):
+def process_dependencies(targets, components, resolved_fn):
     """
     Given a list of targets and component configurations, return a list of
     targets in build order. The list order guarantees every target's
@@ -77,7 +77,6 @@ def order_dependencies(targets, components):
         del reverse_deps[target]
 
     counts, reverse_deps = _build_dep_data(targets, components)
-    target_build_order = list()
     while counts:
         resolved_targets = get_resolved_targets(counts)
 
@@ -86,7 +85,7 @@ def order_dependencies(targets, components):
         if not resolved_targets:
             raise Exception("Resolve error")
 
-        target_build_order += resolved_targets
+        resolved_fn(resolved_targets)
 
         # cleanup resolved targets
         for target in resolved_targets:
@@ -94,4 +93,14 @@ def order_dependencies(targets, components):
                 remove_reverse_deps(target, reverse_deps, counts)
             del counts[target]
 
+
+def order_dependencies(targets, components):
+    target_build_order = []
+
+    def _append_targets(resolved_targets):
+        nonlocal target_build_order
+
+        target_build_order += resolved_targets
+
+    process_dependencies(targets, components, _append_targets)
     return target_build_order
