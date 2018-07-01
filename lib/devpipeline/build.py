@@ -38,11 +38,7 @@ def _make_builder(current_target, common_wrapper):
             "nothing": lambda c, cw: cw(NothingBuilder())
         }
 
-        def add_plugin(builders):
-            for key, fn in builders.items():
-                _BUILDERS[key] = fn
-
-        devpipeline.plugin.query_plugins("get_builders", add_plugin)
+        devpipeline.plugin.initialize_simple_plugins(_BUILDERS, "get_builders")
 
     return devpipeline.toolsupport.tool_builder(
         current_target["current_config"], "build", _BUILDERS,

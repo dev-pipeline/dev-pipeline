@@ -34,11 +34,7 @@ def _make_scm(current_target, common_wrapper):
             "nothing": lambda c, cw: cw(NothingScm())
         }
 
-        def add_plugin(scms):
-            for key, fn in scms.items():
-                _SCMS[key] = fn
-
-        devpipeline.plugin.query_plugins("get_scms", add_plugin)
+        devpipeline.plugin.initialize_simple_plugins(_SCMS, "get_scms")
 
     return devpipeline.toolsupport.tool_builder(
         current_target["current_config"], "scm",

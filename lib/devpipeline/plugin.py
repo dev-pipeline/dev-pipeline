@@ -43,3 +43,11 @@ def query_plugins(query_fn, found_fn):
             # the plugin doesn't have the requested function; just ignore,
             # since it's the same scenario as the plugin not existing.
             pass
+
+
+def initialize_simple_plugins(plugin_handles, query_fn):
+    def add_plugin(scms):
+        for key, fn in scms.items():
+            plugin_handles[key] = fn
+
+    query_plugins(query_fn, add_plugin)
