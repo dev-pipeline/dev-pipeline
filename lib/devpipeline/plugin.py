@@ -48,6 +48,10 @@ def query_plugins(query_fn, found_fn):
 def initialize_simple_plugins(plugin_handles, query_fn):
     def add_plugin(scms):
         for key, fn in scms.items():
-            plugin_handles[key] = fn
+            if key not in plugin_handles:
+                plugin_handles[key] = fn
+            else:
+                raise Exception(
+                    "Multiple plugins registering \"{}\"".format(key))
 
     query_plugins(query_fn, add_plugin)
