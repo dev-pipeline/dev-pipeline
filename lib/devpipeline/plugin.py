@@ -4,7 +4,7 @@ import importlib
 import pkgutil
 
 
-def iter_namespace(ns_pkg):
+def _iter_namespace(ns_pkg):
     # Specifying the second argument (prefix) to iter_modules makes the
     # returned name an absolute name instead of a relative one. This allows
     # import_module to work without having to do additional modification to
@@ -12,28 +12,31 @@ def iter_namespace(ns_pkg):
     return pkgutil.iter_modules(ns_pkg.__path__, ns_pkg.__name__ + ".")
 
 
-def find_plugins(ns_pkg):
+def _find_plugins(ns_pkg):
     return {
         name: importlib.import_module(name)
         for finder, name, ispkg
-        in iter_namespace(ns_pkg)
+        in _iter_namespace(ns_pkg)
     }
 
 
 _PLUGINS = {}
 
 
-def query_plugins(query_fn, found_fn):
+def _load_plugins():
     global _PLUGINS
 
     if not _PLUGINS:
         try:
             import devpipeline_plugins
-            _PLUGINS = find_plugins(devpipeline_plugins)
+            _PLUGINS = _find_plugins(devpipeline_plugins)
         except ImportError:
             # if the import fails, it means no plugins are installed
             pass
 
+
+def query_plugins(query_fn, found_fn):
+    _load_plugins()
     for module in _PLUGINS.values():
         try:
             element = getattr(module, query_fn)

@@ -14,13 +14,7 @@ import devpipeline.toolsupport
 _BUILDERS = {}
 
 
-def _make_builder(current_target, common_wrapper):
-    """
-    Create and return a Builder for a component.
-
-    Arguments
-    component - The component the builder should be created for.
-    """
+def _initialize_builders():
     global _BUILDERS
 
     if not _BUILDERS:
@@ -40,6 +34,15 @@ def _make_builder(current_target, common_wrapper):
 
         devpipeline.plugin.initialize_simple_plugins(_BUILDERS, "get_builders")
 
+
+def _make_builder(current_target, common_wrapper):
+    """
+    Create and return a Builder for a component.
+
+    Arguments
+    component - The component the builder should be created for.
+    """
+    _initialize_builders()
     return devpipeline.toolsupport.tool_builder(
         current_target["current_config"], "build", _BUILDERS,
         current_target, common_wrapper)

@@ -26,6 +26,7 @@ def _print_graph(targets, components):
             print("\t{} -> {}".format(_dotify(dep), stripped_pkg))
     print("}")
 
+
 def _print_dot(targets, components):
     print("Warning: dot option is deprecated.  Use graph instead.",
           file=sys.stderr)

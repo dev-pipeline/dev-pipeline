@@ -13,13 +13,7 @@ import devpipeline.toolsupport
 _SCMS = {}
 
 
-def _make_scm(current_target, common_wrapper):
-    """
-    Create an Scm for a component.
-
-    Arguments
-    component - The component being operated on.
-    """
+def _initialize_scms():
     global _SCMS
 
     if not _SCMS:
@@ -36,6 +30,15 @@ def _make_scm(current_target, common_wrapper):
 
         devpipeline.plugin.initialize_simple_plugins(_SCMS, "get_scms")
 
+
+def _make_scm(current_target, common_wrapper):
+    """
+    Create an Scm for a component.
+
+    Arguments
+    component - The component being operated on.
+    """
+    _initialize_scms()
     return devpipeline.toolsupport.tool_builder(
         current_target["current_config"], "scm",
         _SCMS, current_target, common_wrapper)
