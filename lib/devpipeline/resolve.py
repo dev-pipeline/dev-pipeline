@@ -32,22 +32,26 @@ def _build_dep_data(targets, components):
     to_be_processed = list(targets)
     processed_targets = list()
 
+    missing_components = []
     # populate reverse_deps with who depends on each target
     while to_be_processed:
         current = to_be_processed.pop(0)
-        if not components[current]:
-            raise Exception(
-                "Missing configuration for target (target={})".format(current))
+        if current in components:
+            if current not in processed_targets:
+                component_deps = get_deps_from_component(components[current])
+                counts[current] = len(component_deps)
+                _add_reverse_deps(current, component_deps)
 
-        if current not in processed_targets:
-            component_deps = get_deps_from_component(components[current])
-            counts[current] = len(component_deps)
-            _add_reverse_deps(current, component_deps)
+                # process component dependencies as well
+                to_be_processed += component_deps
+                processed_targets.append(current)
+        else:
+            missing_components.append(current)
 
-            # process component dependencies as well
-            to_be_processed += component_deps
-            processed_targets.append(current)
-
+    if missing_components:
+        raise Exception(
+            "Missing configuration for components: {}".format(
+                missing_components))
     return (counts, reverse_deps)
 
 
@@ -83,7 +87,10 @@ def process_dependencies(targets, components, resolved_fn):
         # Every pass must resolve at least one target. An exception is raised
         # if no targets are resolved to avoid an infinte loop.
         if not resolved_targets:
-            raise Exception("Resolve error")
+            raise Exception(
+                "Circular dependency: {}".format(
+                    list(
+                        reverse_deps.keys())))
 
         resolved_fn(resolved_targets)
 
