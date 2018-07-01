@@ -30,13 +30,16 @@ def query_plugins(query_fn, found_fn):
         try:
             import devpipeline_plugins
             _PLUGINS = find_plugins(devpipeline_plugins)
-        except Exception:
+        except ImportError:
+            # if the import fails, it means no plugins are installed
             pass
 
-    for name, module in _PLUGINS.items():
+    for module in _PLUGINS.values():
         try:
             element = getattr(module, query_fn)
             if element:
                 found_fn(element())
         except AttributeError:
+            # the plugin doesn't have the requested function; just ignore,
+            # since it's the same scenario as the plugin not existing.
             pass
