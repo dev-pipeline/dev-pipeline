@@ -2,6 +2,7 @@
 """This modules generates a build ordered list of targets."""
 
 import re
+import sys
 
 import devpipeline.config.config
 import devpipeline.common
@@ -13,7 +14,7 @@ def _dotify(string):
     return re.sub("-", lambda m: "_", string)
 
 
-def _print_dot(targets, components):
+def _print_graph(targets, components):
     # pylint: disable=protected-access
     rev_deps = devpipeline.resolve._build_dep_data(targets, components)[1]
 
@@ -24,6 +25,11 @@ def _print_dot(targets, components):
         for dep in deps:
             print("\t{} -> {}".format(_dotify(dep), stripped_pkg))
     print("}")
+
+def _print_dot(targets, components):
+    print("Warning: dot option is deprecated.  Use graph instead.",
+          file=sys.stderr)
+    _print_graph(targets, components)
 
 
 def _print_layers(targets, components):
@@ -57,6 +63,7 @@ def _print_list(targets, components):
 
 _ORDER_OUTPUTS = {
     "dot": _print_dot,
+    "graph": _print_graph,
     "layer": _print_layers,
     "list": _print_list,
 }
