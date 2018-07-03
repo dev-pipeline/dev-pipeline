@@ -14,25 +14,25 @@ import devpipeline.toolsupport
 _BUILDERS = {}
 
 
+def _nothing_builder(current_config, common_wrapper):
+    class NothingBuilder:
+        def configure(self, src_dir, build_dir):
+            pass
+
+        def build(self, build_dir):
+            pass
+
+        def install(self, build_dir, path):
+            pass
+
+    return NothingBuilder()
+
+
 def _initialize_builders():
     global _BUILDERS
 
     if not _BUILDERS:
-        class NothingBuilder:
-            def configure(self, src_dir, build_dir):
-                pass
-
-            def build(self, build_dir):
-                pass
-
-            def install(self, build_dir, path):
-                pass
-
-        _BUILDERS = {
-            "nothing": lambda c, cw: cw(NothingBuilder())
-        }
-
-        devpipeline.plugin.initialize_simple_plugins(_BUILDERS, "get_builders")
+        _BUILDERS = devpipeline.plugin.query_plugins('devpipeline.builders')
 
 
 def _make_builder(current_target, common_wrapper):

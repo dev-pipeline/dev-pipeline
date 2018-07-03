@@ -13,22 +13,22 @@ import devpipeline.toolsupport
 _SCMS = {}
 
 
+def _nothing_scm(current_target, common_wrapper):
+    class NothingScm:
+        def checkout(self, repo_dir):
+            pass
+
+        def update(self, repo_dir):
+            pass
+
+    return NothingScm()
+
+
 def _initialize_scms():
     global _SCMS
 
     if not _SCMS:
-        class NothingScm:
-            def checkout(self, repo_dir):
-                pass
-
-            def update(self, repo_dir):
-                pass
-
-        _SCMS = {
-            "nothing": lambda c, cw: cw(NothingScm())
-        }
-
-        devpipeline.plugin.initialize_simple_plugins(_SCMS, "get_scms")
+        _SCMS = devpipeline.plugin.query_plugins('devpipeline.scms')
 
 
 def _make_scm(current_target, common_wrapper):

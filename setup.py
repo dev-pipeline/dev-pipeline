@@ -13,6 +13,14 @@ setup(
     entry_points={
         "console_scripts": [
             "dev-pipeline = devpipeline.exec.driver:main"
+        ],
+
+        'devpipeline.builders': [
+            'nothing = devpipeline.build:_nothing_builder',
+        ],
+
+        'devpipeline.scms': [
+            'nothing = devpipeline.scm:_nothing_scm',
         ]
     },
 
