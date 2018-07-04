@@ -3,7 +3,7 @@
 
 import sys
 
-import devpipeline.plugin
+import devpipeline_core.plugin
 
 
 def _do_help():
@@ -20,7 +20,7 @@ def _initialize_tools():
     global _TOOLS
 
     if not _TOOLS:
-        _TOOLS = devpipeline.plugin.query_plugins('devpipeline.drivers')
+        _TOOLS = devpipeline_core.plugin.query_plugins('devpipeline.drivers')
 
 
 def _do_list():

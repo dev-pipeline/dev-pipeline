@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 """This module implements some helper functions and a simple SCM tool."""
 
-import devpipeline.plugin
-import devpipeline.toolsupport
+import devpipeline_core.plugin
+import devpipeline_core.toolsupport
 
 # A dictionary of all supported scm tools.  Any supported tool should provide
 # an interface compatible with devpipeline.scm.Scm, but it's not required they
@@ -28,7 +28,7 @@ def _initialize_scms():
     global _SCMS
 
     if not _SCMS:
-        _SCMS = devpipeline.plugin.query_plugins('devpipeline.scms')
+        _SCMS = devpipeline_core.plugin.query_plugins('devpipeline.scms')
 
 
 def _make_scm(current_target, common_wrapper):
@@ -39,12 +39,12 @@ def _make_scm(current_target, common_wrapper):
     component - The component being operated on.
     """
     _initialize_scms()
-    return devpipeline.toolsupport.tool_builder(
+    return devpipeline_core.toolsupport.tool_builder(
         current_target["current_config"], "scm",
         _SCMS, current_target, common_wrapper)
 
 
-class SimpleScm(devpipeline.toolsupport.SimpleTool):
+class SimpleScm(devpipeline_core.toolsupport.SimpleTool):
 
     """This class is a simple SCM tool."""
 

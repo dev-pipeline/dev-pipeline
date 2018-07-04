@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 """This modules configures the build system - build cache, etc...."""
 
-import devpipeline.common
-import devpipeline.config.config
+import devpipeline_core.command
+import devpipeline_core.config.config
 
 
-class Configure(devpipeline.common.GenericTool):
+class Configure(devpipeline_core.command.GenericTool):
 
     """This class manages the configuration of the project."""
 
@@ -52,7 +52,7 @@ class Configure(devpipeline.common.GenericTool):
             self.overrides = ""
 
     def process(self):
-        devpipeline.config.config.process_config(
+        devpipeline_core.config.config.process_config(
             self.config,
             self.build_dir,
             "build.cache",
@@ -63,7 +63,7 @@ class Configure(devpipeline.common.GenericTool):
 def main(args=None):
     # pylint: disable=missing-docstring
     configure = Configure()
-    devpipeline.common.execute_tool(configure, args)
+    devpipeline_core.common.execute_tool(configure, args)
 
 
 if __name__ == '__main__':

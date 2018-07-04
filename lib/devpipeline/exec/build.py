@@ -1,16 +1,17 @@
 #!/usr/bin/python3
 """This module initiates the build."""
 
+import devpipeline_core.command
+
 import devpipeline.build
-import devpipeline.common
 
 
 def main(args=None):
     # pylint: disable=missing-docstring
-    builder = devpipeline.common.TargetTool([
+    builder = devpipeline_core.command.TargetTool([
         devpipeline.build.build_task
     ], prog="dev-pipeline build", description="Build targets")
-    devpipeline.common.execute_tool(builder, args)
+    devpipeline_core.command.execute_tool(builder, args)
 
 
 if __name__ == '__main__':

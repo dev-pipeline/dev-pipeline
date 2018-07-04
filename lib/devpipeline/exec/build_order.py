@@ -4,9 +4,9 @@
 import re
 import sys
 
-import devpipeline.config.config
-import devpipeline.common
-import devpipeline.resolve
+import devpipeline_core.config.config
+import devpipeline_core.command
+import devpipeline_core.resolve
 
 
 def _dotify(string):
@@ -20,7 +20,7 @@ def _do_dot(targets, components, layer_fn):
             stripped_name = _dotify(component)
             component_dependencies = components[component].get("depends")
             if component_dependencies:
-                for dep in devpipeline.config.config.split_list(
+                for dep in devpipeline_core.config.config.split_list(
                         component_dependencies):
                     print("{} -> {} {}".format(stripped_name,
                                                _dotify(dep), attributes))
@@ -28,11 +28,11 @@ def _do_dot(targets, components, layer_fn):
 
     print("digraph dependencies {")
     try:
-        devpipeline.resolve.process_dependencies(
+        devpipeline_core.resolve.process_dependencies(
             targets, components, lambda rd: layer_fn(
                 rd, lambda rd: _handle_layer_dependencies(
                     rd, "")))
-    except devpipeline.resolve.CircularDependencyException as cde:
+    except devpipeline_core.resolve.CircularDependencyException as cde:
         layer_fn(
             cde._components,
             lambda rd: _handle_layer_dependencies(
@@ -67,7 +67,7 @@ def _print_layers(targets, components):
 
 
 def _print_list(targets, components):
-    build_order = devpipeline.resolve.order_dependencies(targets, components)
+    build_order = devpipeline_core.resolve.order_dependencies(targets, components)
     print(build_order)
 
 
@@ -79,7 +79,7 @@ _ORDER_OUTPUTS = {
 }
 
 
-class BuildOrderer(devpipeline.common.TargetTool):
+class BuildOrderer(devpipeline_core.command.TargetTool):
 
     """This class outputs an ordered list of the packages to satisfy dependencies."""
 
@@ -110,7 +110,7 @@ class BuildOrderer(devpipeline.common.TargetTool):
 def main(args=None):
     # pylint: disable=missing-docstring
     build_orderer = BuildOrderer()
-    devpipeline.common.execute_tool(build_orderer, args)
+    devpipeline_core.common.execute_tool(build_orderer, args)
 
 
 if __name__ == '__main__':

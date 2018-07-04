@@ -4,8 +4,8 @@
 import os.path
 import os
 
-import devpipeline.plugin
-import devpipeline.toolsupport
+import devpipeline_core.plugin
+import devpipeline_core.toolsupport
 
 
 # Every builder supported should have an entry in this dictionary.  The key
@@ -32,7 +32,7 @@ def _initialize_builders():
     global _BUILDERS
 
     if not _BUILDERS:
-        _BUILDERS = devpipeline.plugin.query_plugins('devpipeline.builders')
+        _BUILDERS = devpipeline_core.plugin.query_plugins('devpipeline.builders')
 
 
 def _make_builder(current_target, common_wrapper):
@@ -43,12 +43,12 @@ def _make_builder(current_target, common_wrapper):
     component - The component the builder should be created for.
     """
     _initialize_builders()
-    return devpipeline.toolsupport.tool_builder(
+    return devpipeline_core.toolsupport.tool_builder(
         current_target["current_config"], "build", _BUILDERS,
         current_target, common_wrapper)
 
 
-class SimpleBuild(devpipeline.toolsupport.SimpleTool):
+class SimpleBuild(devpipeline_core.toolsupport.SimpleTool):
 
     """This class does a simple build - configure, build, and install."""
 
