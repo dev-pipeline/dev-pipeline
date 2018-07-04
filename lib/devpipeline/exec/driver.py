@@ -3,11 +3,7 @@
 
 import sys
 
-import devpipeline.exec.bootstrap
-import devpipeline.exec.build
-import devpipeline.exec.build_order
-import devpipeline.exec.checkout
-import devpipeline.exec.configure
+import devpipeline.plugin
 
 
 def _do_help():
@@ -17,16 +13,18 @@ def _do_help():
     print("\t--list\tDisplay available tools")
 
 
-_TOOLS = {
-    "bootstrap": devpipeline.exec.bootstrap.main,
-    "build-order": devpipeline.exec.build_order.main,
-    "build": devpipeline.exec.build.main,
-    "checkout": devpipeline.exec.checkout.main,
-    "configure": devpipeline.exec.configure.main
-}
+_TOOLS = None
+
+
+def _initialize_tools():
+    global _TOOLS
+
+    if not _TOOLS:
+        _TOOLS = devpipeline.plugin.query_plugins('devpipeline.drivers')
 
 
 def _do_list():
+    _initialize_tools()
     for tool in _TOOLS:
         print(tool)
 
@@ -39,6 +37,7 @@ _EX_TOOLS = {
 
 def main():
     # pylint: disable=missing-docstring
+    _initialize_tools()
     if len(sys.argv) > 1:
         tool = _TOOLS.get(sys.argv[1])
         if tool:

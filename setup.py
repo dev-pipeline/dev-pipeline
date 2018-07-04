@@ -21,6 +21,14 @@ setup(
 
         'devpipeline.scms': [
             'nothing = devpipeline.scm:_nothing_scm',
+        ],
+
+        'devpipeline.drivers': [
+            'bootstrap = devpipeline.exec.bootstrap:main',
+            'build = devpipeline.exec.build:main',
+            'build-order = devpipeline.exec.build_order:main',
+            'checkout = devpipeline.exec.checkout:main',
+            'configure = devpipeline.exec.configure:main'
         ]
     },
 
