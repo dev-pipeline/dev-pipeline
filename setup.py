@@ -11,7 +11,20 @@ setup(
     packages=find_packages("lib"),
 
     install_requires=[
-        'dev-pipeline-core >= 0.2.0'
+        'dev-pipeline-core >= 0.2.0',
+
+        # commands included by default
+        'dev-pipeline-bootstrap >= 0.2.0',
+        'dev-pipeline-build >= 0.2.0',
+        'dev-pipeline-build-order >= 0.2.0',
+        'dev-pipeline-configure >= 0.2.0',
+        'dev-pipeline-scm >= 0.2.0',
+
+        # extra builders included by default
+        'dev-pipeline-cmake >= 0.2.0',
+
+        # extra scms included by default
+        'dev-pipeline-git >= 0.2.0'
     ],
 
     entry_points={
