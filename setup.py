@@ -16,12 +16,7 @@ setup(
 
     entry_points={
         "console_scripts": [
-            "dev-pipeline = devpipeline.exec.driver:main"
-        ],
-
-        'devpipeline.drivers': [
-            'build-order = devpipeline.exec.build_order:main',
-            'configure = devpipeline.exec.configure:main'
+            "dev-pipeline = devpipeline.driver:main"
         ]
     },
 
