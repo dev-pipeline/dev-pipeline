@@ -20,7 +20,28 @@ Installation
 ------------
 dev-pipeline requires python3; python2 will not work.
 
+
+From PyPi
+~~~~~~~~~
 The simplest way to install is using pip_.
+
+.. code:: bash
+
+    $ pip3 install dev-pipeline
+
+This will install the latest release.  It won't be as up to date as what's in
+source, but it should be more stable.
+
+
+From Source
+~~~~~~~~~~~
+If the version in PyPi_ isn't new enough, you can install directoy from source
+using pip_.  Because dev-pipeline is spread across several repositories (each
+tool and plugin is tracked separately), you'll need to install all of them as
+well (see their documentation).  Dependencies are listed in `setup.py`_.
+
+Once all dependencies are installed, you can install dev-pipeline using the
+following commands:
 
 .. code:: bash
 
@@ -36,15 +57,11 @@ If you don't have pip available, you can run :code:`setup.py` directly.
 
 If the install completes without errors, then you're good to go.
 
-Depending on your project configuration you may need to install additional
-tools such as cmake or git; installing those tools is beyond the scope of this
-document.
-
 
 Using
 -----
 The first thing you'll need to do is write a `build configuration`_.  Once
-you're ready, configure_ a build directory.
+you're ready, a build directory.
 
 .. code:: bash
 
@@ -63,18 +80,6 @@ If everything went well, you're ready to build.
 That's it.  Check the tool documentation for information on what's available.
 
 
-Common Tools
-------------
-* configure_ - Prepare an environment for dev-pipeline to operate.  This is
-  required before most tools will work.
-* bootstrap_ - Fetch sources and build packages in dependecy order.
-* build_ - Build packages in dependency order.  This tool assumes the sources
-  are available.
-* checkout_ - Fetch sources in dependecy order.
-* build-order_ - Determine the order to build a set of packages, including any
-  dependencies.
-
-
 .. |codacy| image:: https://api.codacy.com/project/badge/Grade/0d9cf1d52ca846dc99de6cc621dfeb7b
     :target: https://www.codacy.com/app/snewell/dev-pipeline?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dev-pipeline/dev-pipeline&amp;utm_campaign=Badge_Grade
 
@@ -83,9 +88,6 @@ Common Tools
    :alt: Maintainability
 
 .. _build configuration: docs/config.rst
-.. _bootstrap: docs/tools/bootstrap.rst
-.. _build: docs/tools/build.rst
-.. _build-order: docs/tools/build-order.rst
-.. _checkout: docs/tools/checkout.rst
-.. _configure: docs/tools/configure.rst
 .. _pip: https://pypi.python.org/pypi/pip
+.. _PyPi: https://pypi.org/project/dev-pipeline/
+.. _setup.py: https://github.com/dev-pipeline/dev-pipeline/blob/master/setup.py
