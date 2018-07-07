@@ -18,7 +18,7 @@ def _do_help():
 
 def _do_list():
     for tool in sorted(devpipeline.TOOLS):
-        print(tool)
+        print("{} - {}".format(tool, devpipeline.TOOLS[tool][1]))
 
 
 _EX_TOOLS = {
@@ -32,7 +32,7 @@ def main():
     if len(sys.argv) > 1:
         tool = devpipeline.TOOLS.get(sys.argv[1])
         if tool:
-            tool(sys.argv[2:])
+            tool[0](sys.argv[2:])
         else:
             tool = _EX_TOOLS.get(sys.argv[1])
             if tool:
