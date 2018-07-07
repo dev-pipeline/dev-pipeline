@@ -1,9 +1,12 @@
 #!/usr/bin/python3
-"""This module is the driver modules for the execution of various tools."""
+
+"""
+This module is the driver modules for the execution of various tools.
+"""
 
 import sys
 
-import devpipeline_core.plugin
+import devpipeline
 
 
 def _do_help():
@@ -13,19 +16,8 @@ def _do_help():
     print("\t--list\tDisplay available tools")
 
 
-_TOOLS = None
-
-
-def _initialize_tools():
-    global _TOOLS
-
-    if not _TOOLS:
-        _TOOLS = devpipeline_core.plugin.query_plugins('devpipeline.drivers')
-
-
 def _do_list():
-    _initialize_tools()
-    for tool in _TOOLS:
+    for tool in sorted(devpipeline.TOOLS):
         print(tool)
 
 
@@ -37,9 +29,8 @@ _EX_TOOLS = {
 
 def main():
     # pylint: disable=missing-docstring
-    _initialize_tools()
     if len(sys.argv) > 1:
-        tool = _TOOLS.get(sys.argv[1])
+        tool = devpipeline.TOOLS.get(sys.argv[1])
         if tool:
             tool(sys.argv[2:])
         else:
