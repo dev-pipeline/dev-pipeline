@@ -2,6 +2,9 @@
 
 from setuptools import setup, find_packages
 
+with open('README.rst') as f:
+    long_description = f.read()
+
 setup(
     name="dev-pipeline",
     version="0.2.0",
@@ -35,6 +38,16 @@ setup(
 
     author="Stephen Newell",
     description="Manage projects spread across multiple repositories",
+    long_description=long_description,
+    long_description_content_type='text/x-rst',
     license="BSD-2",
     url="https://github.com/dev-pipeline/dev-pipeline",
+    classifiers=[
+        "Development Status :: 2 - Pre-Alpha",
+        "Environment :: Console",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: BSD License",
+        "Topic :: Software Development",
+        "Topic :: Utilities"
+    ]
 )
