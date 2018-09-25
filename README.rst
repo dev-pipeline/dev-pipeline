@@ -18,30 +18,28 @@ working well together, without the issues that sub-repositories introduce.
 
 Installation
 ------------
+Requirements
+~~~~~~~~~~~~
 dev-pipeline requires python3; python2 will not work.
 
 
 From PyPi
 ~~~~~~~~~
-The simplest way to install is using pip_.
+If a published version is good enough, you can install using pip_.  PyPi_ has
+all published versions, including alpha and beta releases.
 
 .. code:: bash
 
     $ pip3 install dev-pipeline
 
-This will install the latest release.  It won't be as up to date as what's in
-source, but it should be more stable.
-
 
 From Source
 ~~~~~~~~~~~
-If the version in PyPi_ isn't new enough, you can install directoy from source
-using pip_.  Because dev-pipeline is spread across several repositories (each
-tool and plugin is tracked separately), you'll need to install all of them as
-well (see their documentation).  Dependencies are listed in `setup.py`_.
-
-Once all dependencies are installed, you can install dev-pipeline using the
-following commands:
+If the version in PyPi_ isn't recent enough, you can install directoy from
+source using pip_.  Because dev-pipeline is spread across several repositories
+(each tool and plugin is tracked separately), you'll need to install all of
+them as well (see their documentation).  Dependencies are listed in
+`setup.py`_.
 
 .. code:: bash
 
