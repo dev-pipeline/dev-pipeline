@@ -7,4 +7,4 @@ available tools.
 
 import devpipeline_core.plugin
 
-TOOLS = devpipeline_core.plugin.query_plugins('devpipeline.drivers')
+TOOLS = devpipeline_core.plugin.query_plugins("devpipeline.drivers")

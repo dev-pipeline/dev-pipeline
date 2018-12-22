@@ -21,10 +21,7 @@ def _do_list():
         print("{} - {}".format(tool, devpipeline.TOOLS[tool][1]))
 
 
-_EX_TOOLS = {
-    "--help": _do_help,
-    "--list": _do_list
-}
+_EX_TOOLS = {"--help": _do_help, "--list": _do_list}
 
 
 def main():
