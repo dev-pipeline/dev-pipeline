@@ -2,6 +2,8 @@ dev-pipeline
 ============
 |codacy|
 |code-climate|
+|lgtm|
+|lgtm-quality|
 
 A tool to help manage projects with dependencies spread across repositories.
 
@@ -80,10 +82,13 @@ That's it.  Check the tool documentation for information on what's available.
 
 .. |codacy| image:: https://api.codacy.com/project/badge/Grade/0d9cf1d52ca846dc99de6cc621dfeb7b
     :target: https://www.codacy.com/app/snewell/dev-pipeline?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dev-pipeline/dev-pipeline&amp;utm_campaign=Badge_Grade
-
 .. |code-climate| image:: https://api.codeclimate.com/v1/badges/9427722fafe270b6716f/maintainability
    :target: https://codeclimate.com/github/dev-pipeline/dev-pipeline/maintainability
    :alt: Maintainability
+.. |lgtm| image:: https://img.shields.io/lgtm/alerts/g/dev-pipeline/dev-pipeline.svg?logo=lgtm&logoWidth=18
+    :target: https://lgtm.com/projects/g/dev-pipeline/dev-pipeline/alerts/
+.. |lgtm-quality| image:: https://img.shields.io/lgtm/grade/python/g/dev-pipeline/dev-pipeline.svg?logo=lgtm&logoWidth=18
+    :target: https://lgtm.com/projects/g/dev-pipeline/dev-pipeline/context:python
 
 .. _build configuration: docs/config.rst
 .. _pip: https://pypi.python.org/pypi/pip
