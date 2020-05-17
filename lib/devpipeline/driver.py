@@ -15,7 +15,7 @@ def _do_list(args):
         print("{} - {}".format(tool, devpipeline.TOOLS[tool][1]))
 
 
-def main():
+def _main():
     parser = argparse.ArgumentParser(
         "dev-pipeline",
         description="Driver for all dev-pipeline tools",
@@ -37,4 +37,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    _main()
