@@ -4,17 +4,11 @@
 This module is the driver modules for the execution of various tools.
 """
 
+import argparse
 import sys
 
 import devpipeline
-
-
-def _do_help(args):
-    del args
-    print("usage: dev-pipeline tool [tool args]")
-    print("Arguments:")
-    print("\t--help\tDisplay this help")
-    print("\t--list\tDisplay available tools")
+import devpipeline_core.command
 
 
 def _do_list(args):
@@ -23,27 +17,25 @@ def _do_list(args):
         print("{} - {}".format(tool, devpipeline.TOOLS[tool][1]))
 
 
-_EX_TOOLS = {"--help": _do_help, "--list": _do_list}
-
-
-def _find_tool():
-    tool = devpipeline.TOOLS.get(sys.argv[1])
-    if tool:
-        return tool[0]
-    return _EX_TOOLS.get(sys.argv[1])
-
-
 def main():
+    parser = argparse.ArgumentParser(
+        "dev-pipeline",
+        description="Driver for all dev-pipeline tools",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    subparsers = parser.add_subparsers(
+        title="tool", description="Tool to execute", metavar="<tool>"
+    )
+    for tool in devpipeline.TOOLS:
+        tools_parser = subparsers.add_parser(tool, help=devpipeline.TOOLS[tool][0])
+        devpipeline.TOOLS[tool][1](tools_parser)
+        tools_parser.set_defaults(func=devpipeline.TOOLS[tool][2])
     # pylint: disable=missing-docstring
-    if len(sys.argv) > 1:
-        tool = _find_tool()
-        if tool:
-            tool(sys.argv[2:])
-        else:
-            print("{} isn't an available tool".format(sys.argv[1]), file=sys.stderr)
-            sys.exit(1)
+    arguments = parser.parse_args()
+    if "func" in arguments:
+        arguments.func(arguments)
     else:
-        _do_help(None)
+        parser.parse_args(["--help"])
 
 
 if __name__ == "__main__":
