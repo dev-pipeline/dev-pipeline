@@ -5,10 +5,8 @@ This module is the driver modules for the execution of various tools.
 """
 
 import argparse
-import sys
 
 import devpipeline
-import devpipeline_core.command
 
 
 def _do_list(args):
