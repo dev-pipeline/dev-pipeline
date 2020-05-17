@@ -25,7 +25,7 @@ setup(
         # extra scms included by default
         "dev-pipeline-git >= {}".format(_VERSION),
     ],
-    entry_points={"console_scripts": ["dev-pipeline = devpipeline.driver:main"]},
+    entry_points={"console_scripts": ["dev-pipeline = devpipeline.driver:_main"]},
     author="Stephen Newell",
     description="Manage projects spread across multiple repositories",
     long_description=long_description,
