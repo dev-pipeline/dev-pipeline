@@ -24,7 +24,7 @@ def _main():
     subparsers = parser.add_subparsers(
         title="tool", description="Tool to execute", metavar="<tool>"
     )
-    for tool in devpipeline.TOOLS:
+    for tool in sorted(devpipeline.TOOLS):
         tools_parser = subparsers.add_parser(tool, help=devpipeline.TOOLS[tool][0])
         devpipeline.TOOLS[tool][1](tools_parser)
         tools_parser.set_defaults(func=devpipeline.TOOLS[tool][2])
